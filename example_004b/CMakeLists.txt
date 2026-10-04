@@ -9,10 +9,4 @@ target_link_libraries(example_004b PRIVATE spdlog::spdlog)
 target_link_libraries(example_004b PRIVATE imgui::imgui)
 target_link_libraries(example_004b PRIVATE stb::stb)
 
-add_custom_command(
-  TARGET example_004b
-  POST_BUILD
-  COMMAND
-    ${CMAKE_COMMAND} -E copy_directory_if_different
-    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
-    "$<TARGET_FILE_DIR:example_004b>/assets")
+target_copy_assets(example_004b "${CMAKE_CURRENT_SOURCE_DIR}/assets")
