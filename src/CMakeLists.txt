@@ -1,0 +1,5 @@
+add_executable(sandbox main.cpp)
+target_link_libraries(sandbox PRIVATE SDL3::SDL3)
+target_link_libraries(sandbox PRIVATE glad::glad)
+target_link_libraries(sandbox PRIVATE imgui::imgui)
+target_link_libraries(sandbox PRIVATE spdlog::spdlog)
