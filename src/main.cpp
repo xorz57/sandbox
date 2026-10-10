@@ -1,6 +1,5 @@
 #include "scope_exit.hpp"
 
-#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_timer.h>
@@ -9,7 +8,6 @@
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl3.h>
-#include <spdlog/spdlog.h>
 
 #include <cstdlib>
 
