@@ -42,7 +42,6 @@ int main() {
 
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
-    spdlog::error("Failed to create window: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   ScopeExit const cleanup2{[&] { SDL_DestroyWindow(window); }};
