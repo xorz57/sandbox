@@ -4,8 +4,8 @@
 
 template <typename Function> class ScopeExit final {
 public:
-  ScopeExit(Function &&function) : m_Function(std::move(function)) {}
-  ~ScopeExit() { m_Function(); }
+  ScopeExit(Function &&function) : function_(std::move(function)) {}
+  ~ScopeExit() { function_(); }
 
   ScopeExit(const ScopeExit &) = delete;
   ScopeExit &operator=(const ScopeExit &) = delete;
@@ -14,5 +14,5 @@ public:
   ScopeExit &operator=(ScopeExit &&) = delete;
 
 private:
-  Function m_Function;
+  Function function_;
 };

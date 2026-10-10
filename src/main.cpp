@@ -94,7 +94,7 @@ int main() {
   ImGui_ImplOpenGL3_Init();
   ScopeExit const cleanup6{[] { ImGui_ImplOpenGL3_Shutdown(); }};
 
-  bool showDemoWindow{true};
+  bool show_demo_window{true};
 
   bool done{false};
 
@@ -125,8 +125,8 @@ int main() {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    if (showDemoWindow) {
-      ImGui::ShowDemoWindow(&showDemoWindow);
+    if (show_demo_window) {
+      ImGui::ShowDemoWindow(&show_demo_window);
     }
 
     ImGui::Render();
