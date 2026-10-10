@@ -17,7 +17,7 @@ int main() {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
     return EXIT_FAILURE;
   }
-  ScopeExit const cleanup1{[] { SDL_Quit(); }};
+  ScopeExit const sdl_guard{[] { SDL_Quit(); }};
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -44,13 +44,13 @@ int main() {
   if (window == nullptr) {
     return EXIT_FAILURE;
   }
-  ScopeExit const cleanup2{[&] { SDL_DestroyWindow(window); }};
+  ScopeExit const window_guard{[&] { SDL_DestroyWindow(window); }};
 
   SDL_GLContext context{SDL_GL_CreateContext(window)};
   if (context == nullptr) {
     return EXIT_FAILURE;
   }
-  ScopeExit const cleanup3{[&] { SDL_GL_DestroyContext(context); }};
+  ScopeExit const context_guard{[&] { SDL_GL_DestroyContext(context); }};
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
@@ -63,7 +63,7 @@ int main() {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ScopeExit const cleanup4{[] { ImGui::DestroyContext(); }};
+  ScopeExit const imgui_context_guard{[] { ImGui::DestroyContext(); }};
 
   ImGuiIO &io{ImGui::GetIO()};
   static_cast<void>(io);
@@ -89,10 +89,10 @@ int main() {
   }
 
   ImGui_ImplSDL3_InitForOpenGL(window, context);
-  ScopeExit const cleanup5{[] { ImGui_ImplSDL3_Shutdown(); }};
+  ScopeExit const imgui_sdl3_guard{[] { ImGui_ImplSDL3_Shutdown(); }};
 
   ImGui_ImplOpenGL3_Init();
-  ScopeExit const cleanup6{[] { ImGui_ImplOpenGL3_Shutdown(); }};
+  ScopeExit const imgui_opengl3_guard{[] { ImGui_ImplOpenGL3_Shutdown(); }};
 
   bool show_demo_window{true};
 
@@ -131,10 +131,7 @@ int main() {
 
     ImGui::Render();
 
-    float w{io.DisplaySize.x};
-    float h{io.DisplaySize.y};
-    glViewport(0, 0, static_cast<int>(w), static_cast<int>(h));
-
+    glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
