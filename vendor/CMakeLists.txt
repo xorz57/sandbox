@@ -1,5 +1,9 @@
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(SDL_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS
+    OFF
+    CACHE BOOL "" FORCE)
+set(SDL_TESTS
+    OFF
+    CACHE BOOL "" FORCE)
 
 add_subdirectory(assimp)
 add_subdirectory(box3d)
