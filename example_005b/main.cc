@@ -44,13 +44,6 @@ constexpr std::uint32_t kUnlitInstancesFirst{kLitInstancesFirst + kLitInstancesC
 constexpr std::uint32_t kInstancesBinding{0};
 constexpr std::uint32_t kModelsBinding{1};
 constexpr std::uint32_t kMaterialsBinding{2};
-
-auto SetLightUniforms(const Program &program, const Light &light) -> void {
-  program.SetUniform("u_light.position", light.position);
-  program.SetUniform("u_light.color", light.color);
-  program.SetUniform("u_light.intensity", light.intensity);
-}
-
 } // namespace
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -410,7 +403,9 @@ auto main() -> int {
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
     lit_program->SetUniform("u_ambient_light", ambient_light);
-    SetLightUniforms(*lit_program, light);
+    lit_program->SetUniform("u_light.position", light.position);
+    lit_program->SetUniform("u_light.color", light.color);
+    lit_program->SetUniform("u_light.intensity", light.intensity);
     lit_program->SetUniform("u_view_position", camera.GetPosition());
 
     ::glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr),

@@ -22,22 +22,6 @@
 #include <filesystem>
 #include <vector>
 
-namespace {
-
-auto SetLightUniforms(const Program &program, const Light &light) -> void {
-  program.SetUniform("u_light.position", light.position);
-  program.SetUniform("u_light.color", light.color);
-  program.SetUniform("u_light.intensity", light.intensity);
-}
-
-auto SetMaterialUniforms(const Program &program, const Material &material) -> void {
-  program.SetUniform("u_material.diffuse", material.diffuse);
-  program.SetUniform("u_material.specular", material.specular);
-  program.SetUniform("u_material.shininess", material.shininess);
-}
-
-} // namespace
-
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 auto main() -> int {
   if (!::SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
@@ -347,22 +331,30 @@ auto main() -> int {
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
     lit_program->SetUniform("u_ambient_light", ambient_light);
-    SetLightUniforms(*lit_program, light);
+    lit_program->SetUniform("u_light.position", light.position);
+    lit_program->SetUniform("u_light.color", light.color);
+    lit_program->SetUniform("u_light.intensity", light.intensity);
     lit_program->SetUniform("u_view_position", camera.GetPosition());
 
     const glm::mat4 model1{glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F})};
     lit_program->SetUniform("u_model", model1);
-    SetMaterialUniforms(*lit_program, material1);
+    lit_program->SetUniform("u_material.diffuse", material1.diffuse);
+    lit_program->SetUniform("u_material.specular", material1.specular);
+    lit_program->SetUniform("u_material.shininess", material1.shininess);
     ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model2{glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F})};
     lit_program->SetUniform("u_model", model2);
-    SetMaterialUniforms(*lit_program, material2);
+    lit_program->SetUniform("u_material.diffuse", material2.diffuse);
+    lit_program->SetUniform("u_material.specular", material2.specular);
+    lit_program->SetUniform("u_material.shininess", material2.shininess);
     ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     const glm::mat4 model3{glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F})};
     lit_program->SetUniform("u_model", model3);
-    SetMaterialUniforms(*lit_program, material3);
+    lit_program->SetUniform("u_material.diffuse", material3.diffuse);
+    lit_program->SetUniform("u_material.specular", material3.specular);
+    lit_program->SetUniform("u_material.shininess", material3.shininess);
     ::glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     unlit_program->Use();
