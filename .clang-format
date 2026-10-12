@@ -2,10 +2,6 @@
 BasedOnStyle: LLVM
 Language: Cpp
 ColumnLimit: 120
-IndentWidth: 4
-AccessModifierOffset: -4
-ContinuationIndentWidth: 4
-TabWidth: 4
 AlwaysBreakTemplateDeclarations: Yes
 BinPackParameters: OnePerLine
 BinPackArguments: false

@@ -6,36 +6,36 @@
 
 class Shader final {
 public:
-    enum class Type : std::uint8_t {
-        kVertex,
-        kFragment,
-    };
+  enum class Type : std::uint8_t {
+    kVertex,
+    kFragment,
+  };
 
-    enum class Error : std::uint8_t {
-        kFileOpenFailed,
-        kFileEmpty,
-        kCreateFailed,
-        kCompileFailed,
-    };
+  enum class Error : std::uint8_t {
+    kFileOpenFailed,
+    kFileEmpty,
+    kCreateFailed,
+    kCompileFailed,
+  };
 
-    ~Shader();
+  ~Shader();
 
-    Shader(const Shader &) = delete;
-    Shader(Shader &&other) noexcept;
+  Shader(const Shader &) = delete;
+  Shader(Shader &&other) noexcept;
 
-    auto operator=(const Shader &) -> Shader & = delete;
-    auto operator=(Shader &&other) noexcept -> Shader &;
+  auto operator=(const Shader &) -> Shader & = delete;
+  auto operator=(Shader &&other) noexcept -> Shader &;
 
-    [[nodiscard]] static auto Create(Type type, const char *source) -> std::expected<Shader, Error>;
-    [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path &path)
-        -> std::expected<Shader, Error>;
+  [[nodiscard]] static auto Create(Type type, const char *source) -> std::expected<Shader, Error>;
+  [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path &path)
+      -> std::expected<Shader, Error>;
 
-    auto Reset() noexcept -> void;
+  auto Reset() noexcept -> void;
 
-    [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t;
+  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t;
 
 private:
-    explicit Shader(std::uint32_t handle);
+  explicit Shader(std::uint32_t handle);
 
-    std::uint32_t handle_{};
+  std::uint32_t handle_{};
 };
