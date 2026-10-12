@@ -19,7 +19,7 @@ Shader::~Shader() { Reset(); }
 
 Shader::Shader(Shader &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
 
-auto Shader::operator=(Shader &&other) noexcept -> Shader & {
+Shader &Shader::operator=(Shader &&other) noexcept {
   if (this != &other) {
     Reset();
     handle_ = std::exchange(other.handle_, 0);
@@ -27,7 +27,7 @@ auto Shader::operator=(Shader &&other) noexcept -> Shader & {
   return *this;
 }
 
-auto Shader::Create(Type type, const char *source) -> std::expected<Shader, Error> {
+std::expected<Shader, Shader::Error> Shader::Create(Type type, const char *source) {
   const std::uint32_t handle{glCreateShader(type == Type::kVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
   if (handle == 0) {
     spdlog::error("Failed to create {} shader", type == Type::kVertex ? "vertex" : "fragment");
@@ -56,7 +56,7 @@ auto Shader::Create(Type type, const char *source) -> std::expected<Shader, Erro
   return Shader{handle};
 }
 
-auto Shader::CreateFromFile(Type type, const std::filesystem::path &path) -> std::expected<Shader, Error> {
+std::expected<Shader, Shader::Error> Shader::CreateFromFile(Type type, const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
     spdlog::error("Failed to open shader file: {}", path.string());
@@ -75,11 +75,11 @@ auto Shader::CreateFromFile(Type type, const std::filesystem::path &path) -> std
   return Create(type, source.c_str());
 }
 
-auto Shader::Reset() noexcept -> void {
+void Shader::Reset() noexcept {
   if (handle_ != 0) {
     glDeleteShader(handle_);
     handle_ = 0;
   }
 }
 
-auto Shader::GetHandle() const noexcept -> std::uint32_t { return handle_; }
+std::uint32_t Shader::GetHandle() const noexcept { return handle_; }

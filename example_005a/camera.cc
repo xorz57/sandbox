@@ -26,25 +26,25 @@ auto Camera::ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4 {
 }
 
 auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) -> void {
-  const float velocity{kMovementSpeed * speed_multiplier * delta_time};
+  const float speed{kMovementSpeed * speed_multiplier * delta_time};
   switch (movement) {
   case Movement::kForward:
-    position_ += front_ * velocity;
+    position_ += front_ * speed;
     break;
   case Movement::kBackward:
-    position_ -= front_ * velocity;
+    position_ -= front_ * speed;
     break;
   case Movement::kLeft:
-    position_ -= right_ * velocity;
+    position_ -= right_ * speed;
     break;
   case Movement::kRight:
-    position_ += right_ * velocity;
+    position_ += right_ * speed;
     break;
   case Movement::kUp:
-    position_ += kWorldUp * velocity;
+    position_ += kWorldUp * speed;
     break;
   case Movement::kDown:
-    position_ -= kWorldUp * velocity;
+    position_ -= kWorldUp * speed;
     break;
   }
 }

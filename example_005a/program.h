@@ -21,55 +21,53 @@ public:
   Program(const Program &) = delete;
   Program(Program &&other) noexcept;
 
-  auto operator=(const Program &) -> Program & = delete;
-  auto operator=(Program &&other) noexcept -> Program &;
+  Program &operator=(const Program &) = delete;
+  Program &operator=(Program &&other) noexcept;
 
-  [[nodiscard]] static auto Create(const Shader &vertex_shader, const Shader &fragment_shader)
-      -> std::expected<Program, Error>;
+  [[nodiscard]] static std::expected<Program, Error> Create(const Shader &vertex_shader, const Shader &fragment_shader);
 
-  auto Reset() noexcept -> void;
+  void Reset() noexcept;
 
-  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t;
+  [[nodiscard]] std::uint32_t GetHandle() const noexcept;
 
-  auto Use() const -> void;
+  void Use() const;
 
-  auto SetUniform(const char *name, bool value) const -> void;
+  void SetUniform(const char *name, bool value) const;
 
-  auto SetUniform(const char *name, float v0) const -> void;
-  auto SetUniform(const char *name, float v0, float v1) const -> void;
-  auto SetUniform(const char *name, float v0, float v1, float v2) const -> void;
-  auto SetUniform(const char *name, float v0, float v1, float v2, float v3) const -> void;
+  void SetUniform(const char *name, float v0) const;
+  void SetUniform(const char *name, float v0, float v1) const;
+  void SetUniform(const char *name, float v0, float v1, float v2) const;
+  void SetUniform(const char *name, float v0, float v1, float v2, float v3) const;
 
-  auto SetUniform(const char *name, std::int32_t v0) const -> void;
-  auto SetUniform(const char *name, std::int32_t v0, std::int32_t v1) const -> void;
-  auto SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const -> void;
-  auto SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const -> void;
+  void SetUniform(const char *name, std::int32_t v0) const;
+  void SetUniform(const char *name, std::int32_t v0, std::int32_t v1) const;
+  void SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const;
+  void SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const;
 
-  auto SetUniform(const char *name, std::uint32_t v0) const -> void;
-  auto SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1) const -> void;
-  auto SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2) const -> void;
-  auto SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2, std::uint32_t v3) const
-      -> void;
+  void SetUniform(const char *name, std::uint32_t v0) const;
+  void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1) const;
+  void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2) const;
+  void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2, std::uint32_t v3) const;
 
-  auto SetUniform(const char *name, const glm::bvec2 &value) const -> void;
-  auto SetUniform(const char *name, const glm::bvec3 &value) const -> void;
-  auto SetUniform(const char *name, const glm::bvec4 &value) const -> void;
+  void SetUniform(const char *name, const glm::bvec2 &value) const;
+  void SetUniform(const char *name, const glm::bvec3 &value) const;
+  void SetUniform(const char *name, const glm::bvec4 &value) const;
 
-  auto SetUniform(const char *name, const glm::vec2 &value) const -> void;
-  auto SetUniform(const char *name, const glm::vec3 &value) const -> void;
-  auto SetUniform(const char *name, const glm::vec4 &value) const -> void;
+  void SetUniform(const char *name, const glm::vec2 &value) const;
+  void SetUniform(const char *name, const glm::vec3 &value) const;
+  void SetUniform(const char *name, const glm::vec4 &value) const;
 
-  auto SetUniform(const char *name, const glm::ivec2 &value) const -> void;
-  auto SetUniform(const char *name, const glm::ivec3 &value) const -> void;
-  auto SetUniform(const char *name, const glm::ivec4 &value) const -> void;
+  void SetUniform(const char *name, const glm::ivec2 &value) const;
+  void SetUniform(const char *name, const glm::ivec3 &value) const;
+  void SetUniform(const char *name, const glm::ivec4 &value) const;
 
-  auto SetUniform(const char *name, const glm::uvec2 &value) const -> void;
-  auto SetUniform(const char *name, const glm::uvec3 &value) const -> void;
-  auto SetUniform(const char *name, const glm::uvec4 &value) const -> void;
+  void SetUniform(const char *name, const glm::uvec2 &value) const;
+  void SetUniform(const char *name, const glm::uvec3 &value) const;
+  void SetUniform(const char *name, const glm::uvec4 &value) const;
 
-  auto SetUniform(const char *name, const glm::mat2 &value) const -> void;
-  auto SetUniform(const char *name, const glm::mat3 &value) const -> void;
-  auto SetUniform(const char *name, const glm::mat4 &value) const -> void;
+  void SetUniform(const char *name, const glm::mat2 &value) const;
+  void SetUniform(const char *name, const glm::mat3 &value) const;
+  void SetUniform(const char *name, const glm::mat4 &value) const;
 
 private:
   explicit Program(std::uint32_t handle);

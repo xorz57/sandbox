@@ -15,18 +15,18 @@ public:
     kDown,
   };
 
-  explicit Camera(const glm::vec3 &position = {0.0F, 0.0F, 0.0F});
+  explicit Camera(const glm::vec3 &position = {});
 
-  [[nodiscard]] auto ComputeViewMatrix() const -> glm::mat4;
-  [[nodiscard]] static auto ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4;
+  [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
+  [[nodiscard]] static glm::mat4 ComputeProjectionMatrix(float aspect_ratio);
 
-  auto ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F) -> void;
-  auto ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true) -> void;
+  void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
+  void ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true);
 
-  [[nodiscard]] auto GetPosition() const -> glm::vec3;
+  [[nodiscard]] glm::vec3 GetPosition() const;
 
 private:
-  auto UpdateCameraVectors() -> void;
+  void UpdateCameraVectors();
 
   glm::vec3 position_;
   glm::vec3 front_{0.0F, 0.0F, -1.0F};

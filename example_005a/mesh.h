@@ -19,17 +19,17 @@ public:
   Mesh(const Mesh &) = delete;
   Mesh(Mesh &&other) noexcept;
 
-  auto operator=(const Mesh &) -> Mesh & = delete;
-  auto operator=(Mesh &&other) noexcept -> Mesh &;
+  Mesh &operator=(const Mesh &) = delete;
+  Mesh &operator=(Mesh &&other) noexcept;
 
-  [[nodiscard]] static auto Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
-      -> std::expected<Mesh, Error>;
+  [[nodiscard]] static std::expected<Mesh, Error> Create(std::span<const Vertex> vertices,
+                                                         std::span<const std::uint32_t> indices);
 
-  auto Reset() noexcept -> void;
+  void Reset() noexcept;
 
-  [[nodiscard]] auto GetVertexArray() const -> std::uint32_t;
+  [[nodiscard]] std::uint32_t GetVertexArray() const;
 
-  [[nodiscard]] auto GetIndicesSize() const -> std::size_t;
+  [[nodiscard]] std::size_t GetIndicesSize() const;
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
@@ -38,6 +38,5 @@ private:
   std::uint32_t vbo_{};
   std::uint32_t ebo_{};
   std::uint32_t vao_{};
-
   std::size_t indices_size_{};
 };

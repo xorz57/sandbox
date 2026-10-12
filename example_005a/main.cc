@@ -23,12 +23,12 @@
 #include <vector>
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-auto main() -> int {
+int main() {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
     spdlog::error("Failed to initialize SDL: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_guard{ScopeExit{[] -> void { SDL_Quit(); }}};
+  auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -56,14 +56,14 @@ auto main() -> int {
     spdlog::error("Failed to create SDL Window: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_window_guard{ScopeExit{[&] -> void { SDL_DestroyWindow(sdl_window); }}};
+  auto sdl_window_guard{ScopeExit{[&] { SDL_DestroyWindow(sdl_window); }}};
 
   const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
     spdlog::error("Failed to create SDL GL Context: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_gl_context_guard{ScopeExit{[&] -> void { SDL_GL_DestroyContext(sdl_gl_context); }}};
+  auto sdl_gl_context_guard{ScopeExit{[&] { SDL_GL_DestroyContext(sdl_gl_context); }}};
 
   SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
   SDL_GL_SetSwapInterval(1);
@@ -91,7 +91,7 @@ auto main() -> int {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  auto imgui_context_guard{ScopeExit{[] -> void { ImGui::DestroyContext(); }}};
+  auto imgui_context_guard{ScopeExit{[] { ImGui::DestroyContext(); }}};
 
   ImGuiIO &io{ImGui::GetIO()};
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -113,10 +113,10 @@ auto main() -> int {
   }
 
   ImGui_ImplSDL3_InitForOpenGL(sdl_window, sdl_gl_context);
-  auto imgui_sdl3_guard{ScopeExit{[] -> void { ImGui_ImplSDL3_Shutdown(); }}};
+  auto imgui_sdl3_guard{ScopeExit{[] { ImGui_ImplSDL3_Shutdown(); }}};
 
   ImGui_ImplOpenGL3_Init();
-  auto imgui_opengl3_guard{ScopeExit{[] -> void { ImGui_ImplOpenGL3_Shutdown(); }}};
+  auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
 
   const std::vector<Vertex> vertices{
       // Front (+z)

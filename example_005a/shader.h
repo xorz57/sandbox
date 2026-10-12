@@ -23,16 +23,15 @@ public:
   Shader(const Shader &) = delete;
   Shader(Shader &&other) noexcept;
 
-  auto operator=(const Shader &) -> Shader & = delete;
-  auto operator=(Shader &&other) noexcept -> Shader &;
+  Shader &operator=(const Shader &) = delete;
+  Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static auto Create(Type type, const char *source) -> std::expected<Shader, Error>;
-  [[nodiscard]] static auto CreateFromFile(Type type, const std::filesystem::path &path)
-      -> std::expected<Shader, Error>;
+  [[nodiscard]] static std::expected<Shader, Error> Create(Type type, const char *source);
+  [[nodiscard]] static std::expected<Shader, Error> CreateFromFile(Type type, const std::filesystem::path &path);
 
-  auto Reset() noexcept -> void;
+  void Reset() noexcept;
 
-  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t;
+  [[nodiscard]] std::uint32_t GetHandle() const noexcept;
 
 private:
   explicit Shader(std::uint32_t handle);

@@ -21,7 +21,7 @@ Mesh::Mesh(Mesh &&other) noexcept
     : vbo_{std::exchange(other.vbo_, 0)}, ebo_{std::exchange(other.ebo_, 0)}, vao_{std::exchange(other.vao_, 0)},
       indices_size_{std::exchange(other.indices_size_, 0)} {}
 
-auto Mesh::operator=(Mesh &&other) noexcept -> Mesh & {
+Mesh &Mesh::operator=(Mesh &&other) noexcept {
   if (this != &other) {
     Reset();
     vbo_ = std::exchange(other.vbo_, 0);
@@ -32,8 +32,8 @@ auto Mesh::operator=(Mesh &&other) noexcept -> Mesh & {
   return *this;
 }
 
-auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
-    -> std::expected<Mesh, Error> {
+std::expected<Mesh, Mesh::Error> Mesh::Create(std::span<const Vertex> vertices,
+                                              std::span<const std::uint32_t> indices) {
   if (vertices.empty()) {
     spdlog::error("Mesh has no vertices");
     return std::unexpected{Error::kVerticesEmpty};
@@ -75,7 +75,7 @@ auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_
   return Mesh{vbo, ebo, vao, indices.size()};
 }
 
-auto Mesh::Reset() noexcept -> void {
+void Mesh::Reset() noexcept {
   if (vao_ != 0) {
     glDeleteVertexArrays(1, &vao_);
     vao_ = 0;
@@ -91,6 +91,6 @@ auto Mesh::Reset() noexcept -> void {
   indices_size_ = 0;
 }
 
-auto Mesh::GetVertexArray() const -> std::uint32_t { return vao_; }
+std::uint32_t Mesh::GetVertexArray() const { return vao_; }
 
-auto Mesh::GetIndicesSize() const -> std::size_t { return indices_size_; }
+std::size_t Mesh::GetIndicesSize() const { return indices_size_; }

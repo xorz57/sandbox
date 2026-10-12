@@ -16,10 +16,10 @@ public:
   ScopeExit(const ScopeExit &) = delete;
   ScopeExit(ScopeExit &&) noexcept = delete;
 
-  auto operator=(const ScopeExit &) -> ScopeExit & = delete;
-  auto operator=(ScopeExit &&) noexcept -> ScopeExit & = delete;
+  ScopeExit &operator=(const ScopeExit &) = delete;
+  ScopeExit &operator=(ScopeExit &&) noexcept = delete;
 
-  auto Release() noexcept -> void { active_ = false; }
+  void Release() noexcept { active_ = false; }
 
 private:
   bool active_{true};

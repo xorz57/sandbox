@@ -7,6 +7,7 @@ Checks:
   - modernize-*
   - cppcoreguidelines-*
   - misc-include-cleaner
+  - -modernize-use-trailing-return-type
   - -cppcoreguidelines-avoid-magic-numbers
   - -readability-identifier-length
   - -readability-magic-numbers
