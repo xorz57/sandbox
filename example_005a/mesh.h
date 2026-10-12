@@ -9,35 +9,35 @@
 
 class Mesh final {
 public:
-  enum class Error : std::uint8_t {
-    kVerticesEmpty,
-    kIndicesEmpty,
-  };
+    enum class Error : std::uint8_t {
+        kVerticesEmpty,
+        kIndicesEmpty,
+    };
 
-  ~Mesh();
+    ~Mesh();
 
-  Mesh(const Mesh &) = delete;
-  Mesh(Mesh &&other) noexcept;
+    Mesh(const Mesh &) = delete;
+    Mesh(Mesh &&other) noexcept;
 
-  auto operator=(const Mesh &) -> Mesh & = delete;
-  auto operator=(Mesh &&other) noexcept -> Mesh &;
+    auto operator=(const Mesh &) -> Mesh & = delete;
+    auto operator=(Mesh &&other) noexcept -> Mesh &;
 
-  [[nodiscard]] static auto Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
-      -> std::expected<Mesh, Error>;
+    [[nodiscard]] static auto Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
+        -> std::expected<Mesh, Error>;
 
-  auto Reset() noexcept -> void;
+    auto Reset() noexcept -> void;
 
-  [[nodiscard]] auto GetVertexArray() const -> std::uint32_t;
+    [[nodiscard]] auto GetVertexArray() const -> std::uint32_t;
 
-  [[nodiscard]] auto GetIndicesSize() const -> std::size_t;
+    [[nodiscard]] auto GetIndicesSize() const -> std::size_t;
 
 private:
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size);
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+    Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size);
 
-  std::uint32_t vbo_{};
-  std::uint32_t ebo_{};
-  std::uint32_t vao_{};
+    std::uint32_t vbo_{};
+    std::uint32_t ebo_{};
+    std::uint32_t vao_{};
 
-  std::size_t indices_size_{};
+    std::size_t indices_size_{};
 };

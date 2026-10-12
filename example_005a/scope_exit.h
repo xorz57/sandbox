@@ -2,25 +2,26 @@
 
 #include <utility>
 
-template <typename Function> class ScopeExit final {
+template <typename Function>
+class ScopeExit final {
 public:
-  explicit ScopeExit(Function function) : function_{std::move(function)} {}
+    explicit ScopeExit(Function function) : function_{std::move(function)} {}
 
-  ~ScopeExit() {
-    if (active_) {
-      function_();
+    ~ScopeExit() {
+        if (active_) {
+            function_();
+        }
     }
-  }
 
-  ScopeExit(const ScopeExit &) = delete;
-  ScopeExit(ScopeExit &&) noexcept = delete;
+    ScopeExit(const ScopeExit &) = delete;
+    ScopeExit(ScopeExit &&) noexcept = delete;
 
-  auto operator=(const ScopeExit &) -> ScopeExit & = delete;
-  auto operator=(ScopeExit &&) noexcept -> ScopeExit & = delete;
+    auto operator=(const ScopeExit &) -> ScopeExit & = delete;
+    auto operator=(ScopeExit &&) noexcept -> ScopeExit & = delete;
 
-  auto Release() noexcept -> void { active_ = false; }
+    auto Release() noexcept -> void { active_ = false; }
 
 private:
-  bool active_{true};
-  Function function_;
+    bool active_{true};
+    Function function_;
 };
