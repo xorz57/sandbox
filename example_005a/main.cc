@@ -29,9 +29,7 @@ auto main() -> int {
     return EXIT_FAILURE;
   }
   spdlog::info("SDL initialized successfully");
-  auto sdl_cleanup{ScopeExit{[] -> void { ::SDL_Quit(); }}};
-
-  const char *glsl_version{"#version 460 core"};
+  auto sdl_guard{ScopeExit{[] -> void { ::SDL_Quit(); }}};
 
   ::SDL_GL_SetAttribute(::SDL_GL_CONTEXT_FLAGS, 0);
   ::SDL_GL_SetAttribute(::SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -53,26 +51,26 @@ auto main() -> int {
   const auto window_h{static_cast<std::int32_t>(720 * main_scale)};
   const ::SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
                                 SDL_WINDOW_HIGH_PIXEL_DENSITY};
-  ::SDL_Window *const window{::SDL_CreateWindow(title, window_w, window_h, flags)};
-  if (window == nullptr) {
+  ::SDL_Window *const sdl_window{::SDL_CreateWindow(title, window_w, window_h, flags)};
+  if (sdl_window == nullptr) {
     spdlog::error("Failed to create SDL window: {}", ::SDL_GetError());
     return EXIT_FAILURE;
   }
   spdlog::info("SDL window created successfully");
-  auto window_cleanup{ScopeExit{[&] -> void { ::SDL_DestroyWindow(window); }}};
+  auto sdl_window_guard{ScopeExit{[&] -> void { ::SDL_DestroyWindow(sdl_window); }}};
 
-  const ::SDL_GLContext gl_context{::SDL_GL_CreateContext(window)};
-  if (gl_context == nullptr) {
+  const ::SDL_GLContext sdl_gl_context{::SDL_GL_CreateContext(sdl_window)};
+  if (sdl_gl_context == nullptr) {
     spdlog::error("Failed to create SDL GL context: {}", ::SDL_GetError());
     return EXIT_FAILURE;
   }
   spdlog::info("SDL GL context created successfully");
-  auto gl_context_cleanup{ScopeExit{[&] -> void { ::SDL_GL_DestroyContext(gl_context); }}};
+  auto sdl_gl_context_guard{ScopeExit{[&] -> void { ::SDL_GL_DestroyContext(sdl_gl_context); }}};
 
-  ::SDL_GL_MakeCurrent(window, gl_context);
+  ::SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
   ::SDL_GL_SetSwapInterval(1);
-  ::SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  ::SDL_ShowWindow(window);
+  ::SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  ::SDL_ShowWindow(sdl_window);
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (::gladLoadGL(reinterpret_cast<::GLADloadfunc>(::SDL_GL_GetProcAddress)) == 0) {
@@ -95,11 +93,7 @@ auto main() -> int {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  auto imgui_cleanup{ScopeExit{[] -> void {
-    ::ImGui_ImplOpenGL3_Shutdown();
-    ::ImGui_ImplSDL3_Shutdown();
-    ImGui::DestroyContext();
-  }}};
+  auto imgui_context_guard{ScopeExit{[] -> void { ImGui::DestroyContext(); }}};
   ::ImGuiIO &io{ImGui::GetIO()};
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableGamepad;
@@ -119,8 +113,10 @@ auto main() -> int {
     style.Colors[::ImGuiCol_WindowBg].w = 1.0F;
   }
 
-  ::ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
-  ::ImGui_ImplOpenGL3_Init(glsl_version);
+  ::ImGui_ImplSDL3_InitForOpenGL(sdl_window, sdl_gl_context);
+  auto imgui_sdl3_guard{ScopeExit{[] -> void { ::ImGui_ImplSDL3_Shutdown(); }}};
+  ::ImGui_ImplOpenGL3_Init();
+  auto imgui_opengl3_guard{ScopeExit{[] -> void { ::ImGui_ImplOpenGL3_Shutdown(); }}};
 
   const std::vector<Vertex> vertices{
       // Front (+z)
@@ -240,32 +236,32 @@ auto main() -> int {
         done = true;
         break;
       case ::SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-        if (event.window.windowID == ::SDL_GetWindowID(window)) {
+        if (event.window.windowID == ::SDL_GetWindowID(sdl_window)) {
           done = true;
         }
         break;
       case ::SDL_EVENT_WINDOW_FOCUS_LOST:
-        ::SDL_SetWindowRelativeMouseMode(window, false);
+        ::SDL_SetWindowRelativeMouseMode(sdl_window, false);
         break;
       case ::SDL_EVENT_MOUSE_BUTTON_DOWN:
         if (!io.WantCaptureMouse && event.button.button == SDL_BUTTON_RIGHT) {
-          ::SDL_SetWindowRelativeMouseMode(window, true);
+          ::SDL_SetWindowRelativeMouseMode(sdl_window, true);
         }
         break;
       case ::SDL_EVENT_MOUSE_BUTTON_UP:
         if (event.button.button == SDL_BUTTON_RIGHT) {
-          ::SDL_SetWindowRelativeMouseMode(window, false);
+          ::SDL_SetWindowRelativeMouseMode(sdl_window, false);
         }
         break;
       case ::SDL_EVENT_MOUSE_MOTION:
-        if (!io.WantCaptureMouse && ::SDL_GetWindowRelativeMouseMode(window)) {
+        if (!io.WantCaptureMouse && ::SDL_GetWindowRelativeMouseMode(sdl_window)) {
           camera.ProcessMouseMovement(event.motion.xrel, -event.motion.yrel);
         }
         break;
       case ::SDL_EVENT_KEY_DOWN:
         if (!event.key.repeat && event.key.key == SDLK_RETURN && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
-          const bool is_fullscreen{static_cast<bool>(::SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
-          ::SDL_SetWindowFullscreen(window, !is_fullscreen);
+          const bool is_fullscreen{static_cast<bool>(::SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN)};
+          ::SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
         }
         break;
       default:
@@ -273,12 +269,12 @@ auto main() -> int {
       }
     }
 
-    if (static_cast<bool>(::SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)) {
+    if (static_cast<bool>(::SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MINIMIZED)) {
       ::SDL_Delay(10);
       continue;
     }
 
-    if (!io.WantCaptureKeyboard && ::SDL_GetWindowRelativeMouseMode(window)) {
+    if (!io.WantCaptureKeyboard && ::SDL_GetWindowRelativeMouseMode(sdl_window)) {
       const bool *keyboard_state{::SDL_GetKeyboardState(nullptr)};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       const float speed_multiplier{keyboard_state[::SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
@@ -313,6 +309,7 @@ auto main() -> int {
     ImGui::NewFrame();
 
     ImGui::Render();
+
     const auto framebuffer_w{static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
     const auto framebuffer_h{static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
     ::glViewport(0, 0, framebuffer_w, framebuffer_h);
@@ -369,14 +366,12 @@ auto main() -> int {
     ::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (static_cast<bool>(io.ConfigFlags & ::ImGuiConfigFlags_ViewportsEnable)) {
-      ::SDL_Window *const backup_current_window{::SDL_GL_GetCurrentWindow()};
-      const ::SDL_GLContext backup_current_context{::SDL_GL_GetCurrentContext()};
       ImGui::UpdatePlatformWindows();
       ImGui::RenderPlatformWindowsDefault();
-      ::SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+      ::SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
     }
 
-    ::SDL_GL_SwapWindow(window);
+    ::SDL_GL_SwapWindow(sdl_window);
   }
 
   return EXIT_SUCCESS;

@@ -78,7 +78,7 @@ auto Shader::CreateFromFile(Type type, const std::filesystem::path &path) -> std
   return Create(type, source.c_str());
 }
 
-auto Shader::Reset() -> void {
+auto Shader::Reset() noexcept -> void {
   if (handle_ != 0) {
     ::glDeleteShader(handle_);
     handle_ = 0;

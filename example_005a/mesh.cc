@@ -71,7 +71,7 @@ auto Mesh::Create(std::span<const Vertex> vertices, std::span<const std::uint32_
   return Mesh{vbo, ebo, vao, indices.size()};
 }
 
-auto Mesh::Reset() -> void {
+auto Mesh::Reset() noexcept -> void {
   if (vao_ != 0) {
     ::glDeleteVertexArrays(1, &vao_);
     vao_ = 0;

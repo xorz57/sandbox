@@ -17,22 +17,22 @@ public:
   ~Mesh();
 
   Mesh(const Mesh &) = delete;
-  auto operator=(const Mesh &) -> Mesh & = delete;
-
   Mesh(Mesh &&other) noexcept;
+
+  auto operator=(const Mesh &) -> Mesh & = delete;
   auto operator=(Mesh &&other) noexcept -> Mesh &;
 
   [[nodiscard]] static auto Create(std::span<const Vertex> vertices, std::span<const std::uint32_t> indices)
       -> std::expected<Mesh, Error>;
 
-  auto Reset() -> void;
+  auto Reset() noexcept -> void;
 
   [[nodiscard]] auto GetVertexArray() const -> std::uint32_t { return vao_; }
   [[nodiscard]] auto GetIndicesSize() const -> std::size_t { return indices_size_; }
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  explicit Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
+  Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
       : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}
 
   std::uint32_t vbo_{};

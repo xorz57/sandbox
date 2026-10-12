@@ -81,7 +81,7 @@ auto Program::Create(const Shader &vertex_shader, const Shader &fragment_shader)
   return Program{handle};
 }
 
-auto Program::Reset() -> void {
+auto Program::Reset() noexcept -> void {
   if (handle_ != 0) {
     ::glDeleteProgram(handle_);
     handle_ = 0;

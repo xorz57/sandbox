@@ -19,17 +19,17 @@ public:
   ~Program();
 
   Program(const Program &) = delete;
-  auto operator=(const Program &) -> Program & = delete;
-
   Program(Program &&other) noexcept;
+
+  auto operator=(const Program &) -> Program & = delete;
   auto operator=(Program &&other) noexcept -> Program &;
 
   [[nodiscard]] static auto Create(const Shader &vertex_shader, const Shader &fragment_shader)
       -> std::expected<Program, Error>;
 
-  auto Reset() -> void;
+  auto Reset() noexcept -> void;
 
-  [[nodiscard]] auto GetHandle() const -> std::uint32_t { return handle_; }
+  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t { return handle_; }
 
   auto Use() const -> void;
 
