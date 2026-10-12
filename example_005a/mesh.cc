@@ -90,3 +90,7 @@ auto Mesh::Reset() noexcept -> void {
   }
   indices_size_ = 0;
 }
+
+auto Mesh::GetVertexArray() const -> std::uint32_t { return vao_; }
+
+auto Mesh::GetIndicesSize() const -> std::size_t { return indices_size_; }

@@ -91,10 +91,7 @@ auto Program::Reset() noexcept -> void {
 auto Program::Use() const -> void {
   if (handle_ == 0) {
     spdlog::error("Program not initialized");
-    ::glUseProgram(0);
-    return;
   }
-
   ::glUseProgram(handle_);
 }
 
