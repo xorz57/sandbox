@@ -72,7 +72,7 @@ public:
   auto SetUniform(const char *name, const glm::mat4 &value) const -> void;
 
 private:
-  explicit Program(std::uint32_t handle) : handle_{handle} {}
+  explicit Program(std::uint32_t handle);
 
   std::uint32_t handle_{};
 };

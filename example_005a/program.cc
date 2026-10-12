@@ -30,6 +30,8 @@ namespace {
 
 } // namespace
 
+Program::Program(std::uint32_t handle) : handle_{handle} {}
+
 Program::~Program() { Reset(); }
 
 Program::Program(Program &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
