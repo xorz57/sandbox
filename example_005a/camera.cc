@@ -58,6 +58,8 @@ auto Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain
   UpdateCameraVectors();
 }
 
+auto Camera::GetPosition() const -> glm::vec3 { return position_; }
+
 auto Camera::UpdateCameraVectors() -> void {
   const glm::vec3 front{
       glm::cos(glm::radians(yaw_)) * glm::cos(glm::radians(pitch_)),

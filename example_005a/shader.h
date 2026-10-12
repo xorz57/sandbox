@@ -14,7 +14,6 @@ public:
   enum class Error : std::uint8_t {
     kFileOpenFailed,
     kFileEmpty,
-    kSourceNull,
     kCreateFailed,
     kCompileFailed,
   };
@@ -33,10 +32,10 @@ public:
 
   auto Reset() noexcept -> void;
 
-  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t { return handle_; }
+  [[nodiscard]] auto GetHandle() const noexcept -> std::uint32_t;
 
 private:
-  explicit Shader(std::uint32_t handle) : handle_{handle} {}
+  explicit Shader(std::uint32_t handle);
 
   std::uint32_t handle_{};
 };

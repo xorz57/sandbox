@@ -13,6 +13,8 @@
 #include <string>
 #include <utility>
 
+Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+
 Shader::~Shader() { Reset(); }
 
 Shader::Shader(Shader &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
@@ -26,11 +28,6 @@ auto Shader::operator=(Shader &&other) noexcept -> Shader & {
 }
 
 auto Shader::Create(Type type, const char *source) -> std::expected<Shader, Error> {
-  if (source == nullptr) {
-    spdlog::error("Shader source is null");
-    return std::unexpected{Error::kSourceNull};
-  }
-
   const std::uint32_t handle{::glCreateShader(type == Type::kVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
   if (handle == 0) {
     spdlog::error("Failed to create {} shader", type == Type::kVertex ? "vertex" : "fragment");
@@ -84,3 +81,5 @@ auto Shader::Reset() noexcept -> void {
     handle_ = 0;
   }
 }
+
+auto Shader::GetHandle() const noexcept -> std::uint32_t { return handle_; }

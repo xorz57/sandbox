@@ -28,7 +28,6 @@ auto main() -> int {
     spdlog::error("Failed to initialize SDL: {}", ::SDL_GetError());
     return EXIT_FAILURE;
   }
-  spdlog::info("SDL initialized successfully");
   auto sdl_guard{ScopeExit{[] -> void { ::SDL_Quit(); }}};
 
   ::SDL_GL_SetAttribute(::SDL_GL_CONTEXT_FLAGS, 0);
@@ -53,18 +52,16 @@ auto main() -> int {
                                 SDL_WINDOW_HIGH_PIXEL_DENSITY};
   ::SDL_Window *const sdl_window{::SDL_CreateWindow(title, window_w, window_h, flags)};
   if (sdl_window == nullptr) {
-    spdlog::error("Failed to create SDL window: {}", ::SDL_GetError());
+    spdlog::error("Failed to create SDL Window: {}", ::SDL_GetError());
     return EXIT_FAILURE;
   }
-  spdlog::info("SDL window created successfully");
   auto sdl_window_guard{ScopeExit{[&] -> void { ::SDL_DestroyWindow(sdl_window); }}};
 
   const ::SDL_GLContext sdl_gl_context{::SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
-    spdlog::error("Failed to create SDL GL context: {}", ::SDL_GetError());
+    spdlog::error("Failed to create SDL GL Context: {}", ::SDL_GetError());
     return EXIT_FAILURE;
   }
-  spdlog::info("SDL GL context created successfully");
   auto sdl_gl_context_guard{ScopeExit{[&] -> void { ::SDL_GL_DestroyContext(sdl_gl_context); }}};
 
   ::SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
@@ -77,7 +74,6 @@ auto main() -> int {
     spdlog::error("Failed to initialize GLAD");
     return EXIT_FAILURE;
   }
-  spdlog::info("GLAD initialized successfully");
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(::glGetString(GL_VERSION)));
@@ -94,6 +90,7 @@ auto main() -> int {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   auto imgui_context_guard{ScopeExit{[] -> void { ImGui::DestroyContext(); }}};
+
   ::ImGuiIO &io{ImGui::GetIO()};
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ::ImGuiConfigFlags_NavEnableGamepad;
@@ -115,6 +112,7 @@ auto main() -> int {
 
   ::ImGui_ImplSDL3_InitForOpenGL(sdl_window, sdl_gl_context);
   auto imgui_sdl3_guard{ScopeExit{[] -> void { ::ImGui_ImplSDL3_Shutdown(); }}};
+
   ::ImGui_ImplOpenGL3_Init();
   auto imgui_opengl3_guard{ScopeExit{[] -> void { ::ImGui_ImplOpenGL3_Shutdown(); }}};
 
