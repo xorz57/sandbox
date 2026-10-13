@@ -9,9 +9,9 @@ constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 constexpr float kMovementSpeed{2.0F};
 constexpr float kMouseSensitivity{0.1F};
 constexpr float kMaxPitch{89.0F};
-constexpr float kFov{45.0F};
-constexpr float kNearPlane{0.1F};
-constexpr float kFarPlane{100.0F};
+constexpr float kFov{45.0F};       // Required for Camera::ComputeProjectionMatrix
+constexpr float kNearPlane{0.1F};  // Required for Camera::ComputeProjectionMatrix
+constexpr float kFarPlane{100.0F}; // Required for Camera::ComputeProjectionMatrix
 
 } // namespace
 

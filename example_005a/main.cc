@@ -40,7 +40,6 @@ int main() {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   const char *title{"example_005a"};
-
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
   const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};
@@ -165,28 +164,21 @@ int main() {
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
   const Light light{.position = {2.0F, 4.0F, 3.0F}, .color = {1.0F, 1.0F, 1.0F}, .intensity = 1.0F};
 
-  const Material material1{.diffuse = {1.0F, 0.0F, 0.0F}, .specular = {0.5F, 0.5F, 0.5F}, .shininess = 32.0F};
-  const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {1.0F, 1.0F, 1.0F}, .shininess = 128.0F};
-  const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.1F, 0.1F, 0.1F}, .shininess = 8.0F};
+  const Material material1{.diffuse = {1.0F, 0.0F, 0.0F}, .specular = {1.0F, 0.5F, 0.5F}, .shininess = 64.0F};
+  const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
+  const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
 
   const auto mesh{Mesh::Create(vertices, indices)};
   if (!mesh.has_value()) {
     return EXIT_FAILURE;
   }
 
-  const char *base_path{SDL_GetBasePath()};
-  if (base_path == nullptr) {
-    spdlog::error("Failed to get base path: {}", SDL_GetError());
-    return EXIT_FAILURE;
-  }
-  const std::filesystem::path assets_dir{std::filesystem::path{base_path} / "assets"};
-
-  auto unlit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, assets_dir / "shaders/unlit.vert.glsl")};
+  auto unlit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, "assets/shaders/unlit.vert.glsl")};
   if (!unlit_vertex_shader.has_value()) {
     return EXIT_FAILURE;
   }
 
-  auto unlit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, assets_dir / "shaders/unlit.frag.glsl")};
+  auto unlit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, "assets/shaders/unlit.frag.glsl")};
   if (!unlit_fragment_shader.has_value()) {
     return EXIT_FAILURE;
   }
@@ -199,12 +191,12 @@ int main() {
   unlit_vertex_shader->Reset();
   unlit_fragment_shader->Reset();
 
-  auto lit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, assets_dir / "shaders/lit.vert.glsl")};
+  auto lit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, "assets/shaders/lit.vert.glsl")};
   if (!lit_vertex_shader.has_value()) {
     return EXIT_FAILURE;
   }
 
-  auto lit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, assets_dir / "shaders/lit.frag.glsl")};
+  auto lit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, "assets/shaders/lit.frag.glsl")};
   if (!lit_fragment_shader.has_value()) {
     return EXIT_FAILURE;
   }
