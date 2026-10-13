@@ -35,8 +35,8 @@ private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size);
 
-  std::uint32_t vbo_{};
-  std::uint32_t ebo_{};
-  std::uint32_t vao_{};
-  std::size_t indices_size_{};
+  std::uint32_t vbo_;
+  std::uint32_t ebo_;
+  std::uint32_t vao_;
+  std::size_t indices_size_;
 };

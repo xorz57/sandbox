@@ -36,5 +36,5 @@ public:
 private:
   explicit Shader(std::uint32_t handle);
 
-  std::uint32_t handle_{};
+  std::uint32_t handle_;
 };
