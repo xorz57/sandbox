@@ -22,6 +22,28 @@
 #include <filesystem>
 #include <vector>
 
+namespace {
+
+[[nodiscard]] bool ImGuiWantsToCaptureEvent(const SDL_Event &event, const ImGuiIO &io) {
+  switch (event.type) {
+  case SDL_EVENT_MOUSE_MOTION:
+  case SDL_EVENT_MOUSE_BUTTON_DOWN:
+  case SDL_EVENT_MOUSE_BUTTON_UP:
+  case SDL_EVENT_MOUSE_WHEEL:
+    return io.WantCaptureMouse;
+  case SDL_EVENT_KEY_DOWN:
+  case SDL_EVENT_KEY_UP:
+  case SDL_EVENT_TEXT_EDITING:
+  case SDL_EVENT_TEXT_INPUT:
+  case SDL_EVENT_TEXT_EDITING_CANDIDATES:
+    return io.WantCaptureKeyboard;
+  default:
+    return false;
+  }
+}
+
+} // namespace
+
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
@@ -223,6 +245,10 @@ int main() {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL3_ProcessEvent(&event);
+      if (ImGuiWantsToCaptureEvent(event, io)) {
+        continue;
+      }
+
       switch (event.type) {
       case SDL_EVENT_QUIT:
         done = true;
@@ -236,7 +262,7 @@ int main() {
         SDL_SetWindowRelativeMouseMode(sdl_window, false);
         break;
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (!io.WantCaptureMouse && event.button.button == SDL_BUTTON_RIGHT) {
+        if (event.button.button == SDL_BUTTON_RIGHT) {
           SDL_SetWindowRelativeMouseMode(sdl_window, true);
         }
         break;
@@ -246,12 +272,12 @@ int main() {
         }
         break;
       case SDL_EVENT_MOUSE_MOTION:
-        if (!io.WantCaptureMouse && SDL_GetWindowRelativeMouseMode(sdl_window)) {
+        if (SDL_GetWindowRelativeMouseMode(sdl_window)) {
           camera.ProcessMouseMovement(event.motion.xrel, -event.motion.yrel);
         }
         break;
       case SDL_EVENT_KEY_DOWN:
-        if (!event.key.repeat && event.key.key == SDLK_RETURN && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
+        if (!event.key.repeat && (event.key.key == SDLK_RETURN) && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
           const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN)};
           SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
         }
@@ -309,9 +335,9 @@ int main() {
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const float aspect_ratio{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
+    const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
 
-    const glm::mat4 projection{Camera::ComputeProjectionMatrix(aspect_ratio)};
+    const glm::mat4 projection{Camera::ComputeProjectionMatrix(framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     glBindVertexArray(mesh->GetVertexArray());
