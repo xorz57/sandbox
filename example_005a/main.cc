@@ -28,7 +28,7 @@ int main() {
     spdlog::error("Failed to initialize SDL: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
+  const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -41,7 +41,7 @@ int main() {
 
   const char *title{"example_005a"};
 
-  float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
+  const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
   const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};
 
@@ -51,19 +51,19 @@ int main() {
   };
   // clang-format on
 
-  SDL_Window *const sdl_window{SDL_CreateWindow(title, w, h, flags)};
+  SDL_Window *sdl_window{SDL_CreateWindow(title, w, h, flags)};
   if (sdl_window == nullptr) {
     spdlog::error("Failed to create SDL Window: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_window_guard{ScopeExit{[&] { SDL_DestroyWindow(sdl_window); }}};
+  const auto sdl_window_guard{ScopeExit{[&] { SDL_DestroyWindow(sdl_window); }}};
 
   const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
     spdlog::error("Failed to create SDL GL Context: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  auto sdl_gl_context_guard{ScopeExit{[&] { SDL_GL_DestroyContext(sdl_gl_context); }}};
+  const auto sdl_gl_context_guard{ScopeExit{[&] { SDL_GL_DestroyContext(sdl_gl_context); }}};
 
   SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
   SDL_GL_SetSwapInterval(1);
@@ -91,7 +91,7 @@ int main() {
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  auto imgui_context_guard{ScopeExit{[] { ImGui::DestroyContext(); }}};
+  const auto imgui_context_guard{ScopeExit{[] { ImGui::DestroyContext(); }}};
 
   ImGuiIO &io{ImGui::GetIO()};
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -113,10 +113,10 @@ int main() {
   }
 
   ImGui_ImplSDL3_InitForOpenGL(sdl_window, sdl_gl_context);
-  auto imgui_sdl3_guard{ScopeExit{[] { ImGui_ImplSDL3_Shutdown(); }}};
+  const auto imgui_sdl3_guard{ScopeExit{[] { ImGui_ImplSDL3_Shutdown(); }}};
 
   ImGui_ImplOpenGL3_Init();
-  auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
+  const auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
 
   const std::vector<Vertex> vertices{
       // Front (+z)
@@ -169,7 +169,7 @@ int main() {
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {1.0F, 1.0F, 1.0F}, .shininess = 128.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.1F, 0.1F, 0.1F}, .shininess = 8.0F};
 
-  auto mesh{Mesh::Create(vertices, indices)};
+  const auto mesh{Mesh::Create(vertices, indices)};
   if (!mesh.has_value()) {
     return EXIT_FAILURE;
   }
