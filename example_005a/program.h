@@ -32,8 +32,6 @@ public:
 
   void Use() const;
 
-  void SetUniform(const char *name, bool value) const;
-
   void SetUniform(const char *name, float v0) const;
   void SetUniform(const char *name, float v0, float v1) const;
   void SetUniform(const char *name, float v0, float v1, float v2) const;
@@ -48,10 +46,6 @@ public:
   void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1) const;
   void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2) const;
   void SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2, std::uint32_t v3) const;
-
-  void SetUniform(const char *name, const glm::bvec2 &value) const;
-  void SetUniform(const char *name, const glm::bvec3 &value) const;
-  void SetUniform(const char *name, const glm::bvec4 &value) const;
 
   void SetUniform(const char *name, const glm::vec2 &value) const;
   void SetUniform(const char *name, const glm::vec3 &value) const;

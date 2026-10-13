@@ -99,13 +99,6 @@ void Program::Use() const {
   glUseProgram(handle_);
 }
 
-void Program::SetUniform(const char *name, bool value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform1i(handle_, location, static_cast<std::int32_t>(value));
-  }
-}
-
 void Program::SetUniform(const char *name, float v0) const {
   const std::int32_t location{GetUniformLocation(handle_, name)};
   if (location != -1) {
@@ -190,12 +183,6 @@ void Program::SetUniform(
     glProgramUniform4ui(handle_, location, v0, v1, v2, v3);
   }
 }
-
-void Program::SetUniform(const char *name, const glm::bvec2 &value) const { SetUniform(name, glm::ivec2{value}); }
-
-void Program::SetUniform(const char *name, const glm::bvec3 &value) const { SetUniform(name, glm::ivec3{value}); }
-
-void Program::SetUniform(const char *name, const glm::bvec4 &value) const { SetUniform(name, glm::ivec4{value}); }
 
 void Program::SetUniform(const char *name, const glm::vec2 &value) const {
   const std::int32_t location{GetUniformLocation(handle_, name)};
