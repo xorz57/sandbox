@@ -13,7 +13,6 @@ public:
 
   enum class Error : std::uint8_t {
     kFileOpenFailed, // Required for Shader::CreateFromFile
-    kFileEmpty,      // Required for Shader::CreateFromFile
     kCreateFailed,
     kCompileFailed,
   };

@@ -67,11 +67,6 @@ std::expected<Shader, Shader::Error> Shader::CreateFromFile(Type type, const std
   buffer << file.rdbuf();
   const std::string source{buffer.str()};
 
-  if (source.empty()) {
-    spdlog::error("Shader file is empty: {}", path.string());
-    return std::unexpected{Error::kFileEmpty};
-  }
-
   return Create(type, source.c_str());
 }
 
