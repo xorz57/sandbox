@@ -106,27 +106,6 @@ void Program::SetUniform(const char *name, float v0) const {
   }
 }
 
-void Program::SetUniform(const char *name, float v0, float v1) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2f(handle_, location, v0, v1);
-  }
-}
-
-void Program::SetUniform(const char *name, float v0, float v1, float v2) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3f(handle_, location, v0, v1, v2);
-  }
-}
-
-void Program::SetUniform(const char *name, float v0, float v1, float v2, float v3) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4f(handle_, location, v0, v1, v2, v3);
-  }
-}
-
 void Program::SetUniform(const char *name, std::int32_t v0) const {
   const std::int32_t location{GetUniformLocation(handle_, name)};
   if (location != -1) {
@@ -134,53 +113,10 @@ void Program::SetUniform(const char *name, std::int32_t v0) const {
   }
 }
 
-void Program::SetUniform(const char *name, std::int32_t v0, std::int32_t v1) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2i(handle_, location, v0, v1);
-  }
-}
-
-void Program::SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3i(handle_, location, v0, v1, v2);
-  }
-}
-
-void Program::SetUniform(const char *name, std::int32_t v0, std::int32_t v1, std::int32_t v2, std::int32_t v3) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4i(handle_, location, v0, v1, v2, v3);
-  }
-}
-
 void Program::SetUniform(const char *name, std::uint32_t v0) const {
   const std::int32_t location{GetUniformLocation(handle_, name)};
   if (location != -1) {
     glProgramUniform1ui(handle_, location, v0);
-  }
-}
-
-void Program::SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2ui(handle_, location, v0, v1);
-  }
-}
-
-void Program::SetUniform(const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3ui(handle_, location, v0, v1, v2);
-  }
-}
-
-void Program::SetUniform(
-    const char *name, std::uint32_t v0, std::uint32_t v1, std::uint32_t v2, std::uint32_t v3) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4ui(handle_, location, v0, v1, v2, v3);
   }
 }
 

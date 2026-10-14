@@ -17,15 +17,15 @@ constexpr float kFarPlane{100.0F}; // Required for Camera::ComputeProjectionMatr
 
 Camera::Camera(const glm::vec3 &position) : position_{position} { UpdateCameraVectors(); }
 
-auto Camera::ComputeViewMatrix() const -> glm::mat4 {
+glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_)));
 }
 
-auto Camera::ComputeProjectionMatrix(float aspect_ratio) -> glm::mat4 {
+glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) {
   return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane);
 }
 
-auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) -> void {
+void Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) {
   const float speed{kMovementSpeed * speed_multiplier * delta_time};
   switch (movement) {
   case Movement::kForward:
@@ -49,7 +49,7 @@ auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_mu
   }
 }
 
-auto Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch) -> void {
+void Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch) {
   yaw_ += x_offset * kMouseSensitivity;
   pitch_ += y_offset * kMouseSensitivity;
   if (constrain_pitch) {
@@ -58,9 +58,9 @@ auto Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain
   UpdateCameraVectors();
 }
 
-auto Camera::GetPosition() const -> glm::vec3 { return position_; }
+glm::vec3 Camera::GetPosition() const { return position_; }
 
-auto Camera::UpdateCameraVectors() -> void {
+void Camera::UpdateCameraVectors() {
   const glm::vec3 front{
       glm::cos(glm::radians(yaw_)) * glm::cos(glm::radians(pitch_)),
       glm::sin(glm::radians(pitch_)),
