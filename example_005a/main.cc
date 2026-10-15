@@ -16,7 +16,6 @@
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
-#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -328,15 +327,14 @@ int main() {
 
     ImGui::Render();
 
-    const auto framebuffer_w{static_cast<std::int32_t>(std::round(io.DisplaySize.x * io.DisplayFramebufferScale.x))};
-    const auto framebuffer_h{static_cast<std::int32_t>(std::round(io.DisplaySize.y * io.DisplayFramebufferScale.y))};
-
+    std::int32_t framebuffer_w{};
+    std::int32_t framebuffer_h{};
+    SDL_GetWindowSizeInPixels(sdl_window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-
     const glm::mat4 projection{Camera::ComputeProjectionMatrix(framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 

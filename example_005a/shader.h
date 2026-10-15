@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <string_view>
 
 class Shader final {
 public:
@@ -25,7 +26,7 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Shader, Error> Create(Type type, const char *source);
+  [[nodiscard]] static std::expected<Shader, Error> Create(Type type, std::string_view source);
   [[nodiscard]] static std::expected<Shader, Error> CreateFromFile(Type type, const std::filesystem::path &path);
 
   void Reset() noexcept;

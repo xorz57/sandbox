@@ -11,6 +11,7 @@
 #include <ios>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 Shader::Shader(std::uint32_t handle) : handle_{handle} {}
@@ -27,14 +28,16 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::expected<Shader, Shader::Error> Shader::Create(Type type, const char *source) {
+std::expected<Shader, Shader::Error> Shader::Create(Type type, std::string_view source) {
   const std::uint32_t handle{glCreateShader(type == Type::kVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
   if (handle == 0) {
     spdlog::error("Failed to create {} shader", type == Type::kVertex ? "vertex" : "fragment");
     return std::unexpected{Error::kCreateFailed};
   }
 
-  glShaderSource(handle, 1, &source, nullptr);
+  const char *const data{source.data()};
+  const std::int32_t length{static_cast<std::int32_t>(source.size())};
+  glShaderSource(handle, 1, &data, &length);
   glCompileShader(handle);
 
   std::int32_t success{};
@@ -65,9 +68,8 @@ std::expected<Shader, Shader::Error> Shader::CreateFromFile(Type type, const std
 
   std::stringstream buffer;
   buffer << file.rdbuf();
-  const std::string source{buffer.str()};
 
-  return Create(type, source.c_str());
+  return Create(type, buffer.str());
 }
 
 void Shader::Reset() noexcept {
