@@ -87,6 +87,7 @@ int main() {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   const char *title{"example_005a"};
+
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
   const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};

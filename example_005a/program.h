@@ -18,8 +18,7 @@ public:
   Program &operator=(const Program &) = delete;
   Program &operator=(Program &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Program, std::string> Create(const Shader &vertex_shader,
-                                                                  const Shader &fragment_shader);
+  [[nodiscard]] static std::expected<Program, std::string> Create(const Shader &vs, const Shader &fs);
 
   void Reset() noexcept;
 

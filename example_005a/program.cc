@@ -44,11 +44,12 @@ Program &Program::operator=(Program &&other) noexcept {
   return *this;
 }
 
-std::expected<Program, std::string> Program::Create(const Shader &vertex_shader, const Shader &fragment_shader) {
-  if (vertex_shader.GetHandle() == 0) {
+std::expected<Program, std::string> Program::Create(const Shader &vs, const Shader &fs) {
+  if (vs.GetHandle() == 0) {
     return std::unexpected{"Vertex shader not initialized"};
   }
-  if (fragment_shader.GetHandle() == 0) {
+
+  if (fs.GetHandle() == 0) {
     return std::unexpected{"Fragment shader not initialized"};
   }
 
@@ -57,8 +58,8 @@ std::expected<Program, std::string> Program::Create(const Shader &vertex_shader,
     return std::unexpected{"Failed to create program"};
   }
 
-  glAttachShader(handle, vertex_shader.GetHandle());
-  glAttachShader(handle, fragment_shader.GetHandle());
+  glAttachShader(handle, vs.GetHandle());
+  glAttachShader(handle, fs.GetHandle());
   glLinkProgram(handle);
 
   std::int32_t success{};
