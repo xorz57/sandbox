@@ -15,13 +15,6 @@ glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_)));
 }
 
-glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) {
-  constexpr float kFov{45.0F};
-  constexpr float kNearPlane{0.1F};
-  constexpr float kFarPlane{100.0F};
-  return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane);
-}
-
 void Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) {
   constexpr float kMovementSpeed{2.0F};
   const float speed{kMovementSpeed * speed_multiplier * delta_time};

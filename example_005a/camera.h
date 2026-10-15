@@ -18,7 +18,6 @@ public:
   explicit Camera(const glm::vec3 &position = {});
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
-  [[nodiscard]] static glm::mat4 ComputeProjectionMatrix(float aspect_ratio);
 
   void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
   void ProcessMouse(float x_offset, float y_offset, bool constrain_pitch = true);
