@@ -16,6 +16,7 @@ add_subdirectory(assimp)
 add_subdirectory(glad)
 add_subdirectory(glm)
 add_subdirectory(SDL)
+add_subdirectory(simdjson)
 add_subdirectory(spdlog)
 
 add_library(
