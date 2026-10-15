@@ -21,7 +21,7 @@ public:
   [[nodiscard]] static glm::mat4 ComputeProjectionMatrix(float aspect_ratio);
 
   void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
-  void ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true);
+  void ProcessMouse(float x_offset, float y_offset, bool constrain_pitch = true);
 
   [[nodiscard]] glm::vec3 GetPosition() const;
 

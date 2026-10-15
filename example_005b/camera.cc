@@ -49,7 +49,7 @@ auto Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_mu
   }
 }
 
-auto Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch) -> void {
+auto Camera::ProcessMouse(float x_offset, float y_offset, bool constrain_pitch) -> void {
   yaw_ += x_offset * kMouseSensitivity;
   pitch_ += y_offset * kMouseSensitivity;
   if (constrain_pitch) {

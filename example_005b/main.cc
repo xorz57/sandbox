@@ -328,7 +328,7 @@ auto main() -> int {
         break;
       case ::SDL_EVENT_MOUSE_MOTION:
         if (!io.WantCaptureMouse && ::SDL_GetWindowRelativeMouseMode(window)) {
-          camera.ProcessMouseMovement(event.motion.xrel, -event.motion.yrel);
+          camera.ProcessMouse(event.motion.xrel, -event.motion.yrel);
         }
         break;
       case ::SDL_EVENT_KEY_DOWN:
