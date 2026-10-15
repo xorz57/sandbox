@@ -19,9 +19,35 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 namespace {
+
+[[nodiscard]] std::optional<Program> LoadProgram(std::string_view name) {
+  const std::filesystem::path directory{"assets/shaders"};
+  const std::string base{name};
+
+  const auto vs{Shader::CreateFromFile(Shader::Type::kVertex, directory / (base + ".vert.glsl"))};
+  if (!vs.has_value()) {
+    return std::nullopt;
+  }
+
+  const auto fs{Shader::CreateFromFile(Shader::Type::kFragment, directory / (base + ".frag.glsl"))};
+  if (!fs.has_value()) {
+    return std::nullopt;
+  }
+
+  auto program{Program::Create(*vs, *fs)};
+  if (!program.has_value()) {
+    return std::nullopt;
+  }
+
+  return std::move(*program);
+}
 
 [[nodiscard]] bool ImGuiWantsToCaptureEvent(const SDL_Event &event, const ImGuiIO &io) {
   switch (event.type) {
@@ -194,41 +220,15 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto unlit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, "assets/shaders/unlit.vert.glsl")};
-  if (!unlit_vertex_shader.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  auto unlit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, "assets/shaders/unlit.frag.glsl")};
-  if (!unlit_fragment_shader.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  auto unlit_program{Program::Create(*unlit_vertex_shader, *unlit_fragment_shader)};
+  const auto unlit_program{LoadProgram("unlit")};
   if (!unlit_program.has_value()) {
     return EXIT_FAILURE;
   }
 
-  unlit_vertex_shader->Reset();
-  unlit_fragment_shader->Reset();
-
-  auto lit_vertex_shader{Shader::CreateFromFile(Shader::Type::kVertex, "assets/shaders/lit.vert.glsl")};
-  if (!lit_vertex_shader.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  auto lit_fragment_shader{Shader::CreateFromFile(Shader::Type::kFragment, "assets/shaders/lit.frag.glsl")};
-  if (!lit_fragment_shader.has_value()) {
-    return EXIT_FAILURE;
-  }
-
-  auto lit_program{Program::Create(*lit_vertex_shader, *lit_fragment_shader)};
+  const auto lit_program{LoadProgram("lit")};
   if (!lit_program.has_value()) {
     return EXIT_FAILURE;
   }
-
-  lit_vertex_shader->Reset();
-  lit_fragment_shader->Reset();
 
   Camera camera{{0.0F, 2.0F, 10.0F}};
 
