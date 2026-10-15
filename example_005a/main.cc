@@ -18,8 +18,8 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <expected>
 #include <filesystem>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -27,26 +27,21 @@
 
 namespace {
 
-[[nodiscard]] std::optional<Program> LoadProgram(std::string_view name) {
+[[nodiscard]] std::expected<Program, std::string> LoadProgram(std::string_view name) {
   const std::filesystem::path directory{"assets/shaders"};
   const std::string base{name};
 
-  const auto vs{Shader::CreateFromFile(Shader::Type::kVertex, directory / (base + ".vert.glsl"))};
+  auto vs{Shader::CreateFromFile(Shader::Type::kVertex, directory / (base + ".vert.glsl"))};
   if (!vs.has_value()) {
-    return std::nullopt;
+    return std::unexpected{std::move(vs.error())};
   }
 
-  const auto fs{Shader::CreateFromFile(Shader::Type::kFragment, directory / (base + ".frag.glsl"))};
+  auto fs{Shader::CreateFromFile(Shader::Type::kFragment, directory / (base + ".frag.glsl"))};
   if (!fs.has_value()) {
-    return std::nullopt;
+    return std::unexpected{std::move(fs.error())};
   }
 
-  auto program{Program::Create(*vs, *fs)};
-  if (!program.has_value()) {
-    return std::nullopt;
-  }
-
-  return std::move(*program);
+  return Program::Create(*vs, *fs);
 }
 
 [[nodiscard]] bool ImGuiWantsToCaptureEvent(const SDL_Event &event, const ImGuiIO &io) {
@@ -228,13 +223,15 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  const auto unlit_program{LoadProgram("unlit")};
-  if (!unlit_program.has_value()) {
+  auto lit_program{LoadProgram("lit")};
+  if (!lit_program.has_value()) {
+    spdlog::error("Failed to load lit program: {}", lit_program.error());
     return EXIT_FAILURE;
   }
 
-  const auto lit_program{LoadProgram("lit")};
-  if (!lit_program.has_value()) {
+  auto unlit_program{LoadProgram("unlit")};
+  if (!unlit_program.has_value()) {
+    spdlog::error("Failed to load unlit program: {}", unlit_program.error());
     return EXIT_FAILURE;
   }
 
