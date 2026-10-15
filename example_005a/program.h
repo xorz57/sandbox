@@ -6,16 +6,10 @@
 
 #include <cstdint>
 #include <expected>
+#include <string>
 
 class Program final {
 public:
-  enum class Error : std::uint8_t {
-    kVertexShaderInvalid,
-    kFragmentShaderInvalid,
-    kCreateFailed,
-    kLinkFailed,
-  };
-
   ~Program();
 
   Program(const Program &) = delete;
@@ -24,7 +18,8 @@ public:
   Program &operator=(const Program &) = delete;
   Program &operator=(Program &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Program, Error> Create(const Shader &vertex_shader, const Shader &fragment_shader);
+  [[nodiscard]] static std::expected<Program, std::string> Create(const Shader &vertex_shader,
+                                                                  const Shader &fragment_shader);
 
   void Reset() noexcept;
 

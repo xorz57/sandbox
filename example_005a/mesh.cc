@@ -3,12 +3,12 @@
 #include "vertex.h"
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <cstdint>
 #include <expected>
 #include <span>
+#include <string>
 #include <utility>
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
@@ -32,15 +32,14 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
   return *this;
 }
 
-std::expected<Mesh, Mesh::Error> Mesh::Create(std::span<const Vertex> vertices,
+std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
                                               std::span<const std::uint32_t> indices) {
   if (vertices.empty()) {
-    spdlog::error("Mesh has no vertices");
-    return std::unexpected{Error::kVerticesEmpty};
+    return std::unexpected{"Mesh has no vertices"};
   }
+
   if (indices.empty()) {
-    spdlog::error("Mesh has no indices");
-    return std::unexpected{Error::kIndicesEmpty};
+    return std::unexpected{"Mesh has no indices"};
   }
 
   std::uint32_t vbo{};

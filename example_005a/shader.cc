@@ -1,12 +1,12 @@
 #include "shader.h"
 
 #include <glad/gl.h>
-#include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <ios>
 #include <sstream>
@@ -28,11 +28,10 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::expected<Shader, Shader::Error> Shader::Create(Type type, std::string_view source) {
-  const std::uint32_t handle{glCreateShader(type == Type::kVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
+std::expected<Shader, std::string> Shader::Create(Type type, std::string_view source) {
+  const std::uint32_t handle{glCreateShader((type == Type::kVertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER)};
   if (handle == 0) {
-    spdlog::error("Failed to create {} shader", type == Type::kVertex ? "vertex" : "fragment");
-    return std::unexpected{Error::kCreateFailed};
+    return std::unexpected{"Failed to create shader"};
   }
 
   const char *const data{source.data()};
@@ -52,18 +51,16 @@ std::expected<Shader, Shader::Error> Shader::Create(Type type, std::string_view 
     }
 
     glDeleteShader(handle);
-    spdlog::error("Failed to compile {} shader: {}", type == Type::kVertex ? "vertex" : "fragment", info_log);
-    return std::unexpected{Error::kCompileFailed};
+    return std::unexpected{std::format("Failed to compile shader:\n{}", info_log)};
   }
 
   return Shader{handle};
 }
 
-std::expected<Shader, Shader::Error> Shader::CreateFromFile(Type type, const std::filesystem::path &path) {
+std::expected<Shader, std::string> Shader::CreateFromFile(Type type, const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
-    spdlog::error("Failed to open shader file: {}", path.string());
-    return std::unexpected{Error::kFileOpenFailed};
+    return std::unexpected{std::format("Failed to open shader file '{}'", path.string())};
   }
 
   std::stringstream buffer;

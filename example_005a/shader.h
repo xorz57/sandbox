@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <string>
 #include <string_view>
 
 class Shader final {
@@ -10,12 +11,6 @@ public:
   enum class Type : std::uint8_t {
     kVertex,
     kFragment,
-  };
-
-  enum class Error : std::uint8_t {
-    kFileOpenFailed, // Required for Shader::CreateFromFile
-    kCreateFailed,
-    kCompileFailed,
   };
 
   ~Shader();
@@ -26,8 +21,8 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Shader, Error> Create(Type type, std::string_view source);
-  [[nodiscard]] static std::expected<Shader, Error> CreateFromFile(Type type, const std::filesystem::path &path);
+  [[nodiscard]] static std::expected<Shader, std::string> Create(Type type, std::string_view source);
+  [[nodiscard]] static std::expected<Shader, std::string> CreateFromFile(Type type, const std::filesystem::path &path);
 
   void Reset() noexcept;
 

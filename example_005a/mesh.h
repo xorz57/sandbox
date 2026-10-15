@@ -6,14 +6,10 @@
 #include <cstdint>
 #include <expected>
 #include <span>
+#include <string>
 
 class Mesh final {
 public:
-  enum class Error : std::uint8_t {
-    kVerticesEmpty,
-    kIndicesEmpty,
-  };
-
   ~Mesh();
 
   Mesh(const Mesh &) = delete;
@@ -22,8 +18,8 @@ public:
   Mesh &operator=(const Mesh &) = delete;
   Mesh &operator=(Mesh &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Mesh, Error> Create(std::span<const Vertex> vertices,
-                                                         std::span<const std::uint32_t> indices);
+  [[nodiscard]] static std::expected<Mesh, std::string> Create(std::span<const Vertex> vertices,
+                                                               std::span<const std::uint32_t> indices);
 
   void Reset() noexcept;
 

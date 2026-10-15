@@ -44,20 +44,17 @@ Program &Program::operator=(Program &&other) noexcept {
   return *this;
 }
 
-std::expected<Program, Program::Error> Program::Create(const Shader &vertex_shader, const Shader &fragment_shader) {
+std::expected<Program, std::string> Program::Create(const Shader &vertex_shader, const Shader &fragment_shader) {
   if (vertex_shader.GetHandle() == 0) {
-    spdlog::error("Vertex shader not initialized");
-    return std::unexpected{Error::kVertexShaderInvalid};
+    return std::unexpected{"Vertex shader not initialized"};
   }
   if (fragment_shader.GetHandle() == 0) {
-    spdlog::error("Fragment shader not initialized");
-    return std::unexpected{Error::kFragmentShaderInvalid};
+    return std::unexpected{"Fragment shader not initialized"};
   }
 
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
-    spdlog::error("Failed to create program");
-    return std::unexpected{Error::kCreateFailed};
+    return std::unexpected{"Failed to create program"};
   }
 
   glAttachShader(handle, vertex_shader.GetHandle());
@@ -76,8 +73,7 @@ std::expected<Program, Program::Error> Program::Create(const Shader &vertex_shad
     }
 
     glDeleteProgram(handle);
-    spdlog::error("Failed to link program: {}", info_log);
-    return std::unexpected{Error::kLinkFailed};
+    return std::unexpected{"Failed to link program"};
   }
 
   return Program{handle};
