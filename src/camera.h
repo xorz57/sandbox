@@ -9,6 +9,11 @@ public:
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
   [[nodiscard]] glm::vec3 GetPosition() const;
 
+  void SetPosition(glm::vec3 position);
+
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void SetOrientation(float yaw, float pitch);
+
   void MoveForward(float distance);
   void MoveRight(float distance);
   void MoveUp(float distance);

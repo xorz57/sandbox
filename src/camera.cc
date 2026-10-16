@@ -18,6 +18,15 @@ glm::mat4 Camera::ComputeViewMatrix() const {
 
 glm::vec3 Camera::GetPosition() const { return position_; }
 
+void Camera::SetPosition(glm::vec3 position) { position_ = position; }
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+void Camera::SetOrientation(float yaw, float pitch) {
+  yaw_ = yaw;
+  pitch_ = glm::clamp(pitch, -kMaxPitch, kMaxPitch);
+  UpdateVectors();
+}
+
 void Camera::MoveForward(float distance) { position_ += front_ * distance; }
 
 void Camera::MoveRight(float distance) { position_ += right_ * distance; }
