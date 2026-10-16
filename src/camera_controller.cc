@@ -2,33 +2,22 @@
 
 #include "camera.h"
 
+#include <glm/glm.hpp>
+
 CameraController::CameraController(Camera &camera, Settings settings) : camera_{camera}, settings_{settings} {}
 
 CameraController::CameraController(Camera &camera) : CameraController{camera, {}} {}
 
-void CameraController::Move(Movement movement, float delta_time, float speed_multiplier) {
-  Camera &camera{camera_.get()};
-  const float distance{settings_.speed * speed_multiplier * delta_time};
-  switch (movement) {
-  case Movement::kForward:
-    camera.MoveForward(distance);
-    break;
-  case Movement::kBackward:
-    camera.MoveForward(-distance);
-    break;
-  case Movement::kLeft:
-    camera.MoveRight(-distance);
-    break;
-  case Movement::kRight:
-    camera.MoveRight(distance);
-    break;
-  case Movement::kUp:
-    camera.MoveUp(distance);
-    break;
-  case Movement::kDown:
-    camera.MoveUp(-distance);
-    break;
+void CameraController::Move(Direction direction, float delta_time, float speed_multiplier) {
+  const float length{glm::length(glm::vec3{direction.right, direction.up, direction.forward})};
+  if (length == 0.0F) {
+    return;
   }
+  Camera &camera{camera_.get()};
+  const float distance{settings_.speed * speed_multiplier * delta_time / length};
+  camera.MoveRight(direction.right * distance);
+  camera.MoveUp(direction.up * distance);
+  camera.MoveForward(direction.forward * distance);
 }
 
 void CameraController::Look(float x_delta, float y_delta) {

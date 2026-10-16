@@ -2,7 +2,6 @@
 
 #include "camera.h"
 
-#include <cstdint>
 #include <functional>
 
 class CameraController final {
@@ -12,20 +11,18 @@ public:
     float sensitivity{0.1F};
   };
 
-  enum class Movement : std::uint8_t {
-    kForward,
-    kBackward,
-    kLeft,
-    kRight,
-    kUp,
-    kDown,
+  // Camera-local movement direction; normalized before use.
+  struct Direction {
+    float right{0.0F};
+    float up{0.0F};
+    float forward{0.0F};
   };
 
   explicit CameraController(Camera &camera, Settings settings);
   explicit CameraController(Camera &camera);
 
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void Move(Movement movement, float delta_time, float speed_multiplier = 1.0F);
+  void Move(Direction direction, float delta_time, float speed_multiplier = 1.0F);
   void Look(float x_delta, float y_delta);
 
 private:

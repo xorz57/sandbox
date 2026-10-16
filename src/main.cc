@@ -303,30 +303,32 @@ int main() {
       const bool *keyboard_state{SDL_GetKeyboardState(nullptr)};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       const float speed_multiplier{keyboard_state[SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
+      CameraController::Direction direction{};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_W]) {
-        camera_controller.Move(CameraController::Movement::kForward, delta_time, speed_multiplier);
+        direction.forward += 1.0F;
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_S]) {
-        camera_controller.Move(CameraController::Movement::kBackward, delta_time, speed_multiplier);
+        direction.forward -= 1.0F;
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_A]) {
-        camera_controller.Move(CameraController::Movement::kLeft, delta_time, speed_multiplier);
+        direction.right -= 1.0F;
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_D]) {
-        camera_controller.Move(CameraController::Movement::kRight, delta_time, speed_multiplier);
+        direction.right += 1.0F;
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_SPACE]) {
-        camera_controller.Move(CameraController::Movement::kUp, delta_time, speed_multiplier);
+        direction.up += 1.0F;
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        camera_controller.Move(CameraController::Movement::kDown, delta_time, speed_multiplier);
+        direction.up -= 1.0F;
       }
+      camera_controller.Move(direction, delta_time, speed_multiplier);
     }
 
     ImGui_ImplOpenGL3_NewFrame();
