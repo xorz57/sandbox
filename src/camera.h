@@ -2,30 +2,22 @@
 
 #include <glm/glm.hpp>
 
-#include <cstdint>
-
 class Camera final {
 public:
-  enum class Movement : std::uint8_t {
-    kForward,
-    kBackward,
-    kLeft,
-    kRight,
-    kUp,
-    kDown,
-  };
-
-  explicit Camera(const glm::vec3 &position = {});
+  explicit Camera(glm::vec3 position = {});
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
-
-  void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
-  void ProcessMouse(float x_offset, float y_offset, bool constrain_pitch = true);
-
   [[nodiscard]] glm::vec3 GetPosition() const;
+  [[nodiscard]] glm::vec3 GetFront() const;
+  [[nodiscard]] glm::vec3 GetRight() const;
+
+  void Move(glm::vec3 offset);
+
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void Rotate(float yaw, float pitch);
 
 private:
-  void UpdateCameraVectors();
+  void UpdateVectors();
 
   glm::vec3 position_;
   glm::vec3 front_{0.0F, 0.0F, -1.0F};

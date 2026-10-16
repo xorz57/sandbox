@@ -5,55 +5,33 @@
 
 namespace {
 
+constexpr float kMaxPitch{89.0F};
 constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 
 } // namespace
 
-Camera::Camera(const glm::vec3 &position) : position_{position} { UpdateCameraVectors(); }
+Camera::Camera(glm::vec3 position) : position_{position} { UpdateVectors(); }
 
 glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_)));
 }
 
-void Camera::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) {
-  constexpr float kMovementSpeed{2.0F};
-  const float speed{kMovementSpeed * speed_multiplier * delta_time};
-  switch (movement) {
-  case Movement::kForward:
-    position_ += front_ * speed;
-    break;
-  case Movement::kBackward:
-    position_ -= front_ * speed;
-    break;
-  case Movement::kLeft:
-    position_ -= right_ * speed;
-    break;
-  case Movement::kRight:
-    position_ += right_ * speed;
-    break;
-  case Movement::kUp:
-    position_ += kWorldUp * speed;
-    break;
-  case Movement::kDown:
-    position_ -= kWorldUp * speed;
-    break;
-  }
-}
-
-void Camera::ProcessMouse(float x_offset, float y_offset, bool constrain_pitch) {
-  constexpr float kMouseSensitivity{0.1F};
-  yaw_ += x_offset * kMouseSensitivity;
-  pitch_ += y_offset * kMouseSensitivity;
-  if (constrain_pitch) {
-    constexpr float kMaxPitch{89.0F};
-    pitch_ = glm::clamp(pitch_, -kMaxPitch, kMaxPitch);
-  }
-  UpdateCameraVectors();
-}
-
 glm::vec3 Camera::GetPosition() const { return position_; }
 
-void Camera::UpdateCameraVectors() {
+glm::vec3 Camera::GetFront() const { return front_; }
+
+glm::vec3 Camera::GetRight() const { return right_; }
+
+void Camera::Move(glm::vec3 offset) { position_ += offset; }
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+void Camera::Rotate(float yaw, float pitch) {
+  yaw_ += yaw;
+  pitch_ = glm::clamp(pitch_ + pitch, -kMaxPitch, kMaxPitch);
+  UpdateVectors();
+}
+
+void Camera::UpdateVectors() {
   const glm::vec3 front{
       glm::cos(glm::radians(yaw_)) * glm::cos(glm::radians(pitch_)),
       glm::sin(glm::radians(pitch_)),
