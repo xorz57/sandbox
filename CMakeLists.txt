@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(LearnOpenGL VERSION 0.0.1)
+project(sandbox VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,4 +16,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(ClangTidy)
 include(CopyAssets)
 
-add_subdirectory(example_005a)
+add_executable(sandbox)
+target_sources(sandbox PRIVATE src/main.cc src/mesh.cc src/shader.cc src/program.cc
+                                    src/camera.cc src/stb_image_impl.cc)
+
+# target_link_libraries(sandbox PRIVATE assimp::assimp)
+target_link_libraries(sandbox PRIVATE glad::glad)
+target_link_libraries(sandbox PRIVATE glm::glm)
+target_link_libraries(sandbox PRIVATE SDL3::SDL3)
+# target_link_libraries(sandbox PRIVATE simdjson::simdjson)
+target_link_libraries(sandbox PRIVATE spdlog::spdlog)
+target_link_libraries(sandbox PRIVATE imgui::imgui)
+target_link_libraries(sandbox PRIVATE stb::stb)
+
+target_copy_assets(sandbox "${CMAKE_CURRENT_SOURCE_DIR}/assets")
