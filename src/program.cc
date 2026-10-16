@@ -30,8 +30,6 @@ namespace {
 
 } // namespace
 
-Program::Program(std::uint32_t handle) : handle_{handle} {}
-
 Program::~Program() { Reset(); }
 
 Program::Program(Program &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
@@ -200,3 +198,5 @@ void Program::SetUniform(const char *name, const glm::mat4 &value) const {
     glProgramUniformMatrix4fv(handle_, location, 1, GL_FALSE, glm::value_ptr(value));
   }
 }
+
+Program::Program(std::uint32_t handle) : handle_{handle} {}

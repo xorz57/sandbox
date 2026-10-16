@@ -14,8 +14,6 @@
 #include <string_view>
 #include <utility>
 
-Shader::Shader(std::uint32_t handle) : handle_{handle} {}
-
 Shader::~Shader() { Reset(); }
 
 Shader::Shader(Shader &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
@@ -77,3 +75,5 @@ void Shader::Reset() noexcept {
 }
 
 std::uint32_t Shader::GetHandle() const noexcept { return handle_; }
+
+Shader::Shader(std::uint32_t handle) : handle_{handle} {}

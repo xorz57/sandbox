@@ -11,10 +11,6 @@
 #include <string>
 #include <utility>
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
-    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}
-
 Mesh::~Mesh() { Reset(); }
 
 Mesh::Mesh(Mesh &&other) noexcept
@@ -93,3 +89,7 @@ void Mesh::Reset() noexcept {
 std::uint32_t Mesh::GetVertexArray() const { return vao_; }
 
 std::size_t Mesh::GetIndicesSize() const { return indices_size_; }
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
+    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}
