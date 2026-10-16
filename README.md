@@ -1,4 +1,4 @@
-# LearnOpenGL
+# sandbox
 
 A project built on [SDL3](https://wiki.libsdl.org/SDL3/README-linux#build-dependencies). See that page for required system build dependencies.
 
