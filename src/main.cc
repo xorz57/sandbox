@@ -280,7 +280,7 @@ int main() {
         break;
       case SDL_EVENT_MOUSE_MOTION:
         if (SDL_GetWindowRelativeMouseMode(sdl_window)) {
-          camera_controller.ProcessMouseDelta(event.motion.xrel, -event.motion.yrel);
+          camera_controller.ProcessMouseDelta(event.motion.xrel, event.motion.yrel);
         }
         break;
       case SDL_EVENT_KEY_DOWN:

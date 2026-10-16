@@ -41,5 +41,5 @@ void CameraController::ProcessKeyboard(Movement movement, float delta_time, floa
 
 void CameraController::ProcessMouseDelta(float x_delta, float y_delta) {
   Camera &camera{camera_.get()};
-  camera.Rotate(x_delta * settings_.sensitivity, y_delta * settings_.sensitivity);
+  camera.Rotate(x_delta * settings_.sensitivity, -y_delta * settings_.sensitivity);
 }
