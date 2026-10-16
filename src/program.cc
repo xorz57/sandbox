@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <expected>
@@ -17,10 +18,7 @@
 namespace {
 
 [[nodiscard]] std::int32_t GetUniformLocation(std::uint32_t handle, const char *name) {
-  if (handle == 0) {
-    spdlog::error("Program not initialized");
-    return -1;
-  }
+  assert(handle != 0);
 
   const std::int32_t location{glGetUniformLocation(handle, name)};
   if (location == -1) {
@@ -44,13 +42,8 @@ Program &Program::operator=(Program &&other) noexcept {
 }
 
 std::expected<Program, std::string> Program::Create(const Shader &vs, const Shader &fs) {
-  if (vs.GetHandle() == 0) {
-    return std::unexpected{"Vertex shader not initialized"};
-  }
-
-  if (fs.GetHandle() == 0) {
-    return std::unexpected{"Fragment shader not initialized"};
-  }
+  assert(vs.GetHandle() != 0);
+  assert(fs.GetHandle() != 0);
 
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
@@ -87,9 +80,7 @@ void Program::Reset() noexcept {
 }
 
 void Program::Use() const {
-  if (handle_ == 0) {
-    spdlog::error("Program not initialized");
-  }
+  assert(handle_ != 0);
   glUseProgram(handle_);
 }
 
