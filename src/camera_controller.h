@@ -22,7 +22,7 @@ public:
   };
 
   explicit CameraController(Camera &camera, Settings settings);
-  explicit CameraController(Camera &camera) : CameraController{camera, {}} {}
+  explicit CameraController(Camera &camera);
 
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   void Move(Movement movement, float delta_time, float speed_multiplier = 1.0F);
