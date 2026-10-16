@@ -17,8 +17,16 @@ include(ClangTidy)
 include(CopyAssets)
 
 add_executable(sandbox)
-target_sources(sandbox PRIVATE src/main.cc src/mesh.cc src/shader.cc src/program.cc
-                                    src/camera.cc src/camera_controller.cc src/stb_image_impl.cc)
+target_include_directories(sandbox PUBLIC src)
+target_sources(
+  sandbox
+  PRIVATE src/main.cc
+          src/mesh.cc
+          src/shader.cc
+          src/program.cc
+          src/camera.cc
+          src/camera_controller.cc
+          src/stb_image_impl.cc)
 
 # target_link_libraries(sandbox PRIVATE assimp::assimp)
 target_link_libraries(sandbox PRIVATE glad::glad)

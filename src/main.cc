@@ -1,10 +1,10 @@
 #include "camera.h"
 #include "camera_controller.h"
+#include "core/scope_exit.h"
 #include "light.h"
 #include "material.h"
 #include "mesh.h"
 #include "program.h"
-#include "scope_exit.h"
 #include "shader.h"
 #include "vertex.h"
 
