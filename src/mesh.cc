@@ -47,6 +47,12 @@ std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
 
   glCreateVertexArrays(1, &vao);
 
+  // Take ownership immediately so partially created objects are released on failure.
+  Mesh mesh{vbo, ebo, vao, indices.size()};
+  if (vbo == 0 || ebo == 0 || vao == 0) {
+    return std::unexpected{"Failed to create mesh buffers"};
+  }
+
   glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
   glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
 
@@ -67,7 +73,7 @@ std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  return Mesh{vbo, ebo, vao, indices.size()};
+  return mesh;
 }
 
 void Mesh::Reset() noexcept {
@@ -86,9 +92,9 @@ void Mesh::Reset() noexcept {
   indices_size_ = 0;
 }
 
-std::uint32_t Mesh::GetVertexArray() const { return vao_; }
+std::uint32_t Mesh::GetVertexArray() const noexcept { return vao_; }
 
-std::size_t Mesh::GetIndicesSize() const { return indices_size_; }
+std::size_t Mesh::GetIndicesSize() const noexcept { return indices_size_; }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)

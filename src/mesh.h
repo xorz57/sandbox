@@ -23,8 +23,8 @@ public:
 
   void Reset() noexcept;
 
-  [[nodiscard]] std::uint32_t GetVertexArray() const;
-  [[nodiscard]] std::size_t GetIndicesSize() const;
+  [[nodiscard]] std::uint32_t GetVertexArray() const noexcept;
+  [[nodiscard]] std::size_t GetIndicesSize() const noexcept;
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
