@@ -29,6 +29,5 @@ public:
 
 private:
   std::reference_wrapper<Camera> camera_;
-  float speed_;
-  float sensitivity_;
+  Settings settings_;
 };
