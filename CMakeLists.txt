@@ -17,4 +17,3 @@ include(ClangTidy)
 include(CopyAssets)
 
 add_subdirectory(example_005a)
-add_subdirectory(example_005b)
