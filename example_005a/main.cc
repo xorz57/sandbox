@@ -220,18 +220,19 @@ int main() {
 
   const auto mesh{Mesh::Create(vertices, indices)};
   if (!mesh.has_value()) {
+    spdlog::error("{}", mesh.error());
     return EXIT_FAILURE;
   }
 
   auto lit_program{LoadProgram("lit")};
   if (!lit_program.has_value()) {
-    spdlog::error("Failed to load lit program: {}", lit_program.error());
+    spdlog::error("{}", lit_program.error());
     return EXIT_FAILURE;
   }
 
   auto unlit_program{LoadProgram("unlit")};
   if (!unlit_program.has_value()) {
-    spdlog::error("Failed to load unlit program: {}", unlit_program.error());
+    spdlog::error("{}", unlit_program.error());
     return EXIT_FAILURE;
   }
 
