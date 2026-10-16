@@ -67,13 +67,6 @@ std::expected<Program, std::string> Program::Create(const Shader &vs, const Shad
   return Program{handle};
 }
 
-void Program::Reset() noexcept {
-  if (handle_ != 0) {
-    glDeleteProgram(handle_);
-    handle_ = 0;
-  }
-}
-
 void Program::Use() const {
   assert(handle_ != 0);
   glUseProgram(handle_);
@@ -142,3 +135,10 @@ void Program::SetUniform(const char *name, const glm::mat4 &value) const {
 std::uint32_t Program::GetHandle() const noexcept { return handle_; }
 
 Program::Program(std::uint32_t handle) : handle_{handle} {}
+
+void Program::Reset() noexcept {
+  if (handle_ != 0) {
+    glDeleteProgram(handle_);
+    handle_ = 0;
+  }
+}

@@ -20,8 +20,6 @@ public:
 
   [[nodiscard]] static std::expected<Program, std::string> Create(const Shader &vs, const Shader &fs);
 
-  void Reset() noexcept;
-
   void Use() const;
 
   void SetUniform(const char *name, float v0) const;
@@ -48,6 +46,8 @@ public:
 
 private:
   explicit Program(std::uint32_t handle);
+
+  void Reset() noexcept;
 
   std::uint32_t handle_;
 };

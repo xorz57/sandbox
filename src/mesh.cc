@@ -76,6 +76,14 @@ std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
   return mesh;
 }
 
+std::uint32_t Mesh::GetVertexArray() const noexcept { return vao_; }
+
+std::size_t Mesh::GetIndicesSize() const noexcept { return indices_size_; }
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
+    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}
+
 void Mesh::Reset() noexcept {
   if (vao_ != 0) {
     glDeleteVertexArrays(1, &vao_);
@@ -91,11 +99,3 @@ void Mesh::Reset() noexcept {
   }
   indices_size_ = 0;
 }
-
-std::uint32_t Mesh::GetVertexArray() const noexcept { return vao_; }
-
-std::size_t Mesh::GetIndicesSize() const noexcept { return indices_size_; }
-
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
-    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}

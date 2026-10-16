@@ -21,14 +21,14 @@ public:
   [[nodiscard]] static std::expected<Mesh, std::string> Create(std::span<const Vertex> vertices,
                                                                std::span<const std::uint32_t> indices);
 
-  void Reset() noexcept;
-
   [[nodiscard]] std::uint32_t GetVertexArray() const noexcept;
   [[nodiscard]] std::size_t GetIndicesSize() const noexcept;
 
 private:
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size);
+
+  void Reset() noexcept;
 
   std::uint32_t vbo_;
   std::uint32_t ebo_;

@@ -67,13 +67,13 @@ std::expected<Shader, std::string> Shader::CreateFromFile(Type type, const std::
   return Create(type, buffer.str());
 }
 
+std::uint32_t Shader::GetHandle() const noexcept { return handle_; }
+
+Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+
 void Shader::Reset() noexcept {
   if (handle_ != 0) {
     glDeleteShader(handle_);
     handle_ = 0;
   }
 }
-
-std::uint32_t Shader::GetHandle() const noexcept { return handle_; }
-
-Shader::Shader(std::uint32_t handle) : handle_{handle} {}

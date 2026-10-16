@@ -24,12 +24,12 @@ public:
   [[nodiscard]] static std::expected<Shader, std::string> Create(Type type, std::string_view source);
   [[nodiscard]] static std::expected<Shader, std::string> CreateFromFile(Type type, const std::filesystem::path &path);
 
-  void Reset() noexcept;
-
   [[nodiscard]] std::uint32_t GetHandle() const noexcept;
 
 private:
   explicit Shader(std::uint32_t handle);
+
+  void Reset() noexcept;
 
   std::uint32_t handle_;
 };
