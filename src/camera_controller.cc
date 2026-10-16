@@ -10,8 +10,9 @@ constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 
 } // namespace
 
-CameraController::CameraController(Camera &camera, Settings settings)
-    : camera_{camera}, settings_{settings} {}
+CameraController::CameraController(Camera &camera, Settings settings) : camera_{camera}, settings_{settings} {}
+
+CameraController::CameraController(Camera &camera) : CameraController{camera, {}} {}
 
 void CameraController::ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier) {
   Camera &camera{camera_.get()};

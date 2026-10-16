@@ -22,7 +22,7 @@ public:
   };
 
   explicit CameraController(Camera &camera, Settings settings);
-  explicit CameraController(Camera &camera) : CameraController{camera, {}} {}
+  explicit CameraController(Camera &camera);
 
   void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
   void ProcessMouseDelta(float x_delta, float y_delta);
