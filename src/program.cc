@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <expected>
+#include <format>
 #include <string>
 #include <utility>
 
@@ -72,7 +73,7 @@ std::expected<Program, std::string> Program::Create(const Shader &vs, const Shad
     }
 
     glDeleteProgram(handle);
-    return std::unexpected{"Failed to link program"};
+    return std::unexpected{std::format("Failed to link program:\n{}", info_log)};
   }
 
   return Program{handle};
