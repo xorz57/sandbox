@@ -8,13 +8,13 @@ public:
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
   [[nodiscard]] glm::vec3 GetPosition() const;
-  [[nodiscard]] glm::vec3 GetFront() const;
-  [[nodiscard]] glm::vec3 GetRight() const;
 
-  void Move(glm::vec3 offset);
+  void MoveForward(float distance);
+  void MoveRight(float distance);
+  void MoveUp(float distance);
 
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void Rotate(float yaw, float pitch);
+  void Rotate(float yaw_delta, float pitch_delta);
 
 private:
   void UpdateVectors();

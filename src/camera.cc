@@ -18,16 +18,16 @@ glm::mat4 Camera::ComputeViewMatrix() const {
 
 glm::vec3 Camera::GetPosition() const { return position_; }
 
-glm::vec3 Camera::GetFront() const { return front_; }
+void Camera::MoveForward(float distance) { position_ += front_ * distance; }
 
-glm::vec3 Camera::GetRight() const { return right_; }
+void Camera::MoveRight(float distance) { position_ += right_ * distance; }
 
-void Camera::Move(glm::vec3 offset) { position_ += offset; }
+void Camera::MoveUp(float distance) { position_ += kWorldUp * distance; }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void Camera::Rotate(float yaw, float pitch) {
-  yaw_ += yaw;
-  pitch_ = glm::clamp(pitch_ + pitch, -kMaxPitch, kMaxPitch);
+void Camera::Rotate(float yaw_delta, float pitch_delta) {
+  yaw_ += yaw_delta;
+  pitch_ = glm::clamp(pitch_ + pitch_delta, -kMaxPitch, kMaxPitch);
   UpdateVectors();
 }
 
