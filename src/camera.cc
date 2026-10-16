@@ -13,7 +13,7 @@ constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 Camera::Camera(glm::vec3 position) : position_{position} { UpdateVectors(); }
 
 glm::mat4 Camera::ComputeViewMatrix() const {
-  return glm::lookAt(position_, position_ + front_, glm::normalize(glm::cross(right_, front_)));
+  return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
 }
 
 glm::vec3 Camera::GetPosition() const { return position_; }
