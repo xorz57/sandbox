@@ -12,19 +12,7 @@ constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 
 Camera::Camera(glm::vec3 position) : position_{position} { UpdateVectors(); }
 
-glm::mat4 Camera::ComputeViewMatrix() const {
-  return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
-}
-
 void Camera::SetPosition(glm::vec3 position) { position_ = position; }
-
-glm::vec3 Camera::GetPosition() const { return position_; }
-
-void Camera::MoveForward(float distance) { position_ += front_ * distance; }
-
-void Camera::MoveRight(float distance) { position_ += right_ * distance; }
-
-void Camera::MoveUp(float distance) { position_ += kWorldUp * distance; }
 
 void Camera::SetOrientation(Orientation orientation) {
   yaw_ = orientation.yaw;
@@ -32,7 +20,19 @@ void Camera::SetOrientation(Orientation orientation) {
   UpdateVectors();
 }
 
+glm::vec3 Camera::GetPosition() const { return position_; }
+
 Camera::Orientation Camera::GetOrientation() const { return {.yaw = yaw_, .pitch = pitch_}; }
+
+glm::mat4 Camera::ComputeViewMatrix() const {
+  return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
+}
+
+void Camera::MoveForward(float distance) { position_ += front_ * distance; }
+
+void Camera::MoveRight(float distance) { position_ += right_ * distance; }
+
+void Camera::MoveUp(float distance) { position_ += kWorldUp * distance; }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void Camera::Rotate(float yaw_delta, float pitch_delta) {

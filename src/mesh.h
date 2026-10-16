@@ -24,7 +24,6 @@ public:
   void Reset() noexcept;
 
   [[nodiscard]] std::uint32_t GetVertexArray() const;
-
   [[nodiscard]] std::size_t GetIndicesSize() const;
 
 private:

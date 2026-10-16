@@ -11,16 +11,18 @@ public:
 
   explicit Camera(glm::vec3 position = {});
 
+  void SetPosition(glm::vec3 position);
+  void SetOrientation(Orientation orientation);
+
+  [[nodiscard]] glm::vec3 GetPosition() const;
+  [[nodiscard]] Orientation GetOrientation() const;
+
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
 
-  void SetPosition(glm::vec3 position);
-  [[nodiscard]] glm::vec3 GetPosition() const;
   void MoveForward(float distance);
   void MoveRight(float distance);
   void MoveUp(float distance);
 
-  void SetOrientation(Orientation orientation);
-  [[nodiscard]] Orientation GetOrientation() const;
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   void Rotate(float yaw_delta, float pitch_delta);
 

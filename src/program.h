@@ -22,8 +22,6 @@ public:
 
   void Reset() noexcept;
 
-  [[nodiscard]] std::uint32_t GetHandle() const noexcept;
-
   void Use() const;
 
   void SetUniform(const char *name, float v0) const;
@@ -45,6 +43,8 @@ public:
   void SetUniform(const char *name, const glm::mat2 &value) const;
   void SetUniform(const char *name, const glm::mat3 &value) const;
   void SetUniform(const char *name, const glm::mat4 &value) const;
+
+  [[nodiscard]] std::uint32_t GetHandle() const noexcept;
 
 private:
   explicit Program(std::uint32_t handle);

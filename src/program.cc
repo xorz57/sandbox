@@ -85,8 +85,6 @@ void Program::Reset() noexcept {
   }
 }
 
-std::uint32_t Program::GetHandle() const noexcept { return handle_; }
-
 void Program::Use() const {
   if (handle_ == 0) {
     spdlog::error("Program not initialized");
@@ -198,5 +196,7 @@ void Program::SetUniform(const char *name, const glm::mat4 &value) const {
     glProgramUniformMatrix4fv(handle_, location, 1, GL_FALSE, glm::value_ptr(value));
   }
 }
+
+std::uint32_t Program::GetHandle() const noexcept { return handle_; }
 
 Program::Program(std::uint32_t handle) : handle_{handle} {}
