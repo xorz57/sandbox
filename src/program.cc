@@ -5,7 +5,6 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
 
 #include <cassert>
 #include <cstddef>
@@ -20,11 +19,7 @@ namespace {
 [[nodiscard]] std::int32_t GetUniformLocation(std::uint32_t handle, const char *name) {
   assert(handle != 0);
 
-  const std::int32_t location{glGetUniformLocation(handle, name)};
-  if (location == -1) {
-    spdlog::warn("Uniform not found: {}", name);
-  }
-  return location;
+  return glGetUniformLocation(handle, name);
 }
 
 } // namespace
@@ -85,108 +80,63 @@ void Program::Use() const {
 }
 
 void Program::SetUniform(const char *name, float v0) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform1f(handle_, location, v0);
-  }
+  glProgramUniform1f(handle_, GetUniformLocation(handle_, name), v0);
 }
 
 void Program::SetUniform(const char *name, std::int32_t v0) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform1i(handle_, location, v0);
-  }
+  glProgramUniform1i(handle_, GetUniformLocation(handle_, name), v0);
 }
 
 void Program::SetUniform(const char *name, std::uint32_t v0) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform1ui(handle_, location, v0);
-  }
+  glProgramUniform1ui(handle_, GetUniformLocation(handle_, name), v0);
 }
 
 void Program::SetUniform(const char *name, const glm::vec2 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2fv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform2fv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::vec3 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3fv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform3fv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::vec4 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4fv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform4fv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec2 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2iv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform2iv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec3 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3iv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform3iv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec4 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4iv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform4iv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec2 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform2uiv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform2uiv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec3 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform3uiv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform3uiv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec4 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniform4uiv(handle_, location, 1, glm::value_ptr(value));
-  }
+  glProgramUniform4uiv(handle_, GetUniformLocation(handle_, name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat2 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniformMatrix2fv(handle_, location, 1, GL_FALSE, glm::value_ptr(value));
-  }
+  glProgramUniformMatrix2fv(handle_, GetUniformLocation(handle_, name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat3 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniformMatrix3fv(handle_, location, 1, GL_FALSE, glm::value_ptr(value));
-  }
+  glProgramUniformMatrix3fv(handle_, GetUniformLocation(handle_, name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat4 &value) const {
-  const std::int32_t location{GetUniformLocation(handle_, name)};
-  if (location != -1) {
-    glProgramUniformMatrix4fv(handle_, location, 1, GL_FALSE, glm::value_ptr(value));
-  }
+  glProgramUniformMatrix4fv(handle_, GetUniformLocation(handle_, name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 std::uint32_t Program::GetHandle() const noexcept { return handle_; }
