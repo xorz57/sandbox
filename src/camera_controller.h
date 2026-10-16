@@ -24,8 +24,8 @@ public:
   explicit CameraController(Camera &camera, Settings settings);
   explicit CameraController(Camera &camera);
 
-  void ProcessKeyboard(Movement movement, float delta_time, float speed_multiplier = 1.0F);
-  void ProcessMouseDelta(float x_delta, float y_delta);
+  void Move(Movement movement, float delta_time, float speed_multiplier = 1.0F);
+  void Look(float x_delta, float y_delta);
 
 private:
   std::reference_wrapper<Camera> camera_;

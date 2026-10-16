@@ -280,7 +280,7 @@ int main() {
         break;
       case SDL_EVENT_MOUSE_MOTION:
         if (SDL_GetWindowRelativeMouseMode(sdl_window)) {
-          camera_controller.ProcessMouseDelta(event.motion.xrel, event.motion.yrel);
+          camera_controller.Look(event.motion.xrel, event.motion.yrel);
         }
         break;
       case SDL_EVENT_KEY_DOWN:
@@ -305,27 +305,27 @@ int main() {
       const float speed_multiplier{keyboard_state[SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_W]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kForward, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kForward, delta_time, speed_multiplier);
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_S]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kBackward, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kBackward, delta_time, speed_multiplier);
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_A]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kLeft, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kLeft, delta_time, speed_multiplier);
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_D]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kRight, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kRight, delta_time, speed_multiplier);
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_SPACE]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kUp, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kUp, delta_time, speed_multiplier);
       }
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        camera_controller.ProcessKeyboard(CameraController::Movement::kDown, delta_time, speed_multiplier);
+        camera_controller.Move(CameraController::Movement::kDown, delta_time, speed_multiplier);
       }
     }
 
