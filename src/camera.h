@@ -4,20 +4,23 @@
 
 class Camera final {
 public:
+  struct Orientation {
+    float yaw{-90.0F};
+    float pitch{0.0F};
+  };
+
   explicit Camera(glm::vec3 position = {});
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
-  [[nodiscard]] glm::vec3 GetPosition() const;
 
   void SetPosition(glm::vec3 position);
-
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void SetOrientation(float yaw, float pitch);
-
+  [[nodiscard]] glm::vec3 GetPosition() const;
   void MoveForward(float distance);
   void MoveRight(float distance);
   void MoveUp(float distance);
 
+  void SetOrientation(Orientation orientation);
+  [[nodiscard]] Orientation GetOrientation() const;
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   void Rotate(float yaw_delta, float pitch_delta);
 

@@ -16,22 +16,23 @@ glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
 }
 
-glm::vec3 Camera::GetPosition() const { return position_; }
-
 void Camera::SetPosition(glm::vec3 position) { position_ = position; }
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void Camera::SetOrientation(float yaw, float pitch) {
-  yaw_ = yaw;
-  pitch_ = glm::clamp(pitch, -kMaxPitch, kMaxPitch);
-  UpdateVectors();
-}
+glm::vec3 Camera::GetPosition() const { return position_; }
 
 void Camera::MoveForward(float distance) { position_ += front_ * distance; }
 
 void Camera::MoveRight(float distance) { position_ += right_ * distance; }
 
 void Camera::MoveUp(float distance) { position_ += kWorldUp * distance; }
+
+void Camera::SetOrientation(Orientation orientation) {
+  yaw_ = orientation.yaw;
+  pitch_ = glm::clamp(orientation.pitch, -kMaxPitch, kMaxPitch);
+  UpdateVectors();
+}
+
+Camera::Orientation Camera::GetOrientation() const { return {.yaw = yaw_, .pitch = pitch_}; }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void Camera::Rotate(float yaw_delta, float pitch_delta) {
