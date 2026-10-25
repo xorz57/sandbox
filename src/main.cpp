@@ -348,6 +348,15 @@ int main() {
 
     const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
 
+    unlit_program->Use();
+    unlit_program->SetUniform("u_projection", projection);
+    unlit_program->SetUniform("u_view", view);
+
+    const glm::mat4 light_model{glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F})};
+    unlit_program->SetUniform("u_model", light_model);
+    unlit_program->SetUniform("u_color", light.color);
+    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
@@ -376,15 +385,6 @@ int main() {
     lit_program->SetUniform("u_material.diffuse", material3.diffuse);
     lit_program->SetUniform("u_material.specular", material3.specular);
     lit_program->SetUniform("u_material.shininess", material3.shininess);
-    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
-
-    unlit_program->Use();
-    unlit_program->SetUniform("u_projection", projection);
-    unlit_program->SetUniform("u_view", view);
-
-    const glm::mat4 light_model{glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F})};
-    unlit_program->SetUniform("u_model", light_model);
-    unlit_program->SetUniform("u_color", light.color);
     glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
