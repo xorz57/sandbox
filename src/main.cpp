@@ -8,7 +8,10 @@
 #include "shader.hpp"
 #include "vertex.hpp"
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
+#include <SDL3/SDL_timer.h>
+#include <SDL3/SDL_video.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
 #include <glad/gl.h>
@@ -75,47 +78,42 @@ namespace {
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
-    spdlog::error("Failed to initialize SDL: {}", SDL_GetError());
+    spdlog::error("SDL_Init failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-  const char *title{"example_005a"};
-
+  const char *title{"sandbox"};
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
   const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};
-
   // clang-format off
   const SDL_WindowFlags flags{
     SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY
   };
   // clang-format on
-
   SDL_Window *sdl_window{SDL_CreateWindow(title, w, h, flags)};
   if (sdl_window == nullptr) {
-    spdlog::error("Failed to create SDL Window: {}", SDL_GetError());
+    spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_window_guard{ScopeExit{[&] { SDL_DestroyWindow(sdl_window); }}};
 
   const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
-    spdlog::error("Failed to create SDL GL Context: {}", SDL_GetError());
+    spdlog::error("SDL_GL_CreateContext failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_gl_context_guard{ScopeExit{[&] { SDL_GL_DestroyContext(sdl_gl_context); }}};
 
-  SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
   SDL_GL_SetSwapInterval(1);
 
   SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -123,18 +121,16 @@ int main() {
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
-    spdlog::error("Failed to initialize GLAD");
+    spdlog::error("gladLoadGL failed");
     return EXIT_FAILURE;
   }
 
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("GLSL version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+  spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+  spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
   spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
