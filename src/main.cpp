@@ -127,12 +127,14 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-  spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
-  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+  { // Log OpenGL Context Info
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+    spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+    spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+    spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+  }
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -357,7 +359,6 @@ int main() {
     { // Draw Light Box
       glm::mat4 light_model{glm::mat4{1.0F}};
       light_model = glm::translate(light_model, light.position);
-      light_model = glm::scale(light_model, glm::vec3{0.2F});
       unlit_program->SetUniform("u_model", light_model);
       unlit_program->SetUniform("u_color", light.color);
       glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));

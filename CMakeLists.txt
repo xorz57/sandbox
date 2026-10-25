@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28)
 project(sandbox VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -21,11 +21,11 @@ target_include_directories(sandbox PUBLIC src)
 target_sources(
   sandbox
   PRIVATE src/main.cpp
-          src/mesh.cpp
-          src/shader.cpp
-          src/program.cpp
-          src/camera.cpp
           src/camera_controller.cpp
+          src/camera.cpp
+          src/mesh.cpp
+          src/program.cpp
+          src/shader.cpp
           src/stb_image_impl.cpp)
 
 # target_link_libraries(sandbox PRIVATE assimp::assimp)
