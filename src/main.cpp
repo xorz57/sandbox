@@ -83,13 +83,15 @@ int main() {
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  { // Set OpenGL Window Attributes
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  }
 
   const char *title{"sandbox"};
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
@@ -352,10 +354,14 @@ int main() {
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    const glm::mat4 light_model{glm::scale(glm::translate(glm::mat4{1.0F}, light.position), glm::vec3{0.2F})};
-    unlit_program->SetUniform("u_model", light_model);
-    unlit_program->SetUniform("u_color", light.color);
-    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    { // Draw Light Box
+      glm::mat4 light_model{glm::mat4{1.0F}};
+      light_model = glm::translate(light_model, light.position);
+      light_model = glm::scale(light_model, glm::vec3{0.2F});
+      unlit_program->SetUniform("u_model", light_model);
+      unlit_program->SetUniform("u_color", light.color);
+      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    }
 
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);
@@ -366,26 +372,35 @@ int main() {
     lit_program->SetUniform("u_light.intensity", light.intensity);
     lit_program->SetUniform("u_view_position", camera.GetPosition());
 
-    const glm::mat4 model1{glm::translate(glm::mat4{1.0F}, {-1.0F, 2.0F, -1.0F})};
-    lit_program->SetUniform("u_model", model1);
-    lit_program->SetUniform("u_material.diffuse", material1.diffuse);
-    lit_program->SetUniform("u_material.specular", material1.specular);
-    lit_program->SetUniform("u_material.shininess", material1.shininess);
-    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    { // Draw Red Box
+      glm::mat4 model1{glm::mat4{1.0F}};
+      model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
+      lit_program->SetUniform("u_model", model1);
+      lit_program->SetUniform("u_material.diffuse", material1.diffuse);
+      lit_program->SetUniform("u_material.specular", material1.specular);
+      lit_program->SetUniform("u_material.shininess", material1.shininess);
+      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    }
 
-    const glm::mat4 model2{glm::translate(glm::mat4{1.0F}, {1.0F, 2.0F, 1.0F})};
-    lit_program->SetUniform("u_model", model2);
-    lit_program->SetUniform("u_material.diffuse", material2.diffuse);
-    lit_program->SetUniform("u_material.specular", material2.specular);
-    lit_program->SetUniform("u_material.shininess", material2.shininess);
-    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    { // Draw Green Box
+      glm::mat4 model2{glm::mat4{1.0F}};
+      model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
+      lit_program->SetUniform("u_model", model2);
+      lit_program->SetUniform("u_material.diffuse", material2.diffuse);
+      lit_program->SetUniform("u_material.specular", material2.specular);
+      lit_program->SetUniform("u_material.shininess", material2.shininess);
+      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    }
 
-    const glm::mat4 model3{glm::scale(glm::mat4{1.0F}, {4.0F, 1.0F, 4.0F})};
-    lit_program->SetUniform("u_model", model3);
-    lit_program->SetUniform("u_material.diffuse", material3.diffuse);
-    lit_program->SetUniform("u_material.specular", material3.specular);
-    lit_program->SetUniform("u_material.shininess", material3.shininess);
-    glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    { // Draw Blue Box
+      glm::mat4 model3{glm::mat4{1.0F}};
+      model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
+      lit_program->SetUniform("u_model", model3);
+      lit_program->SetUniform("u_material.diffuse", material3.diffuse);
+      lit_program->SetUniform("u_material.specular", material3.specular);
+      lit_program->SetUniform("u_material.shininess", material3.shininess);
+      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    }
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
