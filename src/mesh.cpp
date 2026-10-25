@@ -1,6 +1,6 @@
-#include "mesh.h"
+#include "mesh.hpp"
 
-#include "vertex.h"
+#include "vertex.hpp"
 
 #include <glad/gl.h>
 

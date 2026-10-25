@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vertex.h"
+#include "vertex.hpp"
 
 #include <cstddef>
 #include <cstdint>

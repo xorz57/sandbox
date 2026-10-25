@@ -1,12 +1,12 @@
-#include "camera.h"
-#include "camera_controller.h"
-#include "core/scope_exit.h"
-#include "light.h"
-#include "material.h"
-#include "mesh.h"
-#include "program.h"
-#include "shader.h"
-#include "vertex.h"
+#include "camera.hpp"
+#include "camera_controller.hpp"
+#include "core/scope_exit.hpp"
+#include "light.hpp"
+#include "material.hpp"
+#include "mesh.hpp"
+#include "program.hpp"
+#include "shader.hpp"
+#include "vertex.hpp"
 
 #include <SDL3/SDL.h>
 #include <backends/imgui_impl_opengl3.h>

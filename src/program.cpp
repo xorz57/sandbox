@@ -1,6 +1,6 @@
-#include "program.h"
+#include "program.hpp"
 
-#include "shader.h"
+#include "shader.hpp"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>

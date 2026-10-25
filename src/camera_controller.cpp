@@ -1,6 +1,6 @@
-#include "camera_controller.h"
+#include "camera_controller.hpp"
 
-#include "camera.h"
+#include "camera.hpp"
 
 #include <glm/glm.hpp>
 
