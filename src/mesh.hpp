@@ -1,11 +1,10 @@
 #pragma once
 
-#include "vertex.hpp"
+#include "mesh_data.hpp"
 
 #include <cstddef>
 #include <cstdint>
 #include <expected>
-#include <span>
 #include <string>
 
 class Mesh final {
@@ -18,8 +17,7 @@ public:
   Mesh &operator=(const Mesh &) = delete;
   Mesh &operator=(Mesh &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Mesh, std::string> Create(std::span<const Vertex> vertices,
-                                                               std::span<const std::uint32_t> indices);
+  [[nodiscard]] static std::expected<Mesh, std::string> Create(const MeshData &data);
 
   [[nodiscard]] std::uint32_t GetVertexArray() const noexcept;
   [[nodiscard]] std::size_t GetIndexCount() const noexcept;

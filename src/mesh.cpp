@@ -1,5 +1,6 @@
 #include "mesh.hpp"
 
+#include "mesh_data.hpp"
 #include "vertex.hpp"
 
 #include <glad/gl.h>
@@ -28,8 +29,10 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
   return *this;
 }
 
-std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
-                                              std::span<const std::uint32_t> indices) {
+std::expected<Mesh, std::string> Mesh::Create(const MeshData &data) {
+  const std::span<const Vertex> vertices{data.vertices};
+  const std::span<const std::uint32_t> indices{data.indices};
+
   if (vertices.empty()) {
     return std::unexpected{"Mesh has no vertices"};
   }

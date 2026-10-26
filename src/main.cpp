@@ -4,9 +4,9 @@
 #include "light.hpp"
 #include "material.hpp"
 #include "mesh.hpp"
+#include "primitives.hpp"
 #include "program.hpp"
 #include "shader.hpp"
-#include "vertex.hpp"
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -27,7 +27,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 namespace {
 
@@ -160,50 +159,6 @@ int main() {
   ImGui_ImplOpenGL3_Init();
   const auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
 
-  const std::vector<Vertex> vertices{
-      // Front (+z)
-      {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {0.5F, -0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {0.5F, 0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {-0.5F, 0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {0.0F, 1.0F}},
-      // Back (-z)
-      {.position = {0.5F, -0.5F, -0.5F}, .normal = {0.0F, 0.0F, -1.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {-0.5F, -0.5F, -0.5F}, .normal = {0.0F, 0.0F, -1.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {-0.5F, 0.5F, -0.5F}, .normal = {0.0F, 0.0F, -1.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {0.5F, 0.5F, -0.5F}, .normal = {0.0F, 0.0F, -1.0F}, .uv = {0.0F, 1.0F}},
-      // Left (-x)
-      {.position = {-0.5F, -0.5F, -0.5F}, .normal = {-1.0F, 0.0F, 0.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {-0.5F, -0.5F, 0.5F}, .normal = {-1.0F, 0.0F, 0.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {-0.5F, 0.5F, 0.5F}, .normal = {-1.0F, 0.0F, 0.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {-0.5F, 0.5F, -0.5F}, .normal = {-1.0F, 0.0F, 0.0F}, .uv = {0.0F, 1.0F}},
-      // Right (+x)
-      {.position = {0.5F, -0.5F, 0.5F}, .normal = {1.0F, 0.0F, 0.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {0.5F, -0.5F, -0.5F}, .normal = {1.0F, 0.0F, 0.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {0.5F, 0.5F, -0.5F}, .normal = {1.0F, 0.0F, 0.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {0.5F, 0.5F, 0.5F}, .normal = {1.0F, 0.0F, 0.0F}, .uv = {0.0F, 1.0F}},
-      // Top (+y)
-      {.position = {-0.5F, 0.5F, 0.5F}, .normal = {0.0F, 1.0F, 0.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {0.5F, 0.5F, 0.5F}, .normal = {0.0F, 1.0F, 0.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {0.5F, 0.5F, -0.5F}, .normal = {0.0F, 1.0F, 0.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {-0.5F, 0.5F, -0.5F}, .normal = {0.0F, 1.0F, 0.0F}, .uv = {0.0F, 1.0F}},
-      // Bottom (-y)
-      {.position = {-0.5F, -0.5F, -0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {0.0F, 0.0F}},
-      {.position = {0.5F, -0.5F, -0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {1.0F, 0.0F}},
-      {.position = {0.5F, -0.5F, 0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {1.0F, 1.0F}},
-      {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {0.0F, 1.0F}},
-  };
-
-  // clang-format off
-  const std::vector<std::uint32_t> indices{
-     0,  1,  2,  2,  3,  0,  // Front
-     4,  5,  6,  6,  7,  4,  // Back
-     8,  9, 10, 10, 11,  8,  // Left
-    12, 13, 14, 14, 15, 12,  // Right
-    16, 17, 18, 18, 19, 16,  // Top
-    20, 21, 22, 22, 23, 20,  // Bottom
-  };
-  // clang-format on
-
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
   const Light light{.position = {2.0F, 4.0F, 3.0F}, .color = {1.0F, 1.0F, 1.0F}, .intensity = 1.0F};
@@ -212,7 +167,7 @@ int main() {
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
 
-  const auto mesh{Mesh::Create(vertices, indices)};
+  const auto mesh{Mesh::Create(MakeCube())};
   if (!mesh.has_value()) {
     spdlog::error("{}", mesh.error());
     return EXIT_FAILURE;
