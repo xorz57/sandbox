@@ -66,13 +66,6 @@ namespace {
   }
 }
 
-[[nodiscard]] glm::mat4 ComputeProjectionMatrix(float aspect_ratio) {
-  constexpr float kFov{45.0F};
-  constexpr float kNearPlane{0.1F};
-  constexpr float kFarPlane{100.0F};
-  return glm::perspective(glm::radians(kFov), aspect_ratio, kNearPlane, kFarPlane);
-}
-
 } // namespace
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -237,7 +230,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Camera camera{{0.0F, 2.0F, 10.0F}};
+  Camera camera{{0.0F, 2.0F, 10.0F}, {}};
   CameraController camera_controller{camera};
 
   std::uint64_t last_frame_ticks{SDL_GetTicks()};
@@ -345,7 +338,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-    const glm::mat4 projection{ComputeProjectionMatrix(framebuffer_a)};
+    const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     glBindVertexArray(mesh->GetVertexArray());

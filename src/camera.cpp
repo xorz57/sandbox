@@ -10,7 +10,7 @@ constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
 
 } // namespace
 
-Camera::Camera(glm::vec3 position) : position_{position} { UpdateVectors(); }
+Camera::Camera(glm::vec3 position, Lens lens) : position_{position}, lens_{lens} { UpdateVectors(); }
 
 void Camera::SetPosition(glm::vec3 position) { position_ = position; }
 
@@ -20,12 +20,20 @@ void Camera::SetOrientation(Orientation orientation) {
   UpdateVectors();
 }
 
+void Camera::SetLens(Lens lens) { lens_ = lens; }
+
 glm::vec3 Camera::GetPosition() const { return position_; }
 
 Camera::Orientation Camera::GetOrientation() const { return {.yaw = yaw_, .pitch = pitch_}; }
 
+Camera::Lens Camera::GetLens() const { return lens_; }
+
 glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
+}
+
+glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
+  return glm::perspective(glm::radians(lens_.fov), aspect_ratio, lens_.near_plane, lens_.far_plane);
 }
 
 void Camera::MoveForward(float distance) { position_ += front_ * distance; }
