@@ -48,7 +48,7 @@ namespace {
   return Program::Create(*vs, *fs);
 }
 
-[[nodiscard]] bool ImGuiWantsToCaptureEvent(const SDL_Event &event, const ImGuiIO &io) {
+[[nodiscard]] bool IsEventWantedByImGui(const SDL_Event &event, const ImGuiIO &io) {
   switch (event.type) {
   case SDL_EVENT_MOUSE_MOTION:
   case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -252,7 +252,7 @@ int main() {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL3_ProcessEvent(&event);
-      if (ImGuiWantsToCaptureEvent(event, io)) {
+      if (IsEventWantedByImGui(event, io)) {
         continue;
       }
 
