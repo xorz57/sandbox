@@ -3,10 +3,11 @@
 #include "core/scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
-#include "mesh.hpp"
+#include "mesh_data.hpp"
 #include "primitives.hpp"
 #include "program.hpp"
 #include "shader.hpp"
+#include "vertex.hpp"
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -20,6 +21,7 @@
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <expected>
@@ -167,11 +169,41 @@ int main() {
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
 
-  const auto mesh{Mesh::Create(MakeCube())};
-  if (!mesh.has_value()) {
-    spdlog::error("{}", mesh.error());
-    return EXIT_FAILURE;
-  }
+  const MeshData cube{MakeCube()};
+
+  std::uint32_t vbo{};
+  glCreateBuffers(1, &vbo);
+  const auto vbo_guard{ScopeExit{[vbo] { glDeleteBuffers(1, &vbo); }}};
+
+  std::uint32_t ebo{};
+  glCreateBuffers(1, &ebo);
+  const auto ebo_guard{ScopeExit{[ebo] { glDeleteBuffers(1, &ebo); }}};
+
+  std::uint32_t vao{};
+  glCreateVertexArrays(1, &vao);
+  const auto vao_guard{ScopeExit{[vao] { glDeleteVertexArrays(1, &vao); }}};
+
+  glNamedBufferStorage(
+      vbo, static_cast<std::ptrdiff_t>(cube.vertices.size() * sizeof(Vertex)), cube.vertices.data(), 0);
+  glNamedBufferStorage(
+      ebo, static_cast<std::ptrdiff_t>(cube.indices.size() * sizeof(std::uint32_t)), cube.indices.data(), 0);
+
+  glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  glVertexArrayElementBuffer(vao, ebo);
+
+  glEnableVertexArrayAttrib(vao, 0);
+  glEnableVertexArrayAttrib(vao, 1);
+  glEnableVertexArrayAttrib(vao, 2);
+
+  glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+  glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+  glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+
+  glVertexArrayAttribBinding(vao, 0, 0);
+  glVertexArrayAttribBinding(vao, 1, 0);
+  glVertexArrayAttribBinding(vao, 2, 0);
+
+  const auto index_count{static_cast<std::int32_t>(cube.indices.size())};
 
   auto lit_program{LoadProgram("lit")};
   if (!lit_program.has_value()) {
@@ -296,9 +328,7 @@ int main() {
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
-    glBindVertexArray(mesh->GetVertexArray());
-
-    const auto index_count{static_cast<std::int32_t>(mesh->GetIndexCount())};
+    glBindVertexArray(vao);
 
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);

@@ -23,7 +23,6 @@ target_sources(
   PRIVATE src/main.cpp
           src/camera_controller.cpp
           src/camera.cpp
-          src/mesh.cpp
           src/primitives.cpp
           src/program.cpp
           src/shader.cpp
