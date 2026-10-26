@@ -15,7 +15,7 @@ Mesh::~Mesh() { Reset(); }
 
 Mesh::Mesh(Mesh &&other) noexcept
     : vbo_{std::exchange(other.vbo_, 0)}, ebo_{std::exchange(other.ebo_, 0)}, vao_{std::exchange(other.vao_, 0)},
-      indices_size_{std::exchange(other.indices_size_, 0)} {}
+      index_count_{std::exchange(other.index_count_, 0)} {}
 
 Mesh &Mesh::operator=(Mesh &&other) noexcept {
   if (this != &other) {
@@ -23,7 +23,7 @@ Mesh &Mesh::operator=(Mesh &&other) noexcept {
     vbo_ = std::exchange(other.vbo_, 0);
     ebo_ = std::exchange(other.ebo_, 0);
     vao_ = std::exchange(other.vao_, 0);
-    indices_size_ = std::exchange(other.indices_size_, 0);
+    index_count_ = std::exchange(other.index_count_, 0);
   }
   return *this;
 }
@@ -47,7 +47,6 @@ std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
 
   glCreateVertexArrays(1, &vao);
 
-  // Take ownership immediately so partially created objects are released on failure.
   Mesh mesh{vbo, ebo, vao, indices.size()};
   if (vbo == 0 || ebo == 0 || vao == 0) {
     return std::unexpected{"Failed to create mesh buffers"};
@@ -78,11 +77,11 @@ std::expected<Mesh, std::string> Mesh::Create(std::span<const Vertex> vertices,
 
 std::uint32_t Mesh::GetVertexArray() const noexcept { return vao_; }
 
-std::size_t Mesh::GetIndicesSize() const noexcept { return indices_size_; }
+std::size_t Mesh::GetIndexCount() const noexcept { return index_count_; }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t indices_size)
-    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, indices_size_{indices_size} {}
+Mesh::Mesh(std::uint32_t vbo, std::uint32_t ebo, std::uint32_t vao, std::size_t index_count)
+    : vbo_{vbo}, ebo_{ebo}, vao_{vao}, index_count_{index_count} {}
 
 void Mesh::Reset() noexcept {
   if (vao_ != 0) {
@@ -97,5 +96,5 @@ void Mesh::Reset() noexcept {
     glDeleteBuffers(1, &vbo_);
     vbo_ = 0;
   }
-  indices_size_ = 0;
+  index_count_ = 0;
 }

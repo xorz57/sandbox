@@ -342,7 +342,7 @@ int main() {
 
     glBindVertexArray(mesh->GetVertexArray());
 
-    const auto indices_size{static_cast<std::int32_t>(mesh->GetIndicesSize())};
+    const auto index_count{static_cast<std::int32_t>(mesh->GetIndexCount())};
 
     unlit_program->Use();
     unlit_program->SetUniform("u_projection", projection);
@@ -353,7 +353,7 @@ int main() {
       light_model = glm::translate(light_model, light.position);
       unlit_program->SetUniform("u_model", light_model);
       unlit_program->SetUniform("u_color", light.color);
-      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
     }
 
     lit_program->Use();
@@ -372,7 +372,7 @@ int main() {
       lit_program->SetUniform("u_material.diffuse", material1.diffuse);
       lit_program->SetUniform("u_material.specular", material1.specular);
       lit_program->SetUniform("u_material.shininess", material1.shininess);
-      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
     }
 
     { // Draw Green Box
@@ -382,7 +382,7 @@ int main() {
       lit_program->SetUniform("u_material.diffuse", material2.diffuse);
       lit_program->SetUniform("u_material.specular", material2.specular);
       lit_program->SetUniform("u_material.shininess", material2.shininess);
-      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
     }
 
     { // Draw Blue Box
@@ -392,7 +392,7 @@ int main() {
       lit_program->SetUniform("u_material.diffuse", material3.diffuse);
       lit_program->SetUniform("u_material.specular", material3.specular);
       lit_program->SetUniform("u_material.shininess", material3.shininess);
-      glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
     }
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
