@@ -128,8 +128,8 @@ int main() {
     // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
   }
 
-  glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -205,6 +205,7 @@ int main() {
   // clang-format on
 
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
+
   const Light light{.position = {2.0F, 4.0F, 3.0F}, .color = {1.0F, 1.0F, 1.0F}, .intensity = 1.0F};
 
   const Material material1{.diffuse = {1.0F, 0.0F, 0.0F}, .specular = {1.0F, 0.5F, 0.5F}, .shininess = 64.0F};
