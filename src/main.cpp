@@ -3,7 +3,7 @@
 #include "core/scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
-#include "mesh_data.hpp"
+#include "mesh.hpp"
 #include "primitives.hpp"
 #include "program.hpp"
 #include "shader.hpp"
@@ -169,7 +169,7 @@ int main() {
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
 
-  const MeshData cube{MakeCube()};
+  const Mesh cube{MakeCube()};
 
   std::uint32_t vbo{};
   glCreateBuffers(1, &vbo);

@@ -1,13 +1,13 @@
 #include "primitives.hpp"
 
-#include "mesh_data.hpp"
+#include "mesh.hpp"
 #include "vertex.hpp"
 
 #include <cstdint>
 #include <utility>
 #include <vector>
 
-MeshData MakeCube() {
+Mesh MakeCube() {
   std::vector<Vertex> vertices{
       // Front (+z)
       {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, 0.0F, 1.0F}, .uv = {0.0F, 0.0F}},

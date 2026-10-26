@@ -1,5 +1,5 @@
 #pragma once
 
-#include "mesh_data.hpp"
+#include "mesh.hpp"
 
-[[nodiscard]] MeshData MakeCube();
+[[nodiscard]] Mesh MakeCube();
