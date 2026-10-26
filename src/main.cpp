@@ -80,7 +80,6 @@ int main() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
@@ -100,14 +99,14 @@ int main() {
     spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  const auto sdl_window_guard{ScopeExit{[&] { SDL_DestroyWindow(sdl_window); }}};
+  const auto sdl_window_guard{ScopeExit{[sdl_window] { SDL_DestroyWindow(sdl_window); }}};
 
   const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
     spdlog::error("SDL_GL_CreateContext failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  const auto sdl_gl_context_guard{ScopeExit{[&] { SDL_GL_DestroyContext(sdl_gl_context); }}};
+  const auto sdl_gl_context_guard{ScopeExit{[sdl_gl_context] { SDL_GL_DestroyContext(sdl_gl_context); }}};
 
   SDL_GL_SetSwapInterval(1);
 
