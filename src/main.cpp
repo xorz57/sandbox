@@ -70,14 +70,14 @@ int main() {
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
-  { // Set OpenGL Window Attributes
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  }
+#pragma region SetOpenGLWindowAttributes
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+#pragma endregion SetOpenglWindowAttributes
 
   const char *title{"sandbox"};
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
@@ -113,14 +113,14 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  { // Log OpenGL Context Info
-    // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-    spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-    spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-    spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-    spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
-    // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-  }
+#pragma region LogOpenGLContextInfo
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+  spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+  spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+#pragma endregion LogOpenGLContextInfo
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -327,13 +327,13 @@ int main() {
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    { // Draw Light Box
-      glm::mat4 light_model{glm::mat4{1.0F}};
-      light_model = glm::translate(light_model, light.position);
-      unlit_program->SetUniform("u_model", light_model);
-      unlit_program->SetUniform("u_color", light.color);
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
-    }
+#pragma region DrawLight
+    glm::mat4 light_model{glm::mat4{1.0F}};
+    light_model = glm::translate(light_model, light.position);
+    unlit_program->SetUniform("u_model", light_model);
+    unlit_program->SetUniform("u_color", light.color);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+#pragma endregion DrawLight
 
     lit_program->Use();
     lit_program->SetUniform("u_projection", projection);
@@ -344,35 +344,35 @@ int main() {
     lit_program->SetUniform("u_light.intensity", light.intensity);
     lit_program->SetUniform("u_view_position", camera.GetPosition());
 
-    { // Draw Red Box
-      glm::mat4 model1{glm::mat4{1.0F}};
-      model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
-      lit_program->SetUniform("u_model", model1);
-      lit_program->SetUniform("u_material.diffuse", material1.diffuse);
-      lit_program->SetUniform("u_material.specular", material1.specular);
-      lit_program->SetUniform("u_material.shininess", material1.shininess);
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
-    }
+#pragma region DrawBox1
+    glm::mat4 model1{glm::mat4{1.0F}};
+    model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
+    lit_program->SetUniform("u_model", model1);
+    lit_program->SetUniform("u_material.diffuse", material1.diffuse);
+    lit_program->SetUniform("u_material.specular", material1.specular);
+    lit_program->SetUniform("u_material.shininess", material1.shininess);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+#pragma endregion DrawBox1
 
-    { // Draw Green Box
-      glm::mat4 model2{glm::mat4{1.0F}};
-      model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
-      lit_program->SetUniform("u_model", model2);
-      lit_program->SetUniform("u_material.diffuse", material2.diffuse);
-      lit_program->SetUniform("u_material.specular", material2.specular);
-      lit_program->SetUniform("u_material.shininess", material2.shininess);
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
-    }
+#pragma region DrawBox2
+    glm::mat4 model2{glm::mat4{1.0F}};
+    model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
+    lit_program->SetUniform("u_model", model2);
+    lit_program->SetUniform("u_material.diffuse", material2.diffuse);
+    lit_program->SetUniform("u_material.specular", material2.specular);
+    lit_program->SetUniform("u_material.shininess", material2.shininess);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+#pragma endregion DrawBox2
 
-    { // Draw Blue Box
-      glm::mat4 model3{glm::mat4{1.0F}};
-      model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
-      lit_program->SetUniform("u_model", model3);
-      lit_program->SetUniform("u_material.diffuse", material3.diffuse);
-      lit_program->SetUniform("u_material.specular", material3.specular);
-      lit_program->SetUniform("u_material.shininess", material3.shininess);
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
-    }
+#pragma region DrawBox3
+    glm::mat4 model3{glm::mat4{1.0F}};
+    model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
+    lit_program->SetUniform("u_model", model3);
+    lit_program->SetUniform("u_material.diffuse", material3.diffuse);
+    lit_program->SetUniform("u_material.specular", material3.specular);
+    lit_program->SetUniform("u_material.shininess", material3.shininess);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+#pragma endregion DrawBox3
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
