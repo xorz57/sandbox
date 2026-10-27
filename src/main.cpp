@@ -3,8 +3,6 @@
 #include "core/scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
-#include "mesh.hpp"
-#include "primitives.hpp"
 #include "program.hpp"
 #include "vertex.hpp"
 
@@ -32,6 +30,7 @@
 #include <filesystem>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace {
 
@@ -170,9 +169,59 @@ int main() {
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
 
-  const Mesh cube{MakeCube()};
+  #pragma region Vertices
+  // clang-format off
+  const std::vector<Vertex> vertices{
+    // +z Front
+    {.position = {-0.5F, -0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = { 0.5F,  0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = {-0.5F,  0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 0.0F,  1.0F}},
+    // -z Back
+    {.position = { 0.5F, -0.5F, -0.5F}, .normal = { 0.0F,  0.0F, -1.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = {-0.5F, -0.5F, -0.5F}, .normal = { 0.0F,  0.0F, -1.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = {-0.5F,  0.5F, -0.5F}, .normal = { 0.0F,  0.0F, -1.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = { 0.5F,  0.5F, -0.5F}, .normal = { 0.0F,  0.0F, -1.0F}, .uv = { 0.0F,  1.0F}},
+    // -x Left
+    {.position = {-0.5F, -0.5F, -0.5F}, .normal = {-1.0F,  0.0F,  0.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = {-0.5F, -0.5F,  0.5F}, .normal = {-1.0F,  0.0F,  0.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = {-0.5F,  0.5F,  0.5F}, .normal = {-1.0F,  0.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = {-0.5F,  0.5F, -0.5F}, .normal = {-1.0F,  0.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
+    // +x Right
+    {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 1.0F,  0.0F,  0.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = { 0.5F, -0.5F, -0.5F}, .normal = { 1.0F,  0.0F,  0.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = { 0.5F,  0.5F, -0.5F}, .normal = { 1.0F,  0.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = { 0.5F,  0.5F,  0.5F}, .normal = { 1.0F,  0.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
+    // +y Top
+    {.position = {-0.5F,  0.5F,  0.5F}, .normal = { 0.0F,  1.0F,  0.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = { 0.5F,  0.5F,  0.5F}, .normal = { 0.0F,  1.0F,  0.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = { 0.5F,  0.5F, -0.5F}, .normal = { 0.0F,  1.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = {-0.5F,  0.5F, -0.5F}, .normal = { 0.0F,  1.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
+    // -y Bottom
+    {.position = {-0.5F, -0.5F, -0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 0.0F,  0.0F}},
+    {.position = { 0.5F, -0.5F, -0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 1.0F,  0.0F}},
+    {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
+    {.position = {-0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
+  };
+  // clang-format on
+  #pragma endregion Vertices
 
-#pragma region CreateCubeBuffers
+  #pragma region Indices
+  // clang-format off
+  const std::vector<std::uint32_t> indices {
+      0,  1,  2,  2,  3,  0,  // +z Front
+      4,  5,  6,  6,  7,  4,  // -z Back
+      8,  9, 10, 10, 11,  8,  // -x Left
+    12, 13, 14, 14, 15, 12,  // +x Right
+    16, 17, 18, 18, 19, 16,  // +y Top
+    20, 21, 22, 22, 23, 20,  // -y Bottom
+  };
+  // clang-format on
+  #pragma endregion Indices
+
+  const auto index_count{static_cast<std::int32_t>(indices.size())};
+
+#pragma region CreateBuffers
   std::uint32_t vbo{};
   glCreateBuffers(1, &vbo);
   const auto vbo_guard{ScopeExit{[vbo] { glDeleteBuffers(1, &vbo); }}};
@@ -185,10 +234,8 @@ int main() {
   glCreateVertexArrays(1, &vao);
   const auto vao_guard{ScopeExit{[vao] { glDeleteVertexArrays(1, &vao); }}};
 
-  glNamedBufferStorage(
-      vbo, static_cast<std::ptrdiff_t>(cube.vertices.size() * sizeof(Vertex)), cube.vertices.data(), 0);
-  glNamedBufferStorage(
-      ebo, static_cast<std::ptrdiff_t>(cube.indices.size() * sizeof(std::uint32_t)), cube.indices.data(), 0);
+  glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
+  glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
 
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
   glVertexArrayElementBuffer(vao, ebo);
@@ -204,9 +251,7 @@ int main() {
   glVertexArrayAttribBinding(vao, 0, 0);
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
-#pragma endregion CreateCubeBuffers
-
-  const auto index_count{static_cast<std::int32_t>(cube.indices.size())};
+#pragma endregion CreateBuffers
 
   auto lit_program{LoadProgram("lit")};
   if (!lit_program.has_value()) {
@@ -221,6 +266,7 @@ int main() {
   }
 
   Camera camera{{0.0F, 2.0F, 10.0F}, {}};
+
   CameraController camera_controller{camera};
 
   std::uint64_t last_frame_ticks{SDL_GetTicks()};
