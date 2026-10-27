@@ -64,21 +64,24 @@ namespace {
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
+#pragma region InitSDL
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
     spdlog::error("SDL_Init failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
+#pragma endregion InitSDL
 
-#pragma region SetOpenGLWindowAttributes
+#pragma region SetAttributes
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-#pragma endregion SetOpenglWindowAttributes
+#pragma endregion SetAttributes
 
+#pragma region CreateWindow
   const char *title{"sandbox"};
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
@@ -94,13 +97,16 @@ int main() {
     return EXIT_FAILURE;
   }
   const auto sdl_window_guard{ScopeExit{[sdl_window] { SDL_DestroyWindow(sdl_window); }}};
+#pragma endregion CreateWindow
 
+#pragma region CreateContext
   const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
   if (sdl_gl_context == nullptr) {
     spdlog::error("SDL_GL_CreateContext failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_gl_context_guard{ScopeExit{[sdl_gl_context] { SDL_GL_DestroyContext(sdl_gl_context); }}};
+#pragma endregion CreateContext
 
   SDL_GL_SetSwapInterval(1);
 
@@ -113,14 +119,14 @@ int main() {
     return EXIT_FAILURE;
   }
 
-#pragma region LogOpenGLContextInfo
+#pragma region LogContextInfo
   // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
   spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
   spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
   spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
   // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-#pragma endregion LogOpenGLContextInfo
+#pragma endregion LogContextInfo
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
