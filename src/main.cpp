@@ -91,27 +91,27 @@ int main() {
     SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY
   };
   // clang-format on
-  SDL_Window *sdl_window{SDL_CreateWindow(title, w, h, flags)};
-  if (sdl_window == nullptr) {
+  SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
+  if (window == nullptr) {
     spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  const auto sdl_window_guard{ScopeExit{[sdl_window] { SDL_DestroyWindow(sdl_window); }}};
+  const auto window_guard{ScopeExit{[window] { SDL_DestroyWindow(window); }}};
 #pragma endregion CreateWindow
 
 #pragma region CreateContext
-  const SDL_GLContext sdl_gl_context{SDL_GL_CreateContext(sdl_window)};
-  if (sdl_gl_context == nullptr) {
+  const SDL_GLContext context{SDL_GL_CreateContext(window)};
+  if (context == nullptr) {
     spdlog::error("SDL_GL_CreateContext failed: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
-  const auto sdl_gl_context_guard{ScopeExit{[sdl_gl_context] { SDL_GL_DestroyContext(sdl_gl_context); }}};
+  const auto context_guard{ScopeExit{[context] { SDL_GL_DestroyContext(context); }}};
 #pragma endregion CreateContext
 
   SDL_GL_SetSwapInterval(1);
 
-  SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  SDL_ShowWindow(sdl_window);
+  SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  SDL_ShowWindow(window);
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
@@ -155,7 +155,7 @@ int main() {
     style.Colors[ImGuiCol_WindowBg].w = 1.0F;
   }
 
-  ImGui_ImplSDL3_InitForOpenGL(sdl_window, sdl_gl_context);
+  ImGui_ImplSDL3_InitForOpenGL(window, context);
   const auto imgui_sdl3_guard{ScopeExit{[] { ImGui_ImplSDL3_Shutdown(); }}};
 
   ImGui_ImplOpenGL3_Init();
@@ -245,32 +245,32 @@ int main() {
         done = true;
         break;
       case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-        if (event.window.windowID == SDL_GetWindowID(sdl_window)) {
+        if (event.window.windowID == SDL_GetWindowID(window)) {
           done = true;
         }
         break;
       case SDL_EVENT_WINDOW_FOCUS_LOST:
-        SDL_SetWindowRelativeMouseMode(sdl_window, false);
+        SDL_SetWindowRelativeMouseMode(window, false);
         break;
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
         if (event.button.button == SDL_BUTTON_RIGHT) {
-          SDL_SetWindowRelativeMouseMode(sdl_window, true);
+          SDL_SetWindowRelativeMouseMode(window, true);
         }
         break;
       case SDL_EVENT_MOUSE_BUTTON_UP:
         if (event.button.button == SDL_BUTTON_RIGHT) {
-          SDL_SetWindowRelativeMouseMode(sdl_window, false);
+          SDL_SetWindowRelativeMouseMode(window, false);
         }
         break;
       case SDL_EVENT_MOUSE_MOTION:
-        if (SDL_GetWindowRelativeMouseMode(sdl_window)) {
+        if (SDL_GetWindowRelativeMouseMode(window)) {
           camera_controller.Look(event.motion.xrel, event.motion.yrel);
         }
         break;
       case SDL_EVENT_KEY_DOWN:
         if (!event.key.repeat && (event.key.key == SDLK_RETURN) && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
-          const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN)};
-          SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
+          const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
+          SDL_SetWindowFullscreen(window, !is_fullscreen);
         }
         break;
       default:
@@ -279,12 +279,12 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-    if (static_cast<bool>(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MINIMIZED)) {
+    if (static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)) {
       SDL_Delay(10);
       continue;
     }
 
-    if (!io.WantCaptureKeyboard && SDL_GetWindowRelativeMouseMode(sdl_window)) {
+    if (!io.WantCaptureKeyboard && SDL_GetWindowRelativeMouseMode(window)) {
       const bool *keyboard_state{SDL_GetKeyboardState(nullptr)};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       const float speed_multiplier{keyboard_state[SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
@@ -324,7 +324,7 @@ int main() {
 
     std::int32_t framebuffer_w{};
     std::int32_t framebuffer_h{};
-    SDL_GetWindowSizeInPixels(sdl_window, &framebuffer_w, &framebuffer_h);
+    SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -391,10 +391,10 @@ int main() {
     if (static_cast<bool>(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
       ImGui::UpdatePlatformWindows();
       ImGui::RenderPlatformWindowsDefault();
-      SDL_GL_MakeCurrent(sdl_window, sdl_gl_context);
+      SDL_GL_MakeCurrent(window, context);
     }
 
-    SDL_GL_SwapWindow(sdl_window);
+    SDL_GL_SwapWindow(window);
   }
 
   return EXIT_SUCCESS;
