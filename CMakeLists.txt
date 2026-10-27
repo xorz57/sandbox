@@ -25,7 +25,6 @@ target_sources(
           src/camera.cpp
           src/primitives.cpp
           src/program.cpp
-          src/shader.cpp
           src/stb_image_impl.cpp)
 
 # target_link_libraries(sandbox PRIVATE assimp::assimp)

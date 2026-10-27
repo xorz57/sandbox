@@ -1,12 +1,12 @@
 #pragma once
 
-#include "shader.hpp"
-
 #include <glm/glm.hpp>
 
 #include <cstdint>
 #include <expected>
+#include <filesystem>
 #include <string>
+#include <string_view>
 
 class Program final {
 public:
@@ -18,7 +18,9 @@ public:
   Program &operator=(const Program &) = delete;
   Program &operator=(Program &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Program, std::string> Create(const Shader &vs, const Shader &fs);
+  [[nodiscard]] static std::expected<Program, std::string> Create(std::string_view vs_source, std::string_view fs_source);
+  [[nodiscard]] static std::expected<Program, std::string> CreateFromFiles(const std::filesystem::path &vs_path,
+                                                                           const std::filesystem::path &fs_path);
 
   void Use() const;
 

@@ -6,7 +6,6 @@
 #include "mesh.hpp"
 #include "primitives.hpp"
 #include "program.hpp"
-#include "shader.hpp"
 #include "vertex.hpp"
 
 #include <SDL3/SDL_events.h>
@@ -28,7 +27,6 @@
 #include <filesystem>
 #include <string>
 #include <string_view>
-#include <utility>
 
 namespace {
 
@@ -36,17 +34,7 @@ namespace {
   const std::filesystem::path directory{"assets/shaders"};
   const std::string base{name};
 
-  auto vs{Shader::CreateFromFile(Shader::Type::kVertex, directory / (base + ".vert.glsl"))};
-  if (!vs.has_value()) {
-    return std::unexpected{std::move(vs.error())};
-  }
-
-  auto fs{Shader::CreateFromFile(Shader::Type::kFragment, directory / (base + ".frag.glsl"))};
-  if (!fs.has_value()) {
-    return std::unexpected{std::move(fs.error())};
-  }
-
-  return Program::Create(*vs, *fs);
+  return Program::CreateFromFiles(directory / (base + ".vert.glsl"), directory / (base + ".frag.glsl"));
 }
 
 [[nodiscard]] bool IsEventWantedByImGui(const SDL_Event &event, const ImGuiIO &io) {

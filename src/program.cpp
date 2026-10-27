@@ -1,6 +1,6 @@
 #include "program.hpp"
 
-#include "shader.hpp"
+#include "core/scope_exit.hpp"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -10,11 +10,57 @@
 #include <cstddef>
 #include <cstdint>
 #include <expected>
+#include <filesystem>
 #include <format>
+#include <fstream>
+#include <ios>
+#include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace {
+
+[[nodiscard]] std::expected<std::uint32_t, std::string> CompileShader(std::uint32_t type, std::string_view source) {
+  const std::uint32_t handle{glCreateShader(type)};
+  if (handle == 0) {
+    return std::unexpected{"Failed to create shader"};
+  }
+
+  const char *const data{source.data()};
+  const std::int32_t length{static_cast<std::int32_t>(source.size())};
+  glShaderSource(handle, 1, &data, &length);
+  glCompileShader(handle);
+
+  std::int32_t success{};
+  glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
+  if (success == 0) {
+    std::int32_t info_log_length{};
+    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
+    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    glGetShaderInfoLog(handle, info_log_length, nullptr, info_log.data());
+    if (info_log_length > 0) {
+      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+    }
+
+    glDeleteShader(handle);
+    return std::unexpected{std::format("Failed to compile shader:\n{}", info_log)};
+  }
+
+  return handle;
+}
+
+[[nodiscard]] std::expected<std::string, std::string> ReadFile(const std::filesystem::path &path) {
+  const std::ifstream file{path, std::ios::in | std::ios::binary};
+  if (!file) {
+    return std::unexpected{std::format("Failed to open shader file '{}'", path.string())};
+  }
+
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+
+  return buffer.str();
+}
 
 [[nodiscard]] std::int32_t GetUniformLocation(std::uint32_t handle, const char *name) {
   assert(handle != 0);
@@ -36,18 +82,29 @@ Program &Program::operator=(Program &&other) noexcept {
   return *this;
 }
 
-std::expected<Program, std::string> Program::Create(const Shader &vs, const Shader &fs) {
-  assert(vs.GetHandle() != 0);
-  assert(fs.GetHandle() != 0);
+std::expected<Program, std::string> Program::Create(std::string_view vs_source, std::string_view fs_source) {
+  const auto vs{CompileShader(GL_VERTEX_SHADER, vs_source)};
+  if (!vs.has_value()) {
+    return std::unexpected{vs.error()};
+  }
+  const ScopeExit vs_guard{[&vs] { glDeleteShader(*vs); }};
+
+  const auto fs{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
+  if (!fs.has_value()) {
+    return std::unexpected{fs.error()};
+  }
+  const ScopeExit fs_guard{[&fs] { glDeleteShader(*fs); }};
 
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
     return std::unexpected{"Failed to create program"};
   }
 
-  glAttachShader(handle, vs.GetHandle());
-  glAttachShader(handle, fs.GetHandle());
+  glAttachShader(handle, *vs);
+  glAttachShader(handle, *fs);
   glLinkProgram(handle);
+  glDetachShader(handle, *vs);
+  glDetachShader(handle, *fs);
 
   std::int32_t success{};
   glGetProgramiv(handle, GL_LINK_STATUS, &success);
@@ -65,6 +122,21 @@ std::expected<Program, std::string> Program::Create(const Shader &vs, const Shad
   }
 
   return Program{handle};
+}
+
+std::expected<Program, std::string> Program::CreateFromFiles(const std::filesystem::path &vs_path,
+                                                             const std::filesystem::path &fs_path) {
+  const auto vs_source{ReadFile(vs_path)};
+  if (!vs_source.has_value()) {
+    return std::unexpected{vs_source.error()};
+  }
+
+  const auto fs_source{ReadFile(fs_path)};
+  if (!fs_source.has_value()) {
+    return std::unexpected{fs_source.error()};
+  }
+
+  return Create(*vs_source, *fs_source);
 }
 
 void Program::Use() const {
