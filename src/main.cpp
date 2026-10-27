@@ -279,11 +279,6 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-    if (static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)) {
-      SDL_Delay(10);
-      continue;
-    }
-
     if (!io.WantCaptureKeyboard && SDL_GetWindowRelativeMouseMode(window)) {
       const bool *keyboard_state{SDL_GetKeyboardState(nullptr)};
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
