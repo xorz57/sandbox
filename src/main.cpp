@@ -125,6 +125,7 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
+#pragma region InitImGui
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   const auto imgui_context_guard{ScopeExit{[] { ImGui::DestroyContext(); }}};
@@ -153,6 +154,7 @@ int main() {
 
   ImGui_ImplOpenGL3_Init();
   const auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
+#pragma endregion InitImGui
 
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
@@ -164,6 +166,7 @@ int main() {
 
   const Mesh cube{MakeCube()};
 
+#pragma region CreateCubeBuffers
   std::uint32_t vbo{};
   glCreateBuffers(1, &vbo);
   const auto vbo_guard{ScopeExit{[vbo] { glDeleteBuffers(1, &vbo); }}};
@@ -195,6 +198,7 @@ int main() {
   glVertexArrayAttribBinding(vao, 0, 0);
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
+#pragma endregion CreateCubeBuffers
 
   const auto index_count{static_cast<std::int32_t>(cube.indices.size())};
 
@@ -223,6 +227,7 @@ int main() {
     last_frame_ticks = current_frame_ticks;
 
     SDL_Event event{};
+#pragma region ProcessEvents
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL3_ProcessEvent(&event);
       if (IsEventWantedByImGui(event, io)) {
@@ -266,6 +271,7 @@ int main() {
         break;
       }
     }
+#pragma endregion ProcessEvents
 
     if (static_cast<bool>(SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MINIMIZED)) {
       SDL_Delay(10);
