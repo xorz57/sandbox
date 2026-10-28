@@ -32,19 +32,6 @@ glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
   return glm::perspective(glm::radians(fov_), aspect_ratio, near_plane_, far_plane_);
 }
 
-void Camera::MoveForward(float distance) { position_ += front_ * distance; }
-
-void Camera::MoveRight(float distance) { position_ += right_ * distance; }
-
-void Camera::MoveUp(float distance) { position_ += kWorldUp * distance; }
-
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void Camera::Rotate(float yaw_delta, float pitch_delta) {
-  yaw_ += yaw_delta;
-  pitch_ = glm::clamp(pitch_ + pitch_delta, -kMaxPitch, kMaxPitch);
-  UpdateVectors();
-}
-
 void Camera::UpdateVectors() {
   const glm::vec3 front{
       glm::cos(glm::radians(yaw_)) * glm::cos(glm::radians(pitch_)),

@@ -20,13 +20,6 @@ public:
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
   [[nodiscard]] glm::mat4 ComputeProjectionMatrix(float aspect_ratio) const;
 
-  void MoveForward(float distance);
-  void MoveRight(float distance);
-  void MoveUp(float distance);
-
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void Rotate(float yaw_delta, float pitch_delta);
-
 private:
   void UpdateVectors();
 
