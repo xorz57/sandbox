@@ -1,5 +1,4 @@
 #include "camera.hpp"
-#include "camera_controller.hpp"
 #include "core/scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
@@ -9,11 +8,7 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
-#include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_keycode.h>
-#include <SDL3/SDL_mouse.h>
-#include <SDL3/SDL_scancode.h>
-#include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_video.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
@@ -254,19 +249,11 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Camera camera{{0.0F, 2.0F, 10.0F}, {}};
-
-  CameraController camera_controller{camera};
-
-  std::uint64_t last_frame_ticks{SDL_GetTicks()};
+  const Camera camera{{0.0F, 2.0F, 10.0F}, {}};
 
   bool done{false};
 
   while (!done) {
-    const std::uint64_t current_frame_ticks{SDL_GetTicks()};
-    const float delta_time{static_cast<float>(current_frame_ticks - last_frame_ticks) / 1'000.0F};
-    last_frame_ticks = current_frame_ticks;
-
     SDL_Event event{};
 #pragma region ProcessEvents
     while (SDL_PollEvent(&event)) {
@@ -284,24 +271,6 @@ int main() {
           done = true;
         }
         break;
-      case SDL_EVENT_WINDOW_FOCUS_LOST:
-        SDL_SetWindowRelativeMouseMode(window, false);
-        break;
-      case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (event.button.button == SDL_BUTTON_RIGHT) {
-          SDL_SetWindowRelativeMouseMode(window, true);
-        }
-        break;
-      case SDL_EVENT_MOUSE_BUTTON_UP:
-        if (event.button.button == SDL_BUTTON_RIGHT) {
-          SDL_SetWindowRelativeMouseMode(window, false);
-        }
-        break;
-      case SDL_EVENT_MOUSE_MOTION:
-        if (SDL_GetWindowRelativeMouseMode(window)) {
-          camera_controller.Look(event.motion.xrel, event.motion.yrel);
-        }
-        break;
       case SDL_EVENT_KEY_DOWN:
         if (!event.key.repeat && (event.key.key == SDLK_RETURN) && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
           const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
@@ -313,38 +282,6 @@ int main() {
       }
     }
 #pragma endregion ProcessEvents
-
-    if (!io.WantCaptureKeyboard && SDL_GetWindowRelativeMouseMode(window)) {
-      const bool *keyboard_state{SDL_GetKeyboardState(nullptr)};
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      const float speed_multiplier{keyboard_state[SDL_SCANCODE_LSHIFT] ? 2.5F : 1.0F};
-      CameraController::Direction direction{};
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_W]) {
-        direction.forward += 1.0F;
-      }
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_S]) {
-        direction.forward -= 1.0F;
-      }
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_A]) {
-        direction.right -= 1.0F;
-      }
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_D]) {
-        direction.right += 1.0F;
-      }
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_SPACE]) {
-        direction.up += 1.0F;
-      }
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        direction.up -= 1.0F;
-      }
-      camera_controller.Move(direction, delta_time, speed_multiplier);
-    }
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();

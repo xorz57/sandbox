@@ -21,7 +21,6 @@ target_include_directories(sandbox PUBLIC src)
 target_sources(
   sandbox
   PRIVATE src/main.cpp
-          src/camera_controller.cpp
           src/camera.cpp
           src/program.cpp
           src/stb_image_impl.cpp)
