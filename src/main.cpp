@@ -26,20 +26,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-#include <expected>
-#include <filesystem>
-#include <string>
-#include <string_view>
 #include <vector>
 
 namespace {
-
-[[nodiscard]] std::expected<Program, std::string> LoadProgram(std::string_view name) {
-  const std::filesystem::path directory{"assets/shaders"};
-  const std::string base{name};
-
-  return Program::CreateFromFiles(directory / (base + ".vert.glsl"), directory / (base + ".frag.glsl"));
-}
 
 [[nodiscard]] bool IsEventWantedByImGui(const SDL_Event &event, const ImGuiIO &io) {
   switch (event.type) {
@@ -253,13 +242,13 @@ int main() {
   glVertexArrayAttribBinding(vao, 2, 0);
 #pragma endregion CreateBuffers
 
-  auto lit_program{LoadProgram("lit")};
+  auto lit_program{Program::CreateFromFiles("assets/shaders/lit.vert.glsl", "assets/shaders/lit.frag.glsl")};
   if (!lit_program.has_value()) {
     spdlog::error("{}", lit_program.error());
     return EXIT_FAILURE;
   }
 
-  auto unlit_program{LoadProgram("unlit")};
+  auto unlit_program{Program::CreateFromFiles("assets/shaders/unlit.vert.glsl", "assets/shaders/unlit.frag.glsl")};
   if (!unlit_program.has_value()) {
     spdlog::error("{}", unlit_program.error());
     return EXIT_FAILURE;
