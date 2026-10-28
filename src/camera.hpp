@@ -9,24 +9,15 @@ public:
     float pitch{0.0F};
   };
 
-  struct Lens {
-    float fov{45.0F};
-    float near_plane{0.1F};
-    float far_plane{100.0F};
-  };
-
-  explicit Camera(glm::vec3 position, Lens lens);
+  explicit Camera(glm::vec3 position);
 
   void SetPosition(glm::vec3 position);
   void SetOrientation(Orientation orientation);
-  void SetLens(Lens lens);
 
   [[nodiscard]] glm::vec3 GetPosition() const;
   [[nodiscard]] Orientation GetOrientation() const;
-  [[nodiscard]] Lens GetLens() const;
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
-  [[nodiscard]] glm::mat4 ComputeProjectionMatrix(float aspect_ratio) const;
 
   void MoveForward(float distance);
   void MoveRight(float distance);
@@ -43,5 +34,4 @@ private:
   glm::vec3 right_{1.0F, 0.0F, 0.0F};
   float yaw_{-90.0F};
   float pitch_{0.0F};
-  Lens lens_;
 };

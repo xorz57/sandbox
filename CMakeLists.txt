@@ -22,6 +22,7 @@ target_sources(
   sandbox
   PRIVATE src/main.cpp
           src/camera.cpp
+          src/perspective.cpp
           src/program.cpp
           src/stb_image_impl.cpp)
 
