@@ -252,7 +252,7 @@ int main() {
 
   const Camera camera{{0.0F, 2.0F, 10.0F}};
 
-  const Perspective perspective{45.0F, 0.1F, 100.0F};
+  const Perspective perspective{.fov = 45.0F, .near_plane = 0.1F, .far_plane = 100.0F};
 
   bool done{false};
 
@@ -300,7 +300,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-    const glm::mat4 projection{perspective.ComputeProjectionMatrix(framebuffer_a)};
+    const glm::mat4 projection{ComputeProjectionMatrix(perspective, framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     glBindVertexArray(vao);
