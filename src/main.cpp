@@ -251,10 +251,6 @@ int main() {
 
   const Camera camera{{0.0F, 2.0F, 10.0F}};
 
-  constexpr float kFov{45.0F};
-  constexpr float kNearPlane{0.1F};
-  constexpr float kFarPlane{100.0F};
-
   bool done{false};
 
   while (!done) {
@@ -301,7 +297,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-    const glm::mat4 projection{glm::perspective(glm::radians(kFov), framebuffer_a, kNearPlane, kFarPlane)};
+    const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
 
     glBindVertexArray(vao);

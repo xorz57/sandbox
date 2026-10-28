@@ -28,6 +28,10 @@ glm::mat4 Camera::ComputeViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, glm::cross(right_, front_));
 }
 
+glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
+  return glm::perspective(glm::radians(fov_), aspect_ratio, near_plane_, far_plane_);
+}
+
 void Camera::MoveForward(float distance) { position_ += front_ * distance; }
 
 void Camera::MoveRight(float distance) { position_ += right_ * distance; }

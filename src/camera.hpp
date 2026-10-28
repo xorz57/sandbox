@@ -18,6 +18,7 @@ public:
   [[nodiscard]] Orientation GetOrientation() const;
 
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
+  [[nodiscard]] glm::mat4 ComputeProjectionMatrix(float aspect_ratio) const;
 
   void MoveForward(float distance);
   void MoveRight(float distance);
@@ -34,4 +35,7 @@ private:
   glm::vec3 right_{1.0F, 0.0F, 0.0F};
   float yaw_{-90.0F};
   float pitch_{0.0F};
+  float fov_{45.0F};
+  float near_plane_{0.1F};
+  float far_plane_{100.0F};
 };
