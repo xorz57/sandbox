@@ -1,5 +1,5 @@
 #include "camera.hpp"
-#include "core/scope_exit.hpp"
+#include "scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
 #include "program.hpp"

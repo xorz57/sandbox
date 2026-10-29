@@ -1,6 +1,6 @@
 #include "program.hpp"
 
-#include "core/scope_exit.hpp"
+#include "scope_exit.hpp"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>
