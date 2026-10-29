@@ -249,7 +249,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  const Camera camera{{0.0F, 2.0F, 10.0F}};
+  const Camera camera{{0.0F, 2.0F, 10.0F}, {}};
 
   bool done{false};
 
