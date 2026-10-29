@@ -22,16 +22,12 @@ target_sources(
   sandbox
   PRIVATE src/main.cpp
           src/camera.cpp
-          src/program.cpp
-          src/stb_image_impl.cpp)
+          src/program.cpp)
 
-# target_link_libraries(sandbox PRIVATE assimp::assimp)
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)
 target_link_libraries(sandbox PRIVATE SDL3::SDL3)
-# target_link_libraries(sandbox PRIVATE simdjson::simdjson)
 target_link_libraries(sandbox PRIVATE spdlog::spdlog)
 target_link_libraries(sandbox PRIVATE imgui::imgui)
-target_link_libraries(sandbox PRIVATE stb::stb)
 
 target_copy_assets(sandbox "${CMAKE_CURRENT_SOURCE_DIR}/assets")
