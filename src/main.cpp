@@ -10,40 +10,15 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_video.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_sdl3.h>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <imgui.h>
 #include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
-
-namespace {
-
-[[nodiscard]] bool IsEventWantedByImGui(const SDL_Event &event, const ImGuiIO &io) {
-  switch (event.type) {
-  case SDL_EVENT_MOUSE_MOTION:
-  case SDL_EVENT_MOUSE_BUTTON_DOWN:
-  case SDL_EVENT_MOUSE_BUTTON_UP:
-  case SDL_EVENT_MOUSE_WHEEL:
-    return io.WantCaptureMouse;
-  case SDL_EVENT_KEY_DOWN:
-  case SDL_EVENT_KEY_UP:
-  case SDL_EVENT_TEXT_EDITING:
-  case SDL_EVENT_TEXT_INPUT:
-  case SDL_EVENT_TEXT_EDITING_CANDIDATES:
-    return io.WantCaptureKeyboard;
-  default:
-    return false;
-  }
-}
-
-} // namespace
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
@@ -113,37 +88,6 @@ int main() {
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
-
-#pragma region InitImGui
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  const auto imgui_context_guard{ScopeExit{[] { ImGui::DestroyContext(); }}};
-
-  ImGuiIO &io{ImGui::GetIO()};
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-  ImGui::StyleColorsDark();
-
-  ImGuiStyle &style{ImGui::GetStyle()};
-  style.ScaleAllSizes(main_scale);
-  style.FontScaleDpi = main_scale;
-  io.ConfigDpiScaleFonts = true;
-  io.ConfigDpiScaleViewports = true;
-
-  if (static_cast<bool>(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
-    style.WindowRounding = 0.0F;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0F;
-  }
-
-  ImGui_ImplSDL3_InitForOpenGL(window, context);
-  const auto imgui_sdl3_guard{ScopeExit{[] { ImGui_ImplSDL3_Shutdown(); }}};
-
-  ImGui_ImplOpenGL3_Init();
-  const auto imgui_opengl3_guard{ScopeExit{[] { ImGui_ImplOpenGL3_Shutdown(); }}};
-#pragma endregion InitImGui
 
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
@@ -257,11 +201,6 @@ int main() {
     SDL_Event event{};
 #pragma region ProcessEvents
     while (SDL_PollEvent(&event)) {
-      ImGui_ImplSDL3_ProcessEvent(&event);
-      if (IsEventWantedByImGui(event, io)) {
-        continue;
-      }
-
       switch (event.type) {
       case SDL_EVENT_QUIT:
         done = true;
@@ -282,12 +221,6 @@ int main() {
       }
     }
 #pragma endregion ProcessEvents
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL3_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::Render();
 
     std::int32_t framebuffer_w{};
     std::int32_t framebuffer_h{};
@@ -352,14 +285,6 @@ int main() {
     lit_program->SetUniform("u_material.shininess", material3.shininess);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawBox3
-
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    if (static_cast<bool>(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
-      ImGui::UpdatePlatformWindows();
-      ImGui::RenderPlatformWindowsDefault();
-      SDL_GL_MakeCurrent(window, context);
-    }
 
     SDL_GL_SwapWindow(window);
   }
