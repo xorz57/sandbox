@@ -222,12 +222,17 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
+    #pragma region UpdateViewport
     std::int32_t framebuffer_w{};
     std::int32_t framebuffer_h{};
     SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
+    #pragma endregion UpdateViewport
+
+    #pragma region ClearFramebuffer
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    #pragma endregion ClearFramebuffer
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
