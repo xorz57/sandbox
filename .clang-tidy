@@ -8,10 +8,11 @@ Checks:
   - modernize-*
   - cppcoreguidelines-*
   - misc-include-cleaner
-  - -modernize-use-trailing-return-type
-  - -cppcoreguidelines-avoid-magic-numbers
+  - -bugprone-easily-swappable-parameters
   - -readability-identifier-length
   - -readability-magic-numbers
+  - -modernize-use-trailing-return-type
+  - -cppcoreguidelines-avoid-magic-numbers
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 ExcludeHeaderFilterRegex: ''

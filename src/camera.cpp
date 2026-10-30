@@ -5,13 +5,12 @@
 
 namespace {
 
-constexpr glm::vec3 world_right{1.0F, 0.0F, 0.0F};
-constexpr glm::vec3 world_up{0.0F, 1.0F, 0.0F};
-constexpr glm::vec3 world_forward{0.0F, 0.0F, -1.0F};
+constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
+constexpr glm::vec3 kWorldRight{1.0F, 0.0F, 0.0F};
+constexpr glm::vec3 kWorldForward{0.0F, 0.0F, -1.0F};
 
 } // namespace
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Camera::Camera(glm::vec3 position, glm::vec3 orientation) : position_{position}, orientation_{orientation} {}
 
 void Camera::SetPosition(glm::vec3 position) { position_ = position; }
@@ -25,12 +24,12 @@ glm::vec3 Camera::GetOrientation() const { return orientation_; }
 glm::mat4 Camera::ComputeViewMatrix() const {
   glm::mat4 rotation{1.0F};
   // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
-  rotation = glm::rotate(rotation, orientation_.x, world_up);
-  rotation = glm::rotate(rotation, orientation_.y, world_right);
-  rotation = glm::rotate(rotation, orientation_.z, -world_forward);
+  rotation = glm::rotate(rotation, orientation_.x, kWorldUp);
+  rotation = glm::rotate(rotation, orientation_.y, kWorldRight);
+  rotation = glm::rotate(rotation, orientation_.z, -kWorldForward);
   // NOLINTEND(cppcoreguidelines-pro-type-union-access)
-  const glm::vec3 front{rotation * glm::vec4{world_forward, 0.0F}};
-  const glm::vec3 up{rotation * glm::vec4{world_up, 0.0F}};
+  const glm::vec3 front{rotation * glm::vec4{kWorldForward, 0.0F}};
+  const glm::vec3 up{rotation * glm::vec4{kWorldUp, 0.0F}};
   return glm::lookAt(position_, position_ + front, up);
 }
 
