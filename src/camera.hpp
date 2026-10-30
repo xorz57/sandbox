@@ -16,12 +16,8 @@ public:
   [[nodiscard]] glm::mat4 ComputeProjectionMatrix(float aspect_ratio) const;
 
 private:
-  void UpdateVectors();
-
   glm::vec3 position_;
   glm::vec3 orientation_;
-  glm::vec3 front_{0.0F, 0.0F, -1.0F};
-  glm::vec3 up_{0.0F, 1.0F, 0.0F};
   float fov_{45.0F};
   float near_plane_{0.1F};
   float far_plane_{100.0F};
