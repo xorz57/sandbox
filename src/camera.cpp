@@ -5,9 +5,9 @@
 
 namespace {
 
-constexpr glm::vec3 kWorldRight{1.0F, 0.0F, 0.0F};
-constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
-constexpr glm::vec3 kWorldForward{0.0F, 0.0F, -1.0F};
+constexpr glm::vec3 world_right{1.0F, 0.0F, 0.0F};
+constexpr glm::vec3 world_up{0.0F, 1.0F, 0.0F};
+constexpr glm::vec3 world_forward{0.0F, 0.0F, -1.0F};
 
 } // namespace
 
@@ -36,10 +36,10 @@ glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
 void Camera::UpdateVectors() {
   glm::mat4 rotation{1.0F};
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
-  rotation = glm::rotate(rotation, orientation_[0], kWorldUp);
-  rotation = glm::rotate(rotation, orientation_[1], kWorldRight);
-  rotation = glm::rotate(rotation, orientation_[2], -kWorldForward);
+  rotation = glm::rotate(rotation, orientation_[0], world_up);
+  rotation = glm::rotate(rotation, orientation_[1], world_right);
+  rotation = glm::rotate(rotation, orientation_[2], -world_forward);
   // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
-  front_ = glm::vec3{rotation * glm::vec4{kWorldForward, 0.0F}};
-  up_ = glm::vec3{rotation * glm::vec4{kWorldUp, 0.0F}};
+  front_ = glm::vec3{rotation * glm::vec4{world_forward, 0.0F}};
+  up_ = glm::vec3{rotation * glm::vec4{world_up, 0.0F}};
 }
