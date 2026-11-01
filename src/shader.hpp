@@ -8,18 +8,18 @@
 #include <string>
 #include <string_view>
 
-class Program final {
+class Shader final {
 public:
-  ~Program();
+  ~Shader();
 
-  Program(const Program &) = delete;
-  Program(Program &&other) noexcept;
+  Shader(const Shader &) = delete;
+  Shader(Shader &&other) noexcept;
 
-  Program &operator=(const Program &) = delete;
-  Program &operator=(Program &&other) noexcept;
+  Shader &operator=(const Shader &) = delete;
+  Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Program, std::string> Create(std::string_view vs_source, std::string_view fs_source);
-  [[nodiscard]] static std::expected<Program, std::string> CreateFromFiles(const std::filesystem::path &vs_path,
+  [[nodiscard]] static std::expected<Shader, std::string> Create(std::string_view vs_source, std::string_view fs_source);
+  [[nodiscard]] static std::expected<Shader, std::string> CreateFromFiles(const std::filesystem::path &vs_path,
                                                                            const std::filesystem::path &fs_path);
 
   void Use() const;
@@ -45,7 +45,7 @@ public:
   void SetUniform(const char *name, const glm::mat4 &value) const;
 
 private:
-  explicit Program(std::uint32_t handle);
+  explicit Shader(std::uint32_t handle);
 
   void Reset() noexcept;
 
