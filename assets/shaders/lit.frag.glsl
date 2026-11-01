@@ -28,9 +28,9 @@ void main() {
   const vec3 view_direction = normalize(u_view_position - v_position);
   const vec3 halfway_direction = normalize(light_direction + view_direction);
 
-  const vec3 radiance = u_light.color * u_light.intensity;
   const float diffuse_factor = max(dot(normal, light_direction), 0.0F);
   const float specular_factor = pow(max(dot(normal, halfway_direction), 0.0F), u_material.shininess);
+  const vec3 radiance = u_light.color * u_light.intensity;
 
   const vec3 ambient = u_ambient_light * u_material.diffuse;
   const vec3 diffuse = diffuse_factor * radiance * u_material.diffuse;

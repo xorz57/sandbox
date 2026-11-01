@@ -1,13 +1,13 @@
 #version 460 core
 
-layout (location = 0) in vec3 a_position; // local space
-layout (location = 1) in vec3 a_normal;   // local space, unused
-layout (location = 2) in vec2 a_uv;       // local space, unused
+layout (location = 0) in vec3 a_position;
+layout (location = 1) in vec3 a_normal;
+layout (location = 2) in vec2 a_uv;
 
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_projection;
 
 void main() {
-  gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0F); // clip space
+  gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0F);
 }
