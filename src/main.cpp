@@ -1,7 +1,7 @@
 #include "camera.hpp"
-#include "scope_exit.hpp"
 #include "light.hpp"
 #include "material.hpp"
+#include "scope_exit.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
 
@@ -93,11 +93,27 @@ int main() {
 
   const Light light{.position = {2.0F, 4.0F, 3.0F}, .color = {1.0F, 1.0F, 1.0F}, .intensity = 1.0F};
 
+#pragma region Materials
   const Material material1{.diffuse = {1.0F, 0.0F, 0.0F}, .specular = {1.0F, 0.5F, 0.5F}, .shininess = 64.0F};
   const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
   const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
+#pragma endregion Materials
 
-  #pragma region Vertices
+#pragma region Models
+  glm::mat4 light_model{glm::mat4{1.0F}};
+  light_model = glm::translate(light_model, light.position);
+
+  glm::mat4 model1{glm::mat4{1.0F}};
+  model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
+
+  glm::mat4 model2{glm::mat4{1.0F}};
+  model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
+
+  glm::mat4 model3{glm::mat4{1.0F}};
+  model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
+#pragma endregion Models
+
+#pragma region Vertices
   // clang-format off
   const std::vector<Vertex> vertices{
     // +z Front
@@ -131,10 +147,10 @@ int main() {
     {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
     {.position = {-0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
   };
-  // clang-format on
-  #pragma endregion Vertices
+// clang-format on
+#pragma endregion Vertices
 
-  #pragma region Indices
+#pragma region Indices
   // clang-format off
   const std::vector<std::uint32_t> indices {
      0,  1,  2,  2,  3,  0,  // +z Front
@@ -144,8 +160,8 @@ int main() {
     16, 17, 18, 18, 19, 16,  // +y Top
     20, 21, 22, 22, 23, 20,  // -y Bottom
   };
-  // clang-format on
-  #pragma endregion Indices
+// clang-format on
+#pragma endregion Indices
 
   const auto index_count{static_cast<std::int32_t>(indices.size())};
 
@@ -222,17 +238,17 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-    #pragma region UpdateViewport
+#pragma region UpdateViewport
     std::int32_t framebuffer_w{};
     std::int32_t framebuffer_h{};
     SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
-    #pragma endregion UpdateViewport
+#pragma endregion UpdateViewport
 
-    #pragma region ClearFramebuffer
+#pragma region ClearFramebuffer
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    #pragma endregion ClearFramebuffer
+#pragma endregion ClearFramebuffer
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
@@ -245,8 +261,6 @@ int main() {
     unlit_shader->SetUniform("u_view", view);
 
 #pragma region DrawLight
-    glm::mat4 light_model{glm::mat4{1.0F}};
-    light_model = glm::translate(light_model, light.position);
     unlit_shader->SetUniform("u_model", light_model);
     unlit_shader->SetUniform("u_color", light.color);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
@@ -262,8 +276,6 @@ int main() {
     lit_shader->SetUniform("u_view_position", camera.GetPosition());
 
 #pragma region DrawBox1
-    glm::mat4 model1{glm::mat4{1.0F}};
-    model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
     lit_shader->SetUniform("u_model", model1);
     lit_shader->SetUniform("u_material.diffuse", material1.diffuse);
     lit_shader->SetUniform("u_material.specular", material1.specular);
@@ -272,8 +284,6 @@ int main() {
 #pragma endregion DrawBox1
 
 #pragma region DrawBox2
-    glm::mat4 model2{glm::mat4{1.0F}};
-    model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
     lit_shader->SetUniform("u_model", model2);
     lit_shader->SetUniform("u_material.diffuse", material2.diffuse);
     lit_shader->SetUniform("u_material.specular", material2.specular);
@@ -282,8 +292,6 @@ int main() {
 #pragma endregion DrawBox2
 
 #pragma region DrawBox3
-    glm::mat4 model3{glm::mat4{1.0F}};
-    model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
     lit_shader->SetUniform("u_model", model3);
     lit_shader->SetUniform("u_material.diffuse", material3.diffuse);
     lit_shader->SetUniform("u_material.specular", material3.specular);
