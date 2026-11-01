@@ -137,9 +137,9 @@ int main() {
   #pragma region Indices
   // clang-format off
   const std::vector<std::uint32_t> indices {
-      0,  1,  2,  2,  3,  0,  // +z Front
-      4,  5,  6,  6,  7,  4,  // -z Back
-      8,  9, 10, 10, 11,  8,  // -x Left
+     0,  1,  2,  2,  3,  0,  // +z Front
+     4,  5,  6,  6,  7,  4,  // -z Back
+     8,  9, 10, 10, 11,  8,  // -x Left
     12, 13, 14, 14, 15, 12,  // +x Right
     16, 17, 18, 18, 19, 16,  // +y Top
     20, 21, 22, 22, 23, 20,  // -y Bottom
@@ -195,19 +195,19 @@ int main() {
 
   const Camera camera{{0.0F, 2.0F, 10.0F}, {}};
 
-  bool done{false};
+  bool running{true};
 
-  while (!done) {
+  while (running) {
     SDL_Event event{};
 #pragma region ProcessEvents
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_EVENT_QUIT:
-        done = true;
+        running = false;
         break;
       case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
         if (event.window.windowID == SDL_GetWindowID(window)) {
-          done = true;
+          running = false;
         }
         break;
       case SDL_EVENT_KEY_DOWN:
