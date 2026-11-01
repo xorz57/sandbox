@@ -119,7 +119,7 @@ std::expected<Shader, std::string> Shader::Create(std::string_view vs_source, st
 }
 
 std::expected<Shader, std::string> Shader::CreateFromFiles(const std::filesystem::path &vs_path,
-                                                             const std::filesystem::path &fs_path) {
+                                                           const std::filesystem::path &fs_path) {
   const auto vs_source{ReadFile(vs_path)};
   if (!vs_source.has_value()) {
     return std::unexpected{vs_source.error()};

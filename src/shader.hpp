@@ -18,9 +18,10 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::expected<Shader, std::string> Create(std::string_view vs_source, std::string_view fs_source);
+  [[nodiscard]] static std::expected<Shader, std::string> Create(std::string_view vs_source,
+                                                                 std::string_view fs_source);
   [[nodiscard]] static std::expected<Shader, std::string> CreateFromFiles(const std::filesystem::path &vs_path,
-                                                                           const std::filesystem::path &fs_path);
+                                                                          const std::filesystem::path &fs_path);
 
   void Use() const;
 
