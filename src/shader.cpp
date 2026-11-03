@@ -142,19 +142,19 @@ void Shader::Use() const {
   glUseProgram(handle_);
 }
 
-void Shader::SetUniform(const char *name, float v0) const {
+void Shader::SetUniform(const char *name, float value) const {
   assert(handle_ != 0);
-  glProgramUniform1f(handle_, glGetUniformLocation(handle_, name), v0);
+  glProgramUniform1f(handle_, glGetUniformLocation(handle_, name), value);
 }
 
-void Shader::SetUniform(const char *name, std::int32_t v0) const {
+void Shader::SetUniform(const char *name, std::int32_t value) const {
   assert(handle_ != 0);
-  glProgramUniform1i(handle_, glGetUniformLocation(handle_, name), v0);
+  glProgramUniform1i(handle_, glGetUniformLocation(handle_, name), value);
 }
 
-void Shader::SetUniform(const char *name, std::uint32_t v0) const {
+void Shader::SetUniform(const char *name, std::uint32_t value) const {
   assert(handle_ != 0);
-  glProgramUniform1ui(handle_, glGetUniformLocation(handle_, name), v0);
+  glProgramUniform1ui(handle_, glGetUniformLocation(handle_, name), value);
 }
 
 void Shader::SetUniform(const char *name, const glm::vec2 &value) const {
