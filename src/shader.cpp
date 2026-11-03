@@ -133,6 +133,10 @@ std::expected<Shader, std::string> Shader::CreateFromFiles(const std::filesystem
   return Create(*vs_source, *fs_source);
 }
 
+std::expected<Shader, std::string> Shader::CreateFromFile(const std::filesystem::path &path) {
+  return CreateFromFiles(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
+}
+
 void Shader::Use() const {
   assert(handle_ != 0);
   glUseProgram(handle_);

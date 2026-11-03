@@ -197,13 +197,13 @@ int main() {
   glVertexArrayAttribBinding(vao, 2, 0);
 #pragma endregion CreateBuffers
 
-  auto lit_shader{Shader::CreateFromFiles("assets/shaders/lit.vert.glsl", "assets/shaders/lit.frag.glsl")};
+  auto lit_shader{Shader::CreateFromFile("assets/shaders/lit")};
   if (!lit_shader.has_value()) {
     spdlog::error("{}", lit_shader.error());
     return EXIT_FAILURE;
   }
 
-  auto unlit_shader{Shader::CreateFromFiles("assets/shaders/unlit.vert.glsl", "assets/shaders/unlit.frag.glsl")};
+  auto unlit_shader{Shader::CreateFromFile("assets/shaders/unlit")};
   if (!unlit_shader.has_value()) {
     spdlog::error("{}", unlit_shader.error());
     return EXIT_FAILURE;

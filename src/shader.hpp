@@ -22,6 +22,7 @@ public:
                                                                  std::string_view fs_source);
   [[nodiscard]] static std::expected<Shader, std::string> CreateFromFiles(const std::filesystem::path &vs_path,
                                                                           const std::filesystem::path &fs_path);
+  [[nodiscard]] static std::expected<Shader, std::string> CreateFromFile(const std::filesystem::path &path);
 
   void Use() const;
 
