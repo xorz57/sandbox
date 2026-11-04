@@ -5,6 +5,7 @@ layout (location = 1) in vec3 a_normal;
 layout (location = 2) in vec2 a_uv;
 
 uniform mat4 u_model;
+uniform mat3 u_normal_matrix;
 uniform mat4 u_view;
 uniform mat4 u_projection;
 
@@ -14,6 +15,6 @@ out vec3 v_normal;
 void main() {
   const vec4 world_position = u_model * vec4(a_position, 1.0F);
   v_position = world_position.xyz;
-  v_normal = transpose(inverse(mat3(u_model))) * a_normal;
+  v_normal = u_normal_matrix * a_normal;
   gl_Position = u_projection * u_view * world_position;
 }

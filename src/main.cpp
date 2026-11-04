@@ -113,6 +113,10 @@ int main() {
   model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
 #pragma endregion Models
 
+  const glm::mat3 normal_matrix1{glm::transpose(glm::inverse(glm::mat3{model1}))};
+  const glm::mat3 normal_matrix2{glm::transpose(glm::inverse(glm::mat3{model2}))};
+  const glm::mat3 normal_matrix3{glm::transpose(glm::inverse(glm::mat3{model3}))};
+
 #pragma region Vertices
   // clang-format off
   const std::vector<Vertex> vertices{
@@ -277,6 +281,7 @@ int main() {
 
 #pragma region DrawBox1
     lit_shader->SetUniform("u_model", model1);
+    lit_shader->SetUniform("u_normal_matrix", normal_matrix1);
     lit_shader->SetUniform("u_material.diffuse", material1.diffuse);
     lit_shader->SetUniform("u_material.specular", material1.specular);
     lit_shader->SetUniform("u_material.shininess", material1.shininess);
@@ -285,6 +290,7 @@ int main() {
 
 #pragma region DrawBox2
     lit_shader->SetUniform("u_model", model2);
+    lit_shader->SetUniform("u_normal_matrix", normal_matrix2);
     lit_shader->SetUniform("u_material.diffuse", material2.diffuse);
     lit_shader->SetUniform("u_material.specular", material2.specular);
     lit_shader->SetUniform("u_material.shininess", material2.shininess);
@@ -293,6 +299,7 @@ int main() {
 
 #pragma region DrawBox3
     lit_shader->SetUniform("u_model", model3);
+    lit_shader->SetUniform("u_normal_matrix", normal_matrix3);
     lit_shader->SetUniform("u_material.diffuse", material3.diffuse);
     lit_shader->SetUniform("u_material.specular", material3.specular);
     lit_shader->SetUniform("u_material.shininess", material3.shininess);
