@@ -44,11 +44,7 @@ int main() {
   const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
   const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
   const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};
-  // clang-format off
-  const SDL_WindowFlags flags{
-    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY
-  };
-  // clang-format on
+  const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
     spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
@@ -224,11 +220,6 @@ int main() {
       switch (event.type) {
       case SDL_EVENT_QUIT:
         running = false;
-        break;
-      case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-        if (event.window.windowID == SDL_GetWindowID(window)) {
-          running = false;
-        }
         break;
       case SDL_EVENT_KEY_DOWN:
         if (!event.key.repeat && (event.key.key == SDLK_RETURN) && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
