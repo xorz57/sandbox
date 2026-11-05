@@ -268,7 +268,7 @@ int main() {
     lit_shader->SetUniform("u_light.position", light.position);
     lit_shader->SetUniform("u_light.color", light.color);
     lit_shader->SetUniform("u_light.intensity", light.intensity);
-    lit_shader->SetUniform("u_view_position", camera.GetPosition());
+    lit_shader->SetUniform("u_camera_position", camera.GetPosition());
 
 #pragma region DrawBox1
     lit_shader->SetUniform("u_model", model1);

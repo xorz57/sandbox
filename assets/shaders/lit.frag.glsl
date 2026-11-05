@@ -15,7 +15,7 @@ struct Material {
 uniform vec3 u_ambient_light;
 uniform Light u_light;
 uniform Material u_material;
-uniform vec3 u_view_position;
+uniform vec3 u_camera_position;
 
 in vec3 v_world_position;
 in vec3 v_world_normal;
@@ -25,7 +25,7 @@ out vec4 f_color;
 void main() {
   const vec3 world_normal = normalize(v_world_normal);
   const vec3 light_direction = normalize(u_light.position - v_world_position);
-  const vec3 view_direction = normalize(u_view_position - v_world_position);
+  const vec3 view_direction = normalize(u_camera_position - v_world_position);
   const vec3 halfway_direction = normalize(light_direction + view_direction);
 
   const float diffuse_factor = max(dot(world_normal, light_direction), 0.0F);
