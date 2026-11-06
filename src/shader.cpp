@@ -5,7 +5,6 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <spdlog/spdlog.h>
 
 #include <cassert>
