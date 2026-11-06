@@ -26,6 +26,7 @@ namespace {
   if (handle == 0) {
     return std::unexpected{"Failed to create shader"};
   }
+  ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
 
   const char *const data{source.data()};
   const std::int32_t length{static_cast<std::int32_t>(source.size())};
@@ -43,10 +44,10 @@ namespace {
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
 
-    glDeleteShader(handle);
     return std::unexpected{std::format("Failed to compile shader:\n{}", info_log)};
   }
 
+  shader_guard.Release();
   return handle;
 }
 
@@ -93,6 +94,7 @@ std::expected<Shader, std::string> Shader::Create(std::string_view vs_source, st
   if (handle == 0) {
     return std::unexpected{"Failed to create program"};
   }
+  ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
 
   glAttachShader(handle, *vs);
   glAttachShader(handle, *fs);
@@ -111,10 +113,10 @@ std::expected<Shader, std::string> Shader::Create(std::string_view vs_source, st
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
 
-    glDeleteProgram(handle);
     return std::unexpected{std::format("Failed to link program:\n{}", info_log)};
   }
 
+  program_guard.Release();
   return Shader{handle};
 }
 
