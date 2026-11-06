@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
-#include <string_view>
 
 class Shader final {
 public:
@@ -17,7 +16,7 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Shader> Create(std::string_view vs_source, std::string_view fs_source);
+  [[nodiscard]] static std::optional<Shader> Create(const char *vs_source, const char *fs_source);
   [[nodiscard]] static std::optional<Shader> CreateFromFiles(const std::filesystem::path &vs_path,
                                                              const std::filesystem::path &fs_path);
   [[nodiscard]] static std::optional<Shader> CreateFromFile(const std::filesystem::path &path);

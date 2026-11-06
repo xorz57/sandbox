@@ -16,12 +16,11 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <utility>
 
 namespace {
 
-[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, std::string_view source) {
+[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
   const std::uint32_t handle{glCreateShader(type)};
   if (handle == 0) {
     spdlog::error("glCreateShader failed");
@@ -29,9 +28,7 @@ namespace {
   }
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
 
-  const char *const data{source.data()};
-  const std::int32_t length{static_cast<std::int32_t>(source.size())};
-  glShaderSource(handle, 1, &data, &length);
+  glShaderSource(handle, 1, &source, nullptr);
   glCompileShader(handle);
 
   std::int32_t success{};
@@ -111,7 +108,7 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::optional<Shader> Shader::Create(std::string_view vs_source, std::string_view fs_source) {
+std::optional<Shader> Shader::Create(const char *vs_source, const char *fs_source) {
   const auto vs{CompileShader(GL_VERTEX_SHADER, vs_source)};
   if (!vs.has_value()) {
     return std::nullopt;
@@ -144,7 +141,7 @@ std::optional<Shader> Shader::CreateFromFiles(const std::filesystem::path &vs_pa
     return std::nullopt;
   }
 
-  return Create(*vs_source, *fs_source);
+  return Create(vs_source->c_str(), fs_source->c_str());
 }
 
 std::optional<Shader> Shader::CreateFromFile(const std::filesystem::path &path) {
