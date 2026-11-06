@@ -6,14 +6,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <expected>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <ios>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -21,10 +22,11 @@
 
 namespace {
 
-[[nodiscard]] std::expected<std::uint32_t, std::string> CompileShader(std::uint32_t type, std::string_view source) {
+[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, std::string_view source) {
   const std::uint32_t handle{glCreateShader(type)};
   if (handle == 0) {
-    return std::unexpected{"Failed to create shader"};
+    spdlog::error("glCreateShader failed");
+    return std::nullopt;
   }
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
 
@@ -43,18 +45,19 @@ namespace {
     if (info_log_length > 0) {
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
-
-    return std::unexpected{std::format("Failed to compile shader:\n{}", info_log)};
+    spdlog::error("Failed to compile shader:\n{}", info_log);
+    return std::nullopt;
   }
 
   shader_guard.Release();
   return handle;
 }
 
-[[nodiscard]] std::expected<std::string, std::string> ReadFile(const std::filesystem::path &path) {
+[[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
-    return std::unexpected{std::format("Failed to open shader file '{}'", path.string())};
+    spdlog::error("Failed to open shader file {}", path.string());
+    return std::nullopt;
   }
 
   std::stringstream buffer;
@@ -77,22 +80,23 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::expected<Shader, std::string> Shader::Create(std::string_view vs_source, std::string_view fs_source) {
+std::optional<Shader> Shader::Create(std::string_view vs_source, std::string_view fs_source) {
   const auto vs{CompileShader(GL_VERTEX_SHADER, vs_source)};
   if (!vs.has_value()) {
-    return std::unexpected{vs.error()};
+    return std::nullopt;
   }
   const ScopeExit vs_guard{[&vs] { glDeleteShader(*vs); }};
 
   const auto fs{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
   if (!fs.has_value()) {
-    return std::unexpected{fs.error()};
+    return std::nullopt;
   }
   const ScopeExit fs_guard{[&fs] { glDeleteShader(*fs); }};
 
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
-    return std::unexpected{"Failed to create program"};
+    spdlog::error("glCreateProgram failed");
+    return std::nullopt;
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
 
@@ -112,30 +116,30 @@ std::expected<Shader, std::string> Shader::Create(std::string_view vs_source, st
     if (info_log_length > 0) {
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
-
-    return std::unexpected{std::format("Failed to link program:\n{}", info_log)};
+    spdlog::error("Failed to link program:\n{}", info_log);
+    return std::nullopt;
   }
 
   program_guard.Release();
   return Shader{handle};
 }
 
-std::expected<Shader, std::string> Shader::CreateFromFiles(const std::filesystem::path &vs_path,
-                                                           const std::filesystem::path &fs_path) {
+std::optional<Shader> Shader::CreateFromFiles(const std::filesystem::path &vs_path,
+                                              const std::filesystem::path &fs_path) {
   const auto vs_source{ReadFile(vs_path)};
   if (!vs_source.has_value()) {
-    return std::unexpected{vs_source.error()};
+    return std::nullopt;
   }
 
   const auto fs_source{ReadFile(fs_path)};
   if (!fs_source.has_value()) {
-    return std::unexpected{fs_source.error()};
+    return std::nullopt;
   }
 
   return Create(*vs_source, *fs_source);
 }
 
-std::expected<Shader, std::string> Shader::CreateFromFile(const std::filesystem::path &path) {
+std::optional<Shader> Shader::CreateFromFile(const std::filesystem::path &path) {
   return CreateFromFiles(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
 

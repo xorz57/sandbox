@@ -199,13 +199,11 @@ int main() {
 
   auto lit_shader{Shader::CreateFromFile("assets/shaders/lit")};
   if (!lit_shader.has_value()) {
-    spdlog::error("{}", lit_shader.error());
     return EXIT_FAILURE;
   }
 
   auto unlit_shader{Shader::CreateFromFile("assets/shaders/unlit")};
   if (!unlit_shader.has_value()) {
-    spdlog::error("{}", unlit_shader.error());
     return EXIT_FAILURE;
   }
 
