@@ -53,6 +53,38 @@ namespace {
   return handle;
 }
 
+[[nodiscard]] std::optional<std::uint32_t> LinkShader(std::uint32_t vs, std::uint32_t fs) {
+  const std::uint32_t handle{glCreateProgram()};
+  if (handle == 0) {
+    spdlog::error("glCreateProgram failed");
+    return std::nullopt;
+  }
+  ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
+
+  glAttachShader(handle, vs);
+  glAttachShader(handle, fs);
+  glLinkProgram(handle);
+  glDetachShader(handle, vs);
+  glDetachShader(handle, fs);
+
+  std::int32_t success{};
+  glGetProgramiv(handle, GL_LINK_STATUS, &success);
+  if (success == 0) {
+    std::int32_t info_log_length{};
+    glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
+    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    glGetProgramInfoLog(handle, info_log_length, nullptr, info_log.data());
+    if (info_log_length > 0) {
+      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+    }
+    spdlog::error("Failed to link program:\n{}", info_log);
+    return std::nullopt;
+  }
+
+  program_guard.Release();
+  return handle;
+}
+
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
@@ -93,35 +125,12 @@ std::optional<Shader> Shader::Create(std::string_view vs_source, std::string_vie
   }
   const ScopeExit fs_guard{[&fs] { glDeleteShader(*fs); }};
 
-  const std::uint32_t handle{glCreateProgram()};
-  if (handle == 0) {
-    spdlog::error("glCreateProgram failed");
-    return std::nullopt;
-  }
-  ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
-
-  glAttachShader(handle, *vs);
-  glAttachShader(handle, *fs);
-  glLinkProgram(handle);
-  glDetachShader(handle, *vs);
-  glDetachShader(handle, *fs);
-
-  std::int32_t success{};
-  glGetProgramiv(handle, GL_LINK_STATUS, &success);
-  if (success == 0) {
-    std::int32_t info_log_length{};
-    glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
-    glGetProgramInfoLog(handle, info_log_length, nullptr, info_log.data());
-    if (info_log_length > 0) {
-      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
-    }
-    spdlog::error("Failed to link program:\n{}", info_log);
+  const auto handle{LinkShader(*vs, *fs)};
+  if (!handle.has_value()) {
     return std::nullopt;
   }
 
-  program_guard.Release();
-  return Shader{handle};
+  return Shader{*handle};
 }
 
 std::optional<Shader> Shader::CreateFromFiles(const std::filesystem::path &vs_path,
