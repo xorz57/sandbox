@@ -151,20 +151,11 @@ std::optional<Shader> Shader::create(const std::filesystem::path &path) {
   return create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
 
+Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+
 void Shader::use() const {
   assert(handle_ != 0);
   glUseProgram(handle_);
-}
-
-std::int32_t Shader::get_uniform_location(const char *name) const {
-  const auto it{uniform_locations_.find(name)};
-  if (it != uniform_locations_.end()) {
-    return it->second;
-  }
-
-  const std::int32_t location{glGetUniformLocation(handle_, name)};
-  uniform_locations_.emplace(name, location);
-  return location;
 }
 
 void Shader::set_uniform(const char *name, float value) const {
@@ -242,7 +233,16 @@ void Shader::set_uniform(const char *name, const glm::mat4 &value) const {
   glProgramUniformMatrix4fv(handle_, get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+std::int32_t Shader::get_uniform_location(const char *name) const {
+  const auto it{uniform_locations_.find(name)};
+  if (it != uniform_locations_.end()) {
+    return it->second;
+  }
+
+  const std::int32_t location{glGetUniformLocation(handle_, name)};
+  uniform_locations_.emplace(name, location);
+  return location;
+}
 
 void Shader::reset() noexcept {
   if (handle_ != 0) {
