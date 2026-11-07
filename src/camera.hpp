@@ -5,7 +5,7 @@
 struct Camera final {
   glm::vec3 position{};
   glm::vec3 orientation{};
-  float fov{45.0F};
+  float fov{60.0F};
   float near_plane{0.1F};
   float far_plane{100.0F};
 
