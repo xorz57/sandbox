@@ -49,6 +49,7 @@ private:
   explicit Shader(std::uint32_t handle);
 
   [[nodiscard]] std::int32_t get_uniform_location(const char *name) const;
+
   void reset() noexcept;
 
   std::uint32_t handle_;

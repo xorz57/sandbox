@@ -240,6 +240,9 @@ std::int32_t Shader::get_uniform_location(const char *name) const {
   }
 
   const std::int32_t location{glGetUniformLocation(handle_, name)};
+  if (location == -1) {
+    spdlog::warn("Failed to find uniform '{}'", name);
+  }
   uniform_locations_.emplace(name, location);
   return location;
 }
