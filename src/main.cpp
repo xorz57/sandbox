@@ -207,7 +207,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  const Camera camera{{0.0F, 2.0F, 10.0F}, {}};
+  const Camera camera{.position = {0.0F, 2.0F, 10.0F}};
 
   bool running{true};
 
@@ -266,7 +266,7 @@ int main() {
     lit_shader->set_uniform("u_light.position", light.position);
     lit_shader->set_uniform("u_light.color", light.color);
     lit_shader->set_uniform("u_light.intensity", light.intensity);
-    lit_shader->set_uniform("u_camera_position", camera.get_position());
+    lit_shader->set_uniform("u_camera_position", camera.position);
 
 #pragma region DrawBox1
     lit_shader->set_uniform("u_model", model1);
