@@ -110,7 +110,7 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::optional<Shader> Shader::create(const char *vs_source, const char *fs_source) {
+std::optional<Shader> Shader::create_from_sources(const char *vs_source, const char *fs_source) {
   const auto vs{compile_shader(GL_VERTEX_SHADER, vs_source)};
   if (!vs.has_value()) {
     return std::nullopt;
@@ -143,7 +143,7 @@ std::optional<Shader> Shader::create_from_files(const std::filesystem::path &vs_
     return std::nullopt;
   }
 
-  return create(vs_source->c_str(), fs_source->c_str());
+  return create_from_sources(vs_source->c_str(), fs_source->c_str());
 }
 
 std::optional<Shader> Shader::create_from_file(const std::filesystem::path &path) {
