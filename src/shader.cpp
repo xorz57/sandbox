@@ -83,7 +83,7 @@ namespace {
   return handle;
 }
 
-[[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
+[[nodiscard]] std::optional<std::string> read_file(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
     spdlog::error("Failed to open shader file {}", path.string());
@@ -132,12 +132,12 @@ std::optional<Shader> Shader::create(const char *vs_source, const char *fs_sourc
 }
 
 std::optional<Shader> Shader::create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
-  const auto vs_source{ReadFile(vs_path)};
+  const auto vs_source{read_file(vs_path)};
   if (!vs_source.has_value()) {
     return std::nullopt;
   }
 
-  const auto fs_source{ReadFile(fs_path)};
+  const auto fs_source{read_file(fs_path)};
   if (!fs_source.has_value()) {
     return std::nullopt;
   }
