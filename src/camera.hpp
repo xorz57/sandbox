@@ -4,6 +4,7 @@
 
 class Camera final {
 public:
+  Camera() = default;
   Camera(glm::vec3 position, glm::vec3 orientation);
 
   void set_position(glm::vec3 position);
@@ -22,8 +23,8 @@ public:
   [[nodiscard]] glm::mat4 compute_projection_matrix(float aspect_ratio) const;
 
 private:
-  glm::vec3 position_;
-  glm::vec3 orientation_;
+  glm::vec3 position_{};
+  glm::vec3 orientation_{};
   float fov_{45.0F};
   float near_plane_{0.1F};
   float far_plane_{100.0F};
