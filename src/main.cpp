@@ -244,14 +244,14 @@ int main() {
 #pragma endregion ClearFramebuffer
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-    const glm::mat4 projection{camera.compute_projection_matrix(framebuffer_a)};
     const glm::mat4 view{camera.compute_view_matrix()};
+    const glm::mat4 projection{camera.compute_projection_matrix(framebuffer_a)};
 
     glBindVertexArray(vao);
 
     unlit_shader->use();
-    unlit_shader->set_uniform("u_projection", projection);
     unlit_shader->set_uniform("u_view", view);
+    unlit_shader->set_uniform("u_projection", projection);
 
 #pragma region DrawLight
     unlit_shader->set_uniform("u_model", light_model);
@@ -260,8 +260,8 @@ int main() {
 #pragma endregion DrawLight
 
     lit_shader->use();
-    lit_shader->set_uniform("u_projection", projection);
     lit_shader->set_uniform("u_view", view);
+    lit_shader->set_uniform("u_projection", projection);
     lit_shader->set_uniform("u_ambient_light", ambient_light);
     lit_shader->set_uniform("u_light.position", light.position);
     lit_shader->set_uniform("u_light.color", light.color);

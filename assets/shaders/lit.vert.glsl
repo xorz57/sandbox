@@ -5,9 +5,9 @@ layout (location = 1) in vec3 a_normal;
 layout (location = 2) in vec2 a_uv;
 
 uniform mat4 u_model;
-uniform mat3 u_normal_matrix;
 uniform mat4 u_view;
 uniform mat4 u_projection;
+uniform mat3 u_normal_matrix;
 
 out vec3 v_world_position;
 out vec3 v_world_normal;
