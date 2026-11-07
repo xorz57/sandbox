@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <string>
+#include <unordered_map>
 
 class Shader final {
 public:
@@ -46,7 +48,9 @@ public:
 private:
   explicit Shader(std::uint32_t handle);
 
+  [[nodiscard]] std::int32_t get_uniform_location(const char *name) const;
   void reset() noexcept;
 
   std::uint32_t handle_;
+  mutable std::unordered_map<std::string, std::int32_t> uniform_locations_;
 };
