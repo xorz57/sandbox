@@ -16,10 +16,10 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Shader> create_from_sources(const char *vs_source, const char *fs_source);
-  [[nodiscard]] static std::optional<Shader> create_from_files(const std::filesystem::path &vs_path,
-                                                               const std::filesystem::path &fs_path);
-  [[nodiscard]] static std::optional<Shader> create_from_file(const std::filesystem::path &path);
+  [[nodiscard]] static std::optional<Shader> create(const char *vs_source, const char *fs_source);
+  [[nodiscard]] static std::optional<Shader> create(const std::filesystem::path &vs_path,
+                                                    const std::filesystem::path &fs_path);
+  [[nodiscard]] static std::optional<Shader> create(const std::filesystem::path &path);
 
   void use() const;
 

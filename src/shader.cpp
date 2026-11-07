@@ -110,7 +110,7 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::optional<Shader> Shader::create_from_sources(const char *vs_source, const char *fs_source) {
+std::optional<Shader> Shader::create(const char *vs_source, const char *fs_source) {
   const auto vs{compile_shader(GL_VERTEX_SHADER, vs_source)};
   if (!vs.has_value()) {
     return std::nullopt;
@@ -131,8 +131,7 @@ std::optional<Shader> Shader::create_from_sources(const char *vs_source, const c
   return Shader{*handle};
 }
 
-std::optional<Shader> Shader::create_from_files(const std::filesystem::path &vs_path,
-                                                const std::filesystem::path &fs_path) {
+std::optional<Shader> Shader::create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
   const auto vs_source{ReadFile(vs_path)};
   if (!vs_source.has_value()) {
     return std::nullopt;
@@ -143,11 +142,11 @@ std::optional<Shader> Shader::create_from_files(const std::filesystem::path &vs_
     return std::nullopt;
   }
 
-  return create_from_sources(vs_source->c_str(), fs_source->c_str());
+  return create(vs_source->c_str(), fs_source->c_str());
 }
 
-std::optional<Shader> Shader::create_from_file(const std::filesystem::path &path) {
-  return create_from_files(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
+std::optional<Shader> Shader::create(const std::filesystem::path &path) {
+  return create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
 
 void Shader::use() const {
