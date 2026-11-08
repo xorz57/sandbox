@@ -1,6 +1,6 @@
 #include "camera.hpp"
-#include "light.hpp"
 #include "material.hpp"
+#include "point_light.hpp"
 #include "scope_exit.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
