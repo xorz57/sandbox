@@ -250,8 +250,8 @@ int main() {
     glBindVertexArray(vao);
 
     unlit_shader->use();
-    unlit_shader->set_uniform("u_view", view);
     unlit_shader->set_uniform("u_projection", projection);
+    unlit_shader->set_uniform("u_view", view);
 
 #pragma region DrawLight
     unlit_shader->set_uniform("u_model", light_model);
@@ -260,8 +260,8 @@ int main() {
 #pragma endregion DrawLight
 
     lit_shader->use();
-    lit_shader->set_uniform("u_view", view);
     lit_shader->set_uniform("u_projection", projection);
+    lit_shader->set_uniform("u_view", view);
     lit_shader->set_uniform("u_ambient_light", ambient_light);
     lit_shader->set_uniform("u_light.position", light.position);
     lit_shader->set_uniform("u_light.color", light.color);
