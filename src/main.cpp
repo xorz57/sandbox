@@ -23,7 +23,7 @@
 int main() {
 #pragma region InitSDL
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
-    spdlog::error("SDL_Init failed: {}", SDL_GetError());
+    spdlog::error("Failed to initialize SDL: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
@@ -46,7 +46,7 @@ int main() {
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
-    spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
+    spdlog::error("Failed to create SDL window: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto window_guard{ScopeExit{[window] { SDL_DestroyWindow(window); }}};
@@ -55,7 +55,7 @@ int main() {
 #pragma region CreateContext
   const SDL_GLContext context{SDL_GL_CreateContext(window)};
   if (context == nullptr) {
-    spdlog::error("SDL_GL_CreateContext failed: {}", SDL_GetError());
+    spdlog::error("Failed to create OpenGL context: {}", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto context_guard{ScopeExit{[context] { SDL_GL_DestroyContext(context); }}};
@@ -68,7 +68,7 @@ int main() {
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
-    spdlog::error("gladLoadGL failed");
+    spdlog::error("Failed to initialize GLAD.");
     return EXIT_FAILURE;
   }
 

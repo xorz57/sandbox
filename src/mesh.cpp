@@ -35,7 +35,7 @@ std::optional<Mesh> Mesh::Create(const MeshData &data) {
   std::uint32_t vbo{};
   glCreateBuffers(1, &vbo);
   if (vbo == 0) {
-    spdlog::error("Failed to create OpenGL vertex buffer");
+    spdlog::error("Failed to create OpenGL vertex buffer.");
     return std::nullopt;
   }
   ScopeExit vbo_guard{[vbo] { glDeleteBuffers(1, &vbo); }};
@@ -43,7 +43,7 @@ std::optional<Mesh> Mesh::Create(const MeshData &data) {
   std::uint32_t ebo{};
   glCreateBuffers(1, &ebo);
   if (ebo == 0) {
-    spdlog::error("Failed to create OpenGL index buffer");
+    spdlog::error("Failed to create OpenGL index buffer.");
     return std::nullopt;
   }
   ScopeExit ebo_guard{[ebo] { glDeleteBuffers(1, &ebo); }};
@@ -51,7 +51,7 @@ std::optional<Mesh> Mesh::Create(const MeshData &data) {
   std::uint32_t vao{};
   glCreateVertexArrays(1, &vao);
   if (vao == 0) {
-    spdlog::error("Failed to create OpenGL vertex array");
+    spdlog::error("Failed to create OpenGL vertex array.");
     return std::nullopt;
   }
   ScopeExit vao_guard{[vao] { glDeleteVertexArrays(1, &vao); }};

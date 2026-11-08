@@ -23,7 +23,7 @@ namespace {
 [[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
   const std::uint32_t handle{glCreateShader(type)};
   if (handle == 0) {
-    spdlog::error("glCreateShader failed");
+    spdlog::error("Failed to create OpenGL shader.");
     return std::nullopt;
   }
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
@@ -53,7 +53,7 @@ namespace {
 [[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs, std::uint32_t fs) {
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
-    spdlog::error("glCreateProgram failed");
+    spdlog::error("Failed to create OpenGL program.");
     return std::nullopt;
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
@@ -74,7 +74,7 @@ namespace {
     if (info_log_length > 0) {
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
-    spdlog::error("Failed to link program:\n{}", info_log);
+    spdlog::error("Failed to link shader program:\n{}", info_log);
     return std::nullopt;
   }
 
@@ -86,7 +86,7 @@ namespace {
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
-    spdlog::error("Failed to open shader file {}", path.string());
+    spdlog::error("Failed to open shader file '{}'.", path.string());
     return std::nullopt;
   }
 
@@ -241,7 +241,7 @@ std::int32_t Shader::GetUniformLocation(const char *name) const {
 
   const std::int32_t location{glGetUniformLocation(handle_, name)};
   if (location == -1) {
-    spdlog::warn("Failed to find uniform '{}'", name);
+    spdlog::warn("Shader uniform '{}' not found.", name);
   }
   uniform_locations_.emplace(name, location);
   return location;
