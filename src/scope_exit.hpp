@@ -22,7 +22,7 @@ public:
   auto operator=(const ScopeExit &) -> ScopeExit & = delete;
   auto operator=(ScopeExit &&) -> ScopeExit & = delete;
 
-  auto release() noexcept -> void { active_ = false; }
+  auto Release() noexcept -> void { active_ = false; }
 
 private:
   F f_;

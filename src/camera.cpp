@@ -11,11 +11,11 @@ constexpr glm::vec3 kWorldForward{0.0F, 0.0F, -1.0F};
 
 } // namespace
 
-glm::mat4 Camera::computeProjectionMatrix(float aspect_ratio) const {
+glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
   return glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
 }
 
-glm::mat4 Camera::computeViewMatrix() const {
+glm::mat4 Camera::ComputeViewMatrix() const {
   glm::mat4 rotation{1.0F};
   // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
   rotation = glm::rotate(rotation, orientation.x, kWorldUp);
