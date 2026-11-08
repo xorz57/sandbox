@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-struct Light final {
+struct PointLight final {
   glm::vec3 position{};
   glm::vec3 ambient{};
   glm::vec3 diffuse{};

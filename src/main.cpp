@@ -86,7 +86,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   // clang-format off
-  const Light light{
+  const PointLight point_light{
     .position = {2.0F, 4.0F, 3.0F},
     .ambient  = {0.2F, 0.2F, 0.2F},
     .diffuse  = {1.0F, 1.0F, 1.0F},
@@ -118,8 +118,8 @@ int main() {
 #pragma endregion Materials
 
 #pragma region Models
-  glm::mat4 light_model{glm::mat4{1.0F}};
-  light_model = glm::translate(light_model, light.position);
+  glm::mat4 point_light_model{glm::mat4{1.0F}};
+  point_light_model = glm::translate(point_light_model, point_light.position);
 
   glm::mat4 model1{glm::mat4{1.0F}};
   model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
@@ -278,18 +278,18 @@ int main() {
     unlit_shader->set_uniform("u_view", view);
 
 #pragma region DrawLight
-    unlit_shader->set_uniform("u_model", light_model);
-    unlit_shader->set_uniform("u_color", light.diffuse);
+    unlit_shader->set_uniform("u_model", point_light_model);
+    unlit_shader->set_uniform("u_color", point_light.diffuse);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawLight
 
     lit_shader->use();
     lit_shader->set_uniform("u_projection", projection);
     lit_shader->set_uniform("u_view", view);
-    lit_shader->set_uniform("u_light.position", light.position);
-    lit_shader->set_uniform("u_light.ambient", light.ambient);
-    lit_shader->set_uniform("u_light.diffuse", light.diffuse);
-    lit_shader->set_uniform("u_light.specular", light.specular);
+    lit_shader->set_uniform("u_point_light.position", point_light.position);
+    lit_shader->set_uniform("u_point_light.ambient", point_light.ambient);
+    lit_shader->set_uniform("u_point_light.diffuse", point_light.diffuse);
+    lit_shader->set_uniform("u_point_light.specular", point_light.specular);
     lit_shader->set_uniform("u_camera_position", camera.position);
 
 #pragma region DrawBox1
