@@ -1,9 +1,10 @@
 #include "camera.hpp"
 #include "material.hpp"
+#include "mesh_data.hpp"
+#include "mesh.hpp"
 #include "point_light.hpp"
 #include "scope_exit.hpp"
 #include "shader.hpp"
-#include "vertex.hpp"
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -15,10 +16,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
-#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-#include <vector>
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
@@ -135,9 +134,10 @@ int main() {
   const glm::mat3 cube2_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube2_model}))};
   const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
 
-#pragma region CubeVertices
+#pragma region CubeMeshData
   // clang-format off
-  const std::vector<Vertex> vertices{
+  const MeshData cube_mesh_data{
+    .vertices = {
     // +z Front
     {.position = {-0.5F, -0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 0.0F,  0.0F}},
     {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 0.0F,  0.0F,  1.0F}, .uv = { 1.0F,  0.0F}},
@@ -168,56 +168,23 @@ int main() {
     {.position = { 0.5F, -0.5F, -0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 1.0F,  0.0F}},
     {.position = { 0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 1.0F,  1.0F}},
     {.position = {-0.5F, -0.5F,  0.5F}, .normal = { 0.0F, -1.0F,  0.0F}, .uv = { 0.0F,  1.0F}},
-  };
-// clang-format on
-#pragma endregion CubeVertices
-
-#pragma region CubeIndices
-  // clang-format off
-  const std::vector<std::uint32_t> indices {
+    },
+    .indices = {
      0,  1,  2,  2,  3,  0,  // +z Front
      4,  5,  6,  6,  7,  4,  // -z Back
      8,  9, 10, 10, 11,  8,  // -x Left
     12, 13, 14, 14, 15, 12,  // +x Right
     16, 17, 18, 18, 19, 16,  // +y Top
     20, 21, 22, 22, 23, 20,  // -y Bottom
+    },
   };
-// clang-format on
-#pragma endregion CubeIndices
+  // clang-format on
+#pragma endregion CubeMeshData
 
-  const auto cube_index_count{static_cast<std::int32_t>(indices.size())};
-
-#pragma region CreateBuffers
-  std::uint32_t vbo{};
-  glCreateBuffers(1, &vbo);
-  const auto vbo_guard{ScopeExit{[vbo] { glDeleteBuffers(1, &vbo); }}};
-
-  std::uint32_t ebo{};
-  glCreateBuffers(1, &ebo);
-  const auto ebo_guard{ScopeExit{[ebo] { glDeleteBuffers(1, &ebo); }}};
-
-  std::uint32_t vao{};
-  glCreateVertexArrays(1, &vao);
-  const auto vao_guard{ScopeExit{[vao] { glDeleteVertexArrays(1, &vao); }}};
-
-  glNamedBufferStorage(vbo, static_cast<std::ptrdiff_t>(vertices.size() * sizeof(Vertex)), vertices.data(), 0);
-  glNamedBufferStorage(ebo, static_cast<std::ptrdiff_t>(indices.size() * sizeof(std::uint32_t)), indices.data(), 0);
-
-  glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
-  glVertexArrayElementBuffer(vao, ebo);
-
-  glEnableVertexArrayAttrib(vao, 0);
-  glEnableVertexArrayAttrib(vao, 1);
-  glEnableVertexArrayAttrib(vao, 2);
-
-  glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-  glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
-  glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
-
-  glVertexArrayAttribBinding(vao, 0, 0);
-  glVertexArrayAttribBinding(vao, 1, 0);
-  glVertexArrayAttribBinding(vao, 2, 0);
-#pragma endregion CreateBuffers
+  const auto cube_mesh{Mesh::Create(cube_mesh_data)};
+  if (!cube_mesh.has_value()) {
+    return EXIT_FAILURE;
+  }
 
 #pragma region CreateShaders
   auto lit_shader{Shader::Create("assets/shaders/lit")};
@@ -271,8 +238,6 @@ int main() {
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
-    glBindVertexArray(vao);
-
     unlit_shader->Use();
     unlit_shader->SetUniform("u_projection", projection);
     unlit_shader->SetUniform("u_view", view);
@@ -280,7 +245,7 @@ int main() {
 #pragma region DrawPointLightCube
     unlit_shader->SetUniform("u_model", point_light_model);
     unlit_shader->SetUniform("u_color", point_light.diffuse);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    cube_mesh->Draw();
 #pragma endregion DrawPointLightCube
 
     lit_shader->Use();
@@ -299,7 +264,7 @@ int main() {
     lit_shader->SetUniform("u_material.diffuse", cube1_material.diffuse);
     lit_shader->SetUniform("u_material.specular", cube1_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube1_material.shininess);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    cube_mesh->Draw();
 #pragma endregion DrawCube1
 
 #pragma region DrawCube2
@@ -309,7 +274,7 @@ int main() {
     lit_shader->SetUniform("u_material.diffuse", cube2_material.diffuse);
     lit_shader->SetUniform("u_material.specular", cube2_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube2_material.shininess);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    cube_mesh->Draw();
 #pragma endregion DrawCube2
 
 #pragma region DrawCube3
@@ -319,7 +284,7 @@ int main() {
     lit_shader->SetUniform("u_material.diffuse", cube3_material.diffuse);
     lit_shader->SetUniform("u_material.specular", cube3_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube3_material.shininess);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
+    cube_mesh->Draw();
 #pragma endregion DrawCube3
 
     SDL_GL_SwapWindow(window);

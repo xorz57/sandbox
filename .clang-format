@@ -5,6 +5,7 @@ ColumnLimit: 120
 AlwaysBreakTemplateDeclarations: Yes
 BinPackParameters: OnePerLine
 BinPackArguments: false
+PackConstructorInitializers: Never
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"'
