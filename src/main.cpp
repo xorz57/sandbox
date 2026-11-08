@@ -84,74 +84,68 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  // clang-format off
   const PointLight point_light{
-    .position = {2.0F, 4.0F, 3.0F},
-    .ambient  = {0.2F, 0.2F, 0.2F},
-    .diffuse  = {1.0F, 1.0F, 1.0F},
-    .specular = {1.0F, 1.0F, 1.0F},
+      .position = {0.0F, 4.0F, 4.0F},
+      .ambient = {0.2F, 0.2F, 0.2F},
+      .diffuse = {1.0F, 1.0F, 1.0F},
+      .specular = {1.0F, 1.0F, 1.0F},
   };
-  // clang-format on
 
 #pragma region Materials
-  // clang-format off
   const Material cube1_material{
-    .ambient   = {0.1F, 0.1F, 0.1F},
-    .diffuse   = {1.0F, 0.0F, 0.0F},
-    .specular  = {1.0F, 0.5F, 0.5F},
-    .shininess = 64.0F,
+      .ambient = {0.1F, 0.1F, 0.1F},
+      .diffuse = {1.0F, 0.0F, 0.0F},
+      .specular = {1.0F, 0.5F, 0.5F},
+      .shininess = 32.0F,
   };
   const Material cube2_material{
-    .ambient   = {0.1F, 0.1F, 0.1F},
-    .diffuse   = {0.0F, 1.0F, 0.0F},
-    .specular  = {0.5F, 1.0F, 0.5F},
-    .shininess = 32.0F,
+      .ambient = {0.1F, 0.1F, 0.1F},
+      .diffuse = {0.0F, 1.0F, 0.0F},
+      .specular = {0.5F, 1.0F, 0.5F},
+      .shininess = 32.0F,
   };
   const Material cube3_material{
-    .ambient   = {0.1F, 0.1F, 0.1F},
-    .diffuse   = {0.0F, 0.0F, 1.0F},
-    .specular  = {0.5F, 0.5F, 1.0F},
-    .shininess = 16.0F,
+      .ambient = {0.1F, 0.1F, 0.1F},
+      .diffuse = {0.0F, 0.0F, 1.0F},
+      .specular = {0.5F, 0.5F, 1.0F},
+      .shininess = 32.0F,
   };
-  // clang-format on
+  const Material cube4_material{
+      .ambient = {0.1F, 0.1F, 0.1F},
+      .diffuse = {1.0F, 1.0F, 0.0F},
+      .specular = {1.0F, 1.0F, 0.5F},
+      .shininess = 32.0F,
+  };
 #pragma endregion Materials
 
 #pragma region Models
-  glm::mat4 point_light_model{glm::mat4{1.0F}};
-  point_light_model = glm::translate(point_light_model, point_light.position);
-
   glm::mat4 cube1_model{glm::mat4{1.0F}};
-  cube1_model = glm::translate(cube1_model, {-1.0F, 2.0F, -1.0F});
-
   glm::mat4 cube2_model{glm::mat4{1.0F}};
-  cube2_model = glm::translate(cube2_model, {1.0F, 2.0F, 1.0F});
-
   glm::mat4 cube3_model{glm::mat4{1.0F}};
-  cube3_model = glm::scale(cube3_model, {4.0F, 1.0F, 4.0F});
+  glm::mat4 cube4_model{glm::mat4{1.0F}};
+
+  cube1_model = glm::translate(cube1_model, {-1.0F, 1.0F, 0.0F});
+  cube2_model = glm::translate(cube2_model, {1.0F, 1.0F, 0.0F});
+  cube3_model = glm::translate(cube3_model, {-1.0F, -1.0F, 0.0F});
+  cube4_model = glm::translate(cube4_model, {1.0F, -1.0F, 0.0F});
 #pragma endregion Models
 
   const glm::mat3 cube1_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube1_model}))};
   const glm::mat3 cube2_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube2_model}))};
   const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
+  const glm::mat3 cube4_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube4_model}))};
 
   const auto cube_mesh{Mesh::Create(primitives::MakeCube())};
   if (!cube_mesh.has_value()) {
     return EXIT_FAILURE;
   }
 
-#pragma region CreateShaders
   auto lit_shader{Shader::Create("assets/shaders/lit")};
   if (!lit_shader.has_value()) {
     return EXIT_FAILURE;
   }
 
-  auto unlit_shader{Shader::Create("assets/shaders/unlit")};
-  if (!unlit_shader.has_value()) {
-    return EXIT_FAILURE;
-  }
-#pragma endregion CreateShaders
-
-  const Camera camera{.position = {0.0F, 2.0F, 10.0F}};
+  const Camera camera{.position = {0.0F, 0.0F, 4.0F}};
 
   bool running{true};
 
@@ -191,16 +185,6 @@ int main() {
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
-    unlit_shader->Use();
-    unlit_shader->SetUniform("u_projection", projection);
-    unlit_shader->SetUniform("u_view", view);
-
-#pragma region DrawPointLightCube
-    unlit_shader->SetUniform("u_model", point_light_model);
-    unlit_shader->SetUniform("u_color", point_light.diffuse);
-    cube_mesh->Draw();
-#pragma endregion DrawPointLightCube
-
     lit_shader->Use();
     lit_shader->SetUniform("u_projection", projection);
     lit_shader->SetUniform("u_view", view);
@@ -239,6 +223,16 @@ int main() {
     lit_shader->SetUniform("u_material.shininess", cube3_material.shininess);
     cube_mesh->Draw();
 #pragma endregion DrawCube3
+
+#pragma region DrawCube4
+    lit_shader->SetUniform("u_model", cube4_model);
+    lit_shader->SetUniform("u_normal_matrix", cube4_normal_matrix);
+    lit_shader->SetUniform("u_material.ambient", cube4_material.ambient);
+    lit_shader->SetUniform("u_material.diffuse", cube4_material.diffuse);
+    lit_shader->SetUniform("u_material.specular", cube4_material.specular);
+    lit_shader->SetUniform("u_material.shininess", cube4_material.shininess);
+    cube_mesh->Draw();
+#pragma endregion DrawCube4
 
     SDL_GL_SwapWindow(window);
   }
