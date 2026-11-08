@@ -2,17 +2,18 @@
 
 struct Light {
   vec3 position;
-  vec3 color;
-  float intensity;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
 };
 
 struct Material {
+  vec3 ambient;
   vec3 diffuse;
   vec3 specular;
   float shininess;
 };
 
-uniform vec3 u_ambient_light;
 uniform Light u_light;
 uniform Material u_material;
 uniform vec3 u_camera_position;
@@ -31,11 +32,10 @@ void main() {
 
   const float diffuse_factor = max(dot(world_normal, light_direction), 0.0F);
   const float specular_factor = pow(max(dot(world_normal, halfway_direction), 0.0F), u_material.shininess);
-  const vec3 radiance = u_light.color * u_light.intensity;
 
-  const vec3 ambient = u_ambient_light * u_material.diffuse;
-  const vec3 diffuse = diffuse_factor * radiance * u_material.diffuse;
-  const vec3 specular = specular_factor * radiance * u_material.specular;
+  const vec3 ambient = u_light.ambient * u_material.ambient;
+  const vec3 diffuse = u_light.diffuse * diffuse_factor * u_material.diffuse;
+  const vec3 specular = u_light.specular * specular_factor * u_material.specular;
 
   f_color = vec4(ambient + diffuse + specular, 1.0F);
 }

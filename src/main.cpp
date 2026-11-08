@@ -85,14 +85,36 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
-
-  const Light light{.position = {2.0F, 4.0F, 3.0F}, .color = {1.0F, 1.0F, 1.0F}, .intensity = 1.0F};
+  // clang-format off
+  const Light light{
+    .position = {2.0F, 4.0F, 3.0F},
+    .ambient  = {0.2F, 0.2F, 0.2F},
+    .diffuse  = {1.0F, 1.0F, 1.0F},
+    .specular = {1.0F, 1.0F, 1.0F},
+  };
+  // clang-format on
 
 #pragma region Materials
-  const Material material1{.diffuse = {1.0F, 0.0F, 0.0F}, .specular = {1.0F, 0.5F, 0.5F}, .shininess = 64.0F};
-  const Material material2{.diffuse = {0.0F, 1.0F, 0.0F}, .specular = {0.5F, 1.0F, 0.5F}, .shininess = 32.0F};
-  const Material material3{.diffuse = {0.0F, 0.0F, 1.0F}, .specular = {0.5F, 0.5F, 1.0F}, .shininess = 16.0F};
+  // clang-format off
+  const Material material1{
+    .ambient   = {0.1F, 0.1F, 0.1F},
+    .diffuse   = {1.0F, 0.0F, 0.0F},
+    .specular  = {1.0F, 0.5F, 0.5F},
+    .shininess = 64.0F,
+  };
+  const Material material2{
+    .ambient   = {0.1F, 0.1F, 0.1F},
+    .diffuse   = {0.0F, 1.0F, 0.0F},
+    .specular  = {0.5F, 1.0F, 0.5F},
+    .shininess = 32.0F,
+  };
+  const Material material3{
+    .ambient   = {0.1F, 0.1F, 0.1F},
+    .diffuse   = {0.0F, 0.0F, 1.0F},
+    .specular  = {0.5F, 0.5F, 1.0F},
+    .shininess = 16.0F,
+  };
+  // clang-format on
 #pragma endregion Materials
 
 #pragma region Models
@@ -197,6 +219,7 @@ int main() {
   glVertexArrayAttribBinding(vao, 2, 0);
 #pragma endregion CreateBuffers
 
+#pragma region CreateShaders
   auto lit_shader{Shader::create("assets/shaders/lit")};
   if (!lit_shader.has_value()) {
     return EXIT_FAILURE;
@@ -206,6 +229,7 @@ int main() {
   if (!unlit_shader.has_value()) {
     return EXIT_FAILURE;
   }
+#pragma endregion CreateShaders
 
   const Camera camera{.position = {0.0F, 2.0F, 10.0F}};
 
@@ -255,22 +279,23 @@ int main() {
 
 #pragma region DrawLight
     unlit_shader->set_uniform("u_model", light_model);
-    unlit_shader->set_uniform("u_color", light.color);
+    unlit_shader->set_uniform("u_color", light.diffuse);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawLight
 
     lit_shader->use();
     lit_shader->set_uniform("u_projection", projection);
     lit_shader->set_uniform("u_view", view);
-    lit_shader->set_uniform("u_ambient_light", ambient_light);
     lit_shader->set_uniform("u_light.position", light.position);
-    lit_shader->set_uniform("u_light.color", light.color);
-    lit_shader->set_uniform("u_light.intensity", light.intensity);
+    lit_shader->set_uniform("u_light.ambient", light.ambient);
+    lit_shader->set_uniform("u_light.diffuse", light.diffuse);
+    lit_shader->set_uniform("u_light.specular", light.specular);
     lit_shader->set_uniform("u_camera_position", camera.position);
 
 #pragma region DrawBox1
     lit_shader->set_uniform("u_model", model1);
     lit_shader->set_uniform("u_normal_matrix", normal_matrix1);
+    lit_shader->set_uniform("u_material.ambient", material1.ambient);
     lit_shader->set_uniform("u_material.diffuse", material1.diffuse);
     lit_shader->set_uniform("u_material.specular", material1.specular);
     lit_shader->set_uniform("u_material.shininess", material1.shininess);
@@ -280,6 +305,7 @@ int main() {
 #pragma region DrawBox2
     lit_shader->set_uniform("u_model", model2);
     lit_shader->set_uniform("u_normal_matrix", normal_matrix2);
+    lit_shader->set_uniform("u_material.ambient", material2.ambient);
     lit_shader->set_uniform("u_material.diffuse", material2.diffuse);
     lit_shader->set_uniform("u_material.specular", material2.specular);
     lit_shader->set_uniform("u_material.shininess", material2.shininess);
@@ -289,6 +315,7 @@ int main() {
 #pragma region DrawBox3
     lit_shader->set_uniform("u_model", model3);
     lit_shader->set_uniform("u_normal_matrix", normal_matrix3);
+    lit_shader->set_uniform("u_material.ambient", material3.ambient);
     lit_shader->set_uniform("u_material.diffuse", material3.diffuse);
     lit_shader->set_uniform("u_material.specular", material3.specular);
     lit_shader->set_uniform("u_material.shininess", material3.shininess);
