@@ -96,19 +96,19 @@ int main() {
 
 #pragma region Materials
   // clang-format off
-  const Material material1{
+  const Material cube1_material{
     .ambient   = {0.1F, 0.1F, 0.1F},
     .diffuse   = {1.0F, 0.0F, 0.0F},
     .specular  = {1.0F, 0.5F, 0.5F},
     .shininess = 64.0F,
   };
-  const Material material2{
+  const Material cube2_material{
     .ambient   = {0.1F, 0.1F, 0.1F},
     .diffuse   = {0.0F, 1.0F, 0.0F},
     .specular  = {0.5F, 1.0F, 0.5F},
     .shininess = 32.0F,
   };
-  const Material material3{
+  const Material cube3_material{
     .ambient   = {0.1F, 0.1F, 0.1F},
     .diffuse   = {0.0F, 0.0F, 1.0F},
     .specular  = {0.5F, 0.5F, 1.0F},
@@ -121,19 +121,19 @@ int main() {
   glm::mat4 point_light_model{glm::mat4{1.0F}};
   point_light_model = glm::translate(point_light_model, point_light.position);
 
-  glm::mat4 model1{glm::mat4{1.0F}};
-  model1 = glm::translate(model1, {-1.0F, 2.0F, -1.0F});
+  glm::mat4 cube1_model{glm::mat4{1.0F}};
+  cube1_model = glm::translate(cube1_model, {-1.0F, 2.0F, -1.0F});
 
-  glm::mat4 model2{glm::mat4{1.0F}};
-  model2 = glm::translate(model2, {1.0F, 2.0F, 1.0F});
+  glm::mat4 cube2_model{glm::mat4{1.0F}};
+  cube2_model = glm::translate(cube2_model, {1.0F, 2.0F, 1.0F});
 
-  glm::mat4 model3{glm::mat4{1.0F}};
-  model3 = glm::scale(model3, {4.0F, 1.0F, 4.0F});
+  glm::mat4 cube3_model{glm::mat4{1.0F}};
+  cube3_model = glm::scale(cube3_model, {4.0F, 1.0F, 4.0F});
 #pragma endregion Models
 
-  const glm::mat3 normal_matrix1{glm::transpose(glm::inverse(glm::mat3{model1}))};
-  const glm::mat3 normal_matrix2{glm::transpose(glm::inverse(glm::mat3{model2}))};
-  const glm::mat3 normal_matrix3{glm::transpose(glm::inverse(glm::mat3{model3}))};
+  const glm::mat3 cube1_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube1_model}))};
+  const glm::mat3 cube2_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube2_model}))};
+  const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
 
 #pragma region CubeVertices
   // clang-format off
@@ -293,32 +293,32 @@ int main() {
     lit_shader->SetUniform("u_camera_position", camera.position);
 
 #pragma region DrawCube1
-    lit_shader->SetUniform("u_model", model1);
-    lit_shader->SetUniform("u_normal_matrix", normal_matrix1);
-    lit_shader->SetUniform("u_material.ambient", material1.ambient);
-    lit_shader->SetUniform("u_material.diffuse", material1.diffuse);
-    lit_shader->SetUniform("u_material.specular", material1.specular);
-    lit_shader->SetUniform("u_material.shininess", material1.shininess);
+    lit_shader->SetUniform("u_model", cube1_model);
+    lit_shader->SetUniform("u_normal_matrix", cube1_normal_matrix);
+    lit_shader->SetUniform("u_material.ambient", cube1_material.ambient);
+    lit_shader->SetUniform("u_material.diffuse", cube1_material.diffuse);
+    lit_shader->SetUniform("u_material.specular", cube1_material.specular);
+    lit_shader->SetUniform("u_material.shininess", cube1_material.shininess);
     glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawCube1
 
 #pragma region DrawCube2
-    lit_shader->SetUniform("u_model", model2);
-    lit_shader->SetUniform("u_normal_matrix", normal_matrix2);
-    lit_shader->SetUniform("u_material.ambient", material2.ambient);
-    lit_shader->SetUniform("u_material.diffuse", material2.diffuse);
-    lit_shader->SetUniform("u_material.specular", material2.specular);
-    lit_shader->SetUniform("u_material.shininess", material2.shininess);
+    lit_shader->SetUniform("u_model", cube2_model);
+    lit_shader->SetUniform("u_normal_matrix", cube2_normal_matrix);
+    lit_shader->SetUniform("u_material.ambient", cube2_material.ambient);
+    lit_shader->SetUniform("u_material.diffuse", cube2_material.diffuse);
+    lit_shader->SetUniform("u_material.specular", cube2_material.specular);
+    lit_shader->SetUniform("u_material.shininess", cube2_material.shininess);
     glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawCube2
 
 #pragma region DrawCube3
-    lit_shader->SetUniform("u_model", model3);
-    lit_shader->SetUniform("u_normal_matrix", normal_matrix3);
-    lit_shader->SetUniform("u_material.ambient", material3.ambient);
-    lit_shader->SetUniform("u_material.diffuse", material3.diffuse);
-    lit_shader->SetUniform("u_material.specular", material3.specular);
-    lit_shader->SetUniform("u_material.shininess", material3.shininess);
+    lit_shader->SetUniform("u_model", cube3_model);
+    lit_shader->SetUniform("u_normal_matrix", cube3_normal_matrix);
+    lit_shader->SetUniform("u_material.ambient", cube3_material.ambient);
+    lit_shader->SetUniform("u_material.diffuse", cube3_material.diffuse);
+    lit_shader->SetUniform("u_material.specular", cube3_material.specular);
+    lit_shader->SetUniform("u_material.shininess", cube3_material.shininess);
     glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawCube3
 
