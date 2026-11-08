@@ -156,7 +156,6 @@ void Shader::use() const {
   glUseProgram(handle_);
 }
 
-#pragma region setUniform
 void Shader::setUniform(const char *name, float value) const {
   assert(handle_ != 0);
   glProgramUniform1f(handle_, getUniformLocation(name), value);
@@ -231,7 +230,6 @@ void Shader::setUniform(const char *name, const glm::mat4 &value) const {
   assert(handle_ != 0);
   glProgramUniformMatrix4fv(handle_, getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
-#pragma endregion setUniform
 
 Shader::Shader(std::uint32_t handle) : handle_{handle} {}
 
