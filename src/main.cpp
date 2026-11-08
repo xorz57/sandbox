@@ -268,57 +268,57 @@ int main() {
 #pragma endregion ClearFramebuffer
 
     const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
-    const glm::mat4 view{camera.compute_view_matrix()};
-    const glm::mat4 projection{camera.compute_projection_matrix(framebuffer_a)};
+    const glm::mat4 view{camera.computeViewMatrix()};
+    const glm::mat4 projection{camera.computeProjectionMatrix(framebuffer_a)};
 
     glBindVertexArray(vao);
 
     unlit_shader->use();
-    unlit_shader->set_uniform("u_projection", projection);
-    unlit_shader->set_uniform("u_view", view);
+    unlit_shader->setUniform("u_projection", projection);
+    unlit_shader->setUniform("u_view", view);
 
 #pragma region DrawLight
-    unlit_shader->set_uniform("u_model", point_light_model);
-    unlit_shader->set_uniform("u_color", point_light.diffuse);
+    unlit_shader->setUniform("u_model", point_light_model);
+    unlit_shader->setUniform("u_color", point_light.diffuse);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawLight
 
     lit_shader->use();
-    lit_shader->set_uniform("u_projection", projection);
-    lit_shader->set_uniform("u_view", view);
-    lit_shader->set_uniform("u_point_light.position", point_light.position);
-    lit_shader->set_uniform("u_point_light.ambient", point_light.ambient);
-    lit_shader->set_uniform("u_point_light.diffuse", point_light.diffuse);
-    lit_shader->set_uniform("u_point_light.specular", point_light.specular);
-    lit_shader->set_uniform("u_camera_position", camera.position);
+    lit_shader->setUniform("u_projection", projection);
+    lit_shader->setUniform("u_view", view);
+    lit_shader->setUniform("u_point_light.position", point_light.position);
+    lit_shader->setUniform("u_point_light.ambient", point_light.ambient);
+    lit_shader->setUniform("u_point_light.diffuse", point_light.diffuse);
+    lit_shader->setUniform("u_point_light.specular", point_light.specular);
+    lit_shader->setUniform("u_camera_position", camera.position);
 
 #pragma region DrawBox1
-    lit_shader->set_uniform("u_model", model1);
-    lit_shader->set_uniform("u_normal_matrix", normal_matrix1);
-    lit_shader->set_uniform("u_material.ambient", material1.ambient);
-    lit_shader->set_uniform("u_material.diffuse", material1.diffuse);
-    lit_shader->set_uniform("u_material.specular", material1.specular);
-    lit_shader->set_uniform("u_material.shininess", material1.shininess);
+    lit_shader->setUniform("u_model", model1);
+    lit_shader->setUniform("u_normal_matrix", normal_matrix1);
+    lit_shader->setUniform("u_material.ambient", material1.ambient);
+    lit_shader->setUniform("u_material.diffuse", material1.diffuse);
+    lit_shader->setUniform("u_material.specular", material1.specular);
+    lit_shader->setUniform("u_material.shininess", material1.shininess);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawBox1
 
 #pragma region DrawBox2
-    lit_shader->set_uniform("u_model", model2);
-    lit_shader->set_uniform("u_normal_matrix", normal_matrix2);
-    lit_shader->set_uniform("u_material.ambient", material2.ambient);
-    lit_shader->set_uniform("u_material.diffuse", material2.diffuse);
-    lit_shader->set_uniform("u_material.specular", material2.specular);
-    lit_shader->set_uniform("u_material.shininess", material2.shininess);
+    lit_shader->setUniform("u_model", model2);
+    lit_shader->setUniform("u_normal_matrix", normal_matrix2);
+    lit_shader->setUniform("u_material.ambient", material2.ambient);
+    lit_shader->setUniform("u_material.diffuse", material2.diffuse);
+    lit_shader->setUniform("u_material.specular", material2.specular);
+    lit_shader->setUniform("u_material.shininess", material2.shininess);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawBox2
 
 #pragma region DrawBox3
-    lit_shader->set_uniform("u_model", model3);
-    lit_shader->set_uniform("u_normal_matrix", normal_matrix3);
-    lit_shader->set_uniform("u_material.ambient", material3.ambient);
-    lit_shader->set_uniform("u_material.diffuse", material3.diffuse);
-    lit_shader->set_uniform("u_material.specular", material3.specular);
-    lit_shader->set_uniform("u_material.shininess", material3.shininess);
+    lit_shader->setUniform("u_model", model3);
+    lit_shader->setUniform("u_normal_matrix", normal_matrix3);
+    lit_shader->setUniform("u_material.ambient", material3.ambient);
+    lit_shader->setUniform("u_material.diffuse", material3.diffuse);
+    lit_shader->setUniform("u_material.specular", material3.specular);
+    lit_shader->setUniform("u_material.shininess", material3.shininess);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void *>(nullptr));
 #pragma endregion DrawBox3
 

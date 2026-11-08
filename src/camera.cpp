@@ -11,7 +11,11 @@ constexpr glm::vec3 kWorldForward{0.0F, 0.0F, -1.0F};
 
 } // namespace
 
-glm::mat4 Camera::compute_view_matrix() const {
+glm::mat4 Camera::computeProjectionMatrix(float aspect_ratio) const {
+  return glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
+}
+
+glm::mat4 Camera::computeViewMatrix() const {
   glm::mat4 rotation{1.0F};
   // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
   rotation = glm::rotate(rotation, orientation.x, kWorldUp);
@@ -21,8 +25,4 @@ glm::mat4 Camera::compute_view_matrix() const {
   const glm::vec3 front{rotation * glm::vec4{kWorldForward, 0.0F}};
   const glm::vec3 up{rotation * glm::vec4{kWorldUp, 0.0F}};
   return glm::lookAt(position, position + front, up);
-}
-
-glm::mat4 Camera::compute_projection_matrix(float aspect_ratio) const {
-  return glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
 }

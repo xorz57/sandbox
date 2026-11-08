@@ -20,7 +20,7 @@
 
 namespace {
 
-[[nodiscard]] std::optional<std::uint32_t> compile_shader(std::uint32_t type, const char *source) {
+[[nodiscard]] std::optional<std::uint32_t> compileShader(std::uint32_t type, const char *source) {
   const std::uint32_t handle{glCreateShader(type)};
   if (handle == 0) {
     spdlog::error("glCreateShader failed");
@@ -50,7 +50,7 @@ namespace {
   return handle;
 }
 
-[[nodiscard]] std::optional<std::uint32_t> link_program(std::uint32_t vs, std::uint32_t fs) {
+[[nodiscard]] std::optional<std::uint32_t> linkProgram(std::uint32_t vs, std::uint32_t fs) {
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
     spdlog::error("glCreateProgram failed");
@@ -83,7 +83,7 @@ namespace {
   return handle;
 }
 
-[[nodiscard]] std::optional<std::string> read_file(const std::filesystem::path &path) {
+[[nodiscard]] std::optional<std::string> readFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
     spdlog::error("Failed to open shader file {}", path.string());
@@ -113,19 +113,19 @@ Shader &Shader::operator=(Shader &&other) noexcept {
 }
 
 std::optional<Shader> Shader::create(const char *vs_source, const char *fs_source) {
-  const auto vs{compile_shader(GL_VERTEX_SHADER, vs_source)};
+  const auto vs{compileShader(GL_VERTEX_SHADER, vs_source)};
   if (!vs.has_value()) {
     return std::nullopt;
   }
   const ScopeExit vs_guard{[&vs] { glDeleteShader(*vs); }};
 
-  const auto fs{compile_shader(GL_FRAGMENT_SHADER, fs_source)};
+  const auto fs{compileShader(GL_FRAGMENT_SHADER, fs_source)};
   if (!fs.has_value()) {
     return std::nullopt;
   }
   const ScopeExit fs_guard{[&fs] { glDeleteShader(*fs); }};
 
-  const auto handle{link_program(*vs, *fs)};
+  const auto handle{linkProgram(*vs, *fs)};
   if (!handle.has_value()) {
     return std::nullopt;
   }
@@ -134,12 +134,12 @@ std::optional<Shader> Shader::create(const char *vs_source, const char *fs_sourc
 }
 
 std::optional<Shader> Shader::create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
-  const auto vs_source{read_file(vs_path)};
+  const auto vs_source{readFile(vs_path)};
   if (!vs_source.has_value()) {
     return std::nullopt;
   }
 
-  const auto fs_source{read_file(fs_path)};
+  const auto fs_source{readFile(fs_path)};
   if (!fs_source.has_value()) {
     return std::nullopt;
   }
@@ -151,89 +151,91 @@ std::optional<Shader> Shader::create(const std::filesystem::path &path) {
   return create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
 
-Shader::Shader(std::uint32_t handle) : handle_{handle} {}
-
 void Shader::use() const {
   assert(handle_ != 0);
   glUseProgram(handle_);
 }
 
-void Shader::set_uniform(const char *name, float value) const {
+#pragma region setUniform
+void Shader::setUniform(const char *name, float value) const {
   assert(handle_ != 0);
-  glProgramUniform1f(handle_, get_uniform_location(name), value);
+  glProgramUniform1f(handle_, getUniformLocation(name), value);
 }
 
-void Shader::set_uniform(const char *name, std::int32_t value) const {
+void Shader::setUniform(const char *name, std::int32_t value) const {
   assert(handle_ != 0);
-  glProgramUniform1i(handle_, get_uniform_location(name), value);
+  glProgramUniform1i(handle_, getUniformLocation(name), value);
 }
 
-void Shader::set_uniform(const char *name, std::uint32_t value) const {
+void Shader::setUniform(const char *name, std::uint32_t value) const {
   assert(handle_ != 0);
-  glProgramUniform1ui(handle_, get_uniform_location(name), value);
+  glProgramUniform1ui(handle_, getUniformLocation(name), value);
 }
 
-void Shader::set_uniform(const char *name, const glm::vec2 &value) const {
+void Shader::setUniform(const char *name, const glm::vec2 &value) const {
   assert(handle_ != 0);
-  glProgramUniform2fv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform2fv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::vec3 &value) const {
+void Shader::setUniform(const char *name, const glm::vec3 &value) const {
   assert(handle_ != 0);
-  glProgramUniform3fv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform3fv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::vec4 &value) const {
+void Shader::setUniform(const char *name, const glm::vec4 &value) const {
   assert(handle_ != 0);
-  glProgramUniform4fv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform4fv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::ivec2 &value) const {
+void Shader::setUniform(const char *name, const glm::ivec2 &value) const {
   assert(handle_ != 0);
-  glProgramUniform2iv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform2iv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::ivec3 &value) const {
+void Shader::setUniform(const char *name, const glm::ivec3 &value) const {
   assert(handle_ != 0);
-  glProgramUniform3iv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform3iv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::ivec4 &value) const {
+void Shader::setUniform(const char *name, const glm::ivec4 &value) const {
   assert(handle_ != 0);
-  glProgramUniform4iv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform4iv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::uvec2 &value) const {
+void Shader::setUniform(const char *name, const glm::uvec2 &value) const {
   assert(handle_ != 0);
-  glProgramUniform2uiv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform2uiv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::uvec3 &value) const {
+void Shader::setUniform(const char *name, const glm::uvec3 &value) const {
   assert(handle_ != 0);
-  glProgramUniform3uiv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform3uiv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::uvec4 &value) const {
+void Shader::setUniform(const char *name, const glm::uvec4 &value) const {
   assert(handle_ != 0);
-  glProgramUniform4uiv(handle_, get_uniform_location(name), 1, glm::value_ptr(value));
+  glProgramUniform4uiv(handle_, getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::mat2 &value) const {
+void Shader::setUniform(const char *name, const glm::mat2 &value) const {
   assert(handle_ != 0);
-  glProgramUniformMatrix2fv(handle_, get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(value));
+  glProgramUniformMatrix2fv(handle_, getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::mat3 &value) const {
+void Shader::setUniform(const char *name, const glm::mat3 &value) const {
   assert(handle_ != 0);
-  glProgramUniformMatrix3fv(handle_, get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(value));
+  glProgramUniformMatrix3fv(handle_, getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::set_uniform(const char *name, const glm::mat4 &value) const {
+void Shader::setUniform(const char *name, const glm::mat4 &value) const {
   assert(handle_ != 0);
-  glProgramUniformMatrix4fv(handle_, get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(value));
+  glProgramUniformMatrix4fv(handle_, getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
+#pragma endregion setUniform
 
-std::int32_t Shader::get_uniform_location(const char *name) const {
+Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+
+std::int32_t Shader::getUniformLocation(const char *name) const {
   const auto it{uniform_locations_.find(name)};
   if (it != uniform_locations_.end()) {
     return it->second;

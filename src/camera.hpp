@@ -9,6 +9,6 @@ struct Camera final {
   float near_plane{0.1F};
   float far_plane{100.0F};
 
-  [[nodiscard]] glm::mat4 compute_view_matrix() const;
-  [[nodiscard]] glm::mat4 compute_projection_matrix(float aspect_ratio) const;
+  [[nodiscard]] glm::mat4 computeProjectionMatrix(float aspect_ratio) const;
+  [[nodiscard]] glm::mat4 computeViewMatrix() const;
 };
