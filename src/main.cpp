@@ -94,7 +94,6 @@ int main() {
       .kq = 0.032F,
   };
 
-#pragma region Materials
   const Material cube1_material{
       .ambient = {0.1F, 0.1F, 0.1F},
       .diffuse = {1.0F, 0.0F, 0.0F},
@@ -119,9 +118,7 @@ int main() {
       .specular = {1.0F, 1.0F, 0.5F},
       .shininess = 32.0F,
   };
-#pragma endregion Materials
 
-#pragma region Models
   glm::mat4 cube1_model{glm::mat4{1.0F}};
   glm::mat4 cube2_model{glm::mat4{1.0F}};
   glm::mat4 cube3_model{glm::mat4{1.0F}};
@@ -131,7 +128,6 @@ int main() {
   cube2_model = glm::translate(cube2_model, {1.0F, 1.0F, 0.0F});
   cube3_model = glm::translate(cube3_model, {-1.0F, -1.0F, 0.0F});
   cube4_model = glm::translate(cube4_model, {1.0F, -1.0F, 0.0F});
-#pragma endregion Models
 
   const glm::mat3 cube1_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube1_model}))};
   const glm::mat3 cube2_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube2_model}))};
@@ -200,7 +196,6 @@ int main() {
     lit_shader->SetUniform("u_point_light.kq", point_light.kq);
     lit_shader->SetUniform("u_camera_position", camera.position);
 
-#pragma region DrawCube1
     lit_shader->SetUniform("u_model", cube1_model);
     lit_shader->SetUniform("u_normal_matrix", cube1_normal_matrix);
     lit_shader->SetUniform("u_material.ambient", cube1_material.ambient);
@@ -208,9 +203,7 @@ int main() {
     lit_shader->SetUniform("u_material.specular", cube1_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube1_material.shininess);
     cube_mesh->Draw();
-#pragma endregion DrawCube1
 
-#pragma region DrawCube2
     lit_shader->SetUniform("u_model", cube2_model);
     lit_shader->SetUniform("u_normal_matrix", cube2_normal_matrix);
     lit_shader->SetUniform("u_material.ambient", cube2_material.ambient);
@@ -218,9 +211,7 @@ int main() {
     lit_shader->SetUniform("u_material.specular", cube2_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube2_material.shininess);
     cube_mesh->Draw();
-#pragma endregion DrawCube2
 
-#pragma region DrawCube3
     lit_shader->SetUniform("u_model", cube3_model);
     lit_shader->SetUniform("u_normal_matrix", cube3_normal_matrix);
     lit_shader->SetUniform("u_material.ambient", cube3_material.ambient);
@@ -228,9 +219,7 @@ int main() {
     lit_shader->SetUniform("u_material.specular", cube3_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube3_material.shininess);
     cube_mesh->Draw();
-#pragma endregion DrawCube3
 
-#pragma region DrawCube4
     lit_shader->SetUniform("u_model", cube4_model);
     lit_shader->SetUniform("u_normal_matrix", cube4_normal_matrix);
     lit_shader->SetUniform("u_material.ambient", cube4_material.ambient);
@@ -238,7 +227,6 @@ int main() {
     lit_shader->SetUniform("u_material.specular", cube4_material.specular);
     lit_shader->SetUniform("u_material.shininess", cube4_material.shininess);
     cube_mesh->Draw();
-#pragma endregion DrawCube4
 
     SDL_GL_SwapWindow(window);
   }
