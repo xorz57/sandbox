@@ -85,10 +85,13 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   const PointLight point_light{
-      .position = {0.0F, 4.0F, 4.0F},
+      .position = {0.0F, 0.0F, 2.0F},
       .ambient = {0.2F, 0.2F, 0.2F},
       .diffuse = {1.0F, 1.0F, 1.0F},
       .specular = {1.0F, 1.0F, 1.0F},
+      .kc = 1.0F,
+      .kl = 0.09F,
+      .kq = 0.032F,
   };
 
 #pragma region Materials
@@ -192,6 +195,9 @@ int main() {
     lit_shader->SetUniform("u_point_light.ambient", point_light.ambient);
     lit_shader->SetUniform("u_point_light.diffuse", point_light.diffuse);
     lit_shader->SetUniform("u_point_light.specular", point_light.specular);
+    lit_shader->SetUniform("u_point_light.kc", point_light.kc);
+    lit_shader->SetUniform("u_point_light.kl", point_light.kl);
+    lit_shader->SetUniform("u_point_light.kq", point_light.kq);
     lit_shader->SetUniform("u_camera_position", camera.position);
 
 #pragma region DrawCube1

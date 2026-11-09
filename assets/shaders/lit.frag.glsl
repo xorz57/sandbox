@@ -5,6 +5,9 @@ struct PointLight {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
+  float kc;
+  float kl;
+  float kq;
 };
 
 struct Material {
@@ -30,6 +33,9 @@ void main() {
   const vec3 view_direction = normalize(u_camera_position - v_world_position);
   const vec3 halfway_direction = normalize(light_direction + view_direction);
 
+  const float distance = length(u_point_light.position - v_world_position);
+  const float attenuation = 1.0F / (u_point_light.kc + u_point_light.kl * distance + u_point_light.kq * (distance * distance));
+
   const float diffuse_factor = max(dot(world_normal, light_direction), 0.0F);
   const float specular_factor = pow(max(dot(world_normal, halfway_direction), 0.0F), u_material.shininess);
 
@@ -37,5 +43,5 @@ void main() {
   const vec3 diffuse = u_point_light.diffuse * diffuse_factor * u_material.diffuse;
   const vec3 specular = u_point_light.specular * specular_factor * u_material.specular;
 
-  f_color = vec4(ambient + diffuse + specular, 1.0F);
+  f_color = vec4(attenuation * (ambient + diffuse + specular), 1.0F);
 }
