@@ -184,6 +184,8 @@ int main() {
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
+    lit_shader->ReloadIfChanged();
+
     lit_shader->Use();
     lit_shader->SetUniform("u_projection", projection);
     lit_shader->SetUniform("u_view", view);

@@ -16,6 +16,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <utility>
 
 namespace {
@@ -47,7 +48,7 @@ namespace {
 
   shader_guard.Release();
 
-  return handle;
+  return std::optional<std::uint32_t>{handle};
 }
 
 [[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs, std::uint32_t fs) {
@@ -80,7 +81,7 @@ namespace {
 
   program_guard.Release();
 
-  return handle;
+  return std::optional<std::uint32_t>{handle};
 }
 
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
@@ -93,7 +94,17 @@ namespace {
   std::stringstream buffer;
   buffer << file.rdbuf();
 
-  return buffer.str();
+  return std::optional<std::string>{buffer.str()};
+}
+
+[[nodiscard]] std::optional<std::filesystem::file_time_type> GetLastWriteTime(const std::filesystem::path &path) {
+  std::error_code error;
+  const std::filesystem::file_time_type write_time{std::filesystem::last_write_time(path, error)};
+  if (error) {
+    spdlog::error("Failed to get last write time for shader file '{}': {}", path.string(), error.message());
+    return std::nullopt;
+  }
+  return std::optional<std::filesystem::file_time_type>{write_time};
 }
 
 } // namespace
@@ -101,12 +112,21 @@ namespace {
 Shader::~Shader() { Reset(); }
 
 Shader::Shader(Shader &&other) noexcept
-    : handle_{std::exchange(other.handle_, 0)}, uniform_locations_{std::move(other.uniform_locations_)} {}
+    : handle_{std::exchange(other.handle_, 0)},
+      vs_path_{std::move(other.vs_path_)},
+      fs_path_{std::move(other.fs_path_)},
+      vs_attempted_write_time_{other.vs_attempted_write_time_},
+      fs_attempted_write_time_{other.fs_attempted_write_time_},
+      uniform_locations_{std::move(other.uniform_locations_)} {}
 
 Shader &Shader::operator=(Shader &&other) noexcept {
   if (this != &other) {
     Reset();
     handle_ = std::exchange(other.handle_, 0);
+    vs_path_ = std::move(other.vs_path_);
+    fs_path_ = std::move(other.fs_path_);
+    vs_attempted_write_time_ = other.vs_attempted_write_time_;
+    fs_attempted_write_time_ = other.fs_attempted_write_time_;
     uniform_locations_ = std::move(other.uniform_locations_);
   }
   return *this;
@@ -130,10 +150,20 @@ std::optional<Shader> Shader::Create(const char *vs_source, const char *fs_sourc
     return std::nullopt;
   }
 
-  return Shader{*handle};
+  return std::optional<Shader>{Shader{*handle}};
 }
 
 std::optional<Shader> Shader::Create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
+  const auto vs_write_time{GetLastWriteTime(vs_path)};
+  if (!vs_write_time.has_value()) {
+    return std::nullopt;
+  }
+
+  const auto fs_write_time{GetLastWriteTime(fs_path)};
+  if (!fs_write_time.has_value()) {
+    return std::nullopt;
+  }
+
   const auto vs_source{ReadFile(vs_path)};
   if (!vs_source.has_value()) {
     return std::nullopt;
@@ -144,11 +174,70 @@ std::optional<Shader> Shader::Create(const std::filesystem::path &vs_path, const
     return std::nullopt;
   }
 
-  return Create(vs_source->c_str(), fs_source->c_str());
+  auto shader{Create(vs_source->c_str(), fs_source->c_str())};
+  if (!shader.has_value()) {
+    return std::nullopt;
+  }
+
+  shader->vs_path_ = vs_path;
+  shader->fs_path_ = fs_path;
+
+  shader->vs_attempted_write_time_ = *vs_write_time;
+  shader->fs_attempted_write_time_ = *fs_write_time;
+
+  return shader;
 }
 
 std::optional<Shader> Shader::Create(const std::filesystem::path &path) {
   return Create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
+}
+
+void Shader::ReloadIfChanged() {
+  if (vs_path_.empty()) {
+    return;
+  }
+
+  if (fs_path_.empty()) {
+    return;
+  }
+
+  const auto vs_write_time{GetLastWriteTime(vs_path_)};
+  if (!vs_write_time.has_value()) {
+    return;
+  }
+
+  const auto fs_write_time{GetLastWriteTime(fs_path_)};
+  if (!fs_write_time.has_value()) {
+    return;
+  }
+
+  bool has_changed{false};
+
+  if (*vs_write_time != vs_attempted_write_time_) {
+    has_changed = true;
+    vs_attempted_write_time_ = *vs_write_time;
+    spdlog::info("Shader '{}' changed.", vs_path_.string());
+  }
+
+  if (*fs_write_time != fs_attempted_write_time_) {
+    has_changed = true;
+    fs_attempted_write_time_ = *fs_write_time;
+    spdlog::info("Shader '{}' changed.", fs_path_.string());
+  }
+
+  if (!has_changed) {
+    return;
+  }
+
+  auto shader{Create(vs_path_, fs_path_)};
+  if (!shader.has_value()) {
+    spdlog::warn("Keeping the previous shader program after a failed reload.");
+    return;
+  }
+
+  std::swap(handle_, shader->handle_);
+
+  uniform_locations_.clear();
 }
 
 void Shader::Use() const {
@@ -231,7 +320,8 @@ void Shader::SetUniform(const char *name, const glm::mat4 &value) const {
   glProgramUniformMatrix4fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-Shader::Shader(std::uint32_t handle) : handle_{handle} {}
+Shader::Shader(std::uint32_t handle)
+    : handle_{handle} {}
 
 std::int32_t Shader::GetUniformLocation(const char *name) const {
   const auto it{uniform_locations_.find(name)};

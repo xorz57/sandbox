@@ -23,6 +23,8 @@ public:
                                                     const std::filesystem::path &fs_path);
   [[nodiscard]] static std::optional<Shader> Create(const std::filesystem::path &path);
 
+  void ReloadIfChanged();
+
   void Use() const;
 
   void SetUniform(const char *name, float value) const;
@@ -49,5 +51,9 @@ private:
   void Reset() noexcept;
 
   std::uint32_t handle_;
+  std::filesystem::path vs_path_;
+  std::filesystem::path fs_path_;
+  std::filesystem::file_time_type vs_attempted_write_time_;
+  std::filesystem::file_time_type fs_attempted_write_time_;
   mutable std::unordered_map<std::string, std::int32_t> uniform_locations_;
 };
