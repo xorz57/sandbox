@@ -1,4 +1,4 @@
-#include "shader.hpp"
+#include "program.hpp"
 
 #include "scope_exit.hpp"
 
@@ -24,12 +24,13 @@ namespace {
 [[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
   const std::uint32_t handle{glCreateShader(type)};
   if (handle == 0) {
-    spdlog::error("Failed to create OpenGL shader.");
+    spdlog::error("Failed to create shader.");
     return std::nullopt;
   }
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
 
   glShaderSource(handle, 1, &source, nullptr);
+
   glCompileShader(handle);
 
   std::int32_t success{};
@@ -54,14 +55,16 @@ namespace {
 [[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs, std::uint32_t fs) {
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
-    spdlog::error("Failed to create OpenGL program.");
+    spdlog::error("Failed to create program.");
     return std::nullopt;
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
 
   glAttachShader(handle, vs);
   glAttachShader(handle, fs);
+
   glLinkProgram(handle);
+
   glDetachShader(handle, vs);
   glDetachShader(handle, fs);
 
@@ -75,7 +78,7 @@ namespace {
     if (info_log_length > 0) {
       info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
     }
-    spdlog::error("Failed to link shader program:\n{}", info_log);
+    spdlog::error("Failed to link program:\n{}", info_log);
     return std::nullopt;
   }
 
@@ -99,19 +102,19 @@ namespace {
 
 [[nodiscard]] std::optional<std::filesystem::file_time_type> GetLastWriteTime(const std::filesystem::path &path) {
   std::error_code error;
-  const std::filesystem::file_time_type write_time{std::filesystem::last_write_time(path, error)};
+  const std::filesystem::file_time_type last_write_time{std::filesystem::last_write_time(path, error)};
   if (error) {
     spdlog::error("Failed to get last write time for shader file '{}': {}", path.string(), error.message());
     return std::nullopt;
   }
-  return std::optional<std::filesystem::file_time_type>{write_time};
+  return std::optional<std::filesystem::file_time_type>{last_write_time};
 }
 
 } // namespace
 
-Shader::~Shader() { Reset(); }
+Program::~Program() { Reset(); }
 
-Shader::Shader(Shader &&other) noexcept
+Program::Program(Program &&other) noexcept
     : handle_{std::exchange(other.handle_, 0)},
       vs_path_{std::move(other.vs_path_)},
       fs_path_{std::move(other.fs_path_)},
@@ -119,7 +122,7 @@ Shader::Shader(Shader &&other) noexcept
       fs_attempted_write_time_{other.fs_attempted_write_time_},
       uniform_locations_{std::move(other.uniform_locations_)} {}
 
-Shader &Shader::operator=(Shader &&other) noexcept {
+Program &Program::operator=(Program &&other) noexcept {
   if (this != &other) {
     Reset();
     handle_ = std::exchange(other.handle_, 0);
@@ -132,28 +135,28 @@ Shader &Shader::operator=(Shader &&other) noexcept {
   return *this;
 }
 
-std::optional<Shader> Shader::Create(const char *vs_source, const char *fs_source) {
-  const auto vs{CompileShader(GL_VERTEX_SHADER, vs_source)};
-  if (!vs.has_value()) {
+std::optional<Program> Program::Create(const char *vs_source, const char *fs_source) {
+  const auto vs_handle{CompileShader(GL_VERTEX_SHADER, vs_source)};
+  if (!vs_handle.has_value()) {
     return std::nullopt;
   }
-  const ScopeExit vs_guard{[&vs] { glDeleteShader(*vs); }};
+  const ScopeExit vs_guard{[&vs_handle] { glDeleteShader(*vs_handle); }};
 
-  const auto fs{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
-  if (!fs.has_value()) {
+  const auto fs_handle{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
+  if (!fs_handle.has_value()) {
     return std::nullopt;
   }
-  const ScopeExit fs_guard{[&fs] { glDeleteShader(*fs); }};
+  const ScopeExit fs_guard{[&fs_handle] { glDeleteShader(*fs_handle); }};
 
-  const auto handle{LinkProgram(*vs, *fs)};
+  const auto handle{LinkProgram(*vs_handle, *fs_handle)};
   if (!handle.has_value()) {
     return std::nullopt;
   }
 
-  return std::optional<Shader>{Shader{*handle}};
+  return std::optional<Program>{Program{*handle}};
 }
 
-std::optional<Shader> Shader::Create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
+std::optional<Program> Program::Create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
   const auto vs_write_time{GetLastWriteTime(vs_path)};
   if (!vs_write_time.has_value()) {
     return std::nullopt;
@@ -174,25 +177,25 @@ std::optional<Shader> Shader::Create(const std::filesystem::path &vs_path, const
     return std::nullopt;
   }
 
-  auto shader{Create(vs_source->c_str(), fs_source->c_str())};
-  if (!shader.has_value()) {
+  auto program{Create(vs_source->c_str(), fs_source->c_str())};
+  if (!program.has_value()) {
     return std::nullopt;
   }
 
-  shader->vs_path_ = vs_path;
-  shader->fs_path_ = fs_path;
+  program->vs_path_ = vs_path;
+  program->fs_path_ = fs_path;
 
-  shader->vs_attempted_write_time_ = *vs_write_time;
-  shader->fs_attempted_write_time_ = *fs_write_time;
+  program->vs_attempted_write_time_ = *vs_write_time;
+  program->fs_attempted_write_time_ = *fs_write_time;
 
-  return shader;
+  return program;
 }
 
-std::optional<Shader> Shader::Create(const std::filesystem::path &path) {
+std::optional<Program> Program::Create(const std::filesystem::path &path) {
   return Create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
 
-void Shader::ReloadIfChanged() {
+void Program::ReloadIfChanged() {
   if (vs_path_.empty()) {
     return;
   }
@@ -229,101 +232,101 @@ void Shader::ReloadIfChanged() {
     return;
   }
 
-  auto shader{Create(vs_path_, fs_path_)};
-  if (!shader.has_value()) {
-    spdlog::warn("Keeping the previous shader program after a failed reload.");
+  auto program{Create(vs_path_, fs_path_)};
+  if (!program.has_value()) {
+    spdlog::warn("Keeping the previous program after a failed reload.");
     return;
   }
 
-  std::swap(handle_, shader->handle_);
+  std::swap(handle_, program->handle_);
 
   uniform_locations_.clear();
 }
 
-void Shader::Use() const {
+void Program::Use() const {
   assert(handle_ != 0);
   glUseProgram(handle_);
 }
 
-void Shader::SetUniform(const char *name, float value) const {
+void Program::SetUniform(const char *name, float value) const {
   assert(handle_ != 0);
   glProgramUniform1f(handle_, GetUniformLocation(name), value);
 }
 
-void Shader::SetUniform(const char *name, std::int32_t value) const {
+void Program::SetUniform(const char *name, std::int32_t value) const {
   assert(handle_ != 0);
   glProgramUniform1i(handle_, GetUniformLocation(name), value);
 }
 
-void Shader::SetUniform(const char *name, std::uint32_t value) const {
+void Program::SetUniform(const char *name, std::uint32_t value) const {
   assert(handle_ != 0);
   glProgramUniform1ui(handle_, GetUniformLocation(name), value);
 }
 
-void Shader::SetUniform(const char *name, const glm::vec2 &value) const {
+void Program::SetUniform(const char *name, const glm::vec2 &value) const {
   assert(handle_ != 0);
   glProgramUniform2fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::vec3 &value) const {
+void Program::SetUniform(const char *name, const glm::vec3 &value) const {
   assert(handle_ != 0);
   glProgramUniform3fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::vec4 &value) const {
+void Program::SetUniform(const char *name, const glm::vec4 &value) const {
   assert(handle_ != 0);
   glProgramUniform4fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::ivec2 &value) const {
+void Program::SetUniform(const char *name, const glm::ivec2 &value) const {
   assert(handle_ != 0);
   glProgramUniform2iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::ivec3 &value) const {
+void Program::SetUniform(const char *name, const glm::ivec3 &value) const {
   assert(handle_ != 0);
   glProgramUniform3iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::ivec4 &value) const {
+void Program::SetUniform(const char *name, const glm::ivec4 &value) const {
   assert(handle_ != 0);
   glProgramUniform4iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::uvec2 &value) const {
+void Program::SetUniform(const char *name, const glm::uvec2 &value) const {
   assert(handle_ != 0);
   glProgramUniform2uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::uvec3 &value) const {
+void Program::SetUniform(const char *name, const glm::uvec3 &value) const {
   assert(handle_ != 0);
   glProgramUniform3uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::uvec4 &value) const {
+void Program::SetUniform(const char *name, const glm::uvec4 &value) const {
   assert(handle_ != 0);
   glProgramUniform4uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::mat2 &value) const {
+void Program::SetUniform(const char *name, const glm::mat2 &value) const {
   assert(handle_ != 0);
   glProgramUniformMatrix2fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::mat3 &value) const {
+void Program::SetUniform(const char *name, const glm::mat3 &value) const {
   assert(handle_ != 0);
   glProgramUniformMatrix3fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::SetUniform(const char *name, const glm::mat4 &value) const {
+void Program::SetUniform(const char *name, const glm::mat4 &value) const {
   assert(handle_ != 0);
   glProgramUniformMatrix4fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-Shader::Shader(std::uint32_t handle)
+Program::Program(std::uint32_t handle)
     : handle_{handle} {}
 
-std::int32_t Shader::GetUniformLocation(const char *name) const {
+std::int32_t Program::GetUniformLocation(const char *name) const {
   const auto it{uniform_locations_.find(name)};
   if (it != uniform_locations_.end()) {
     return it->second;
@@ -337,7 +340,7 @@ std::int32_t Shader::GetUniformLocation(const char *name) const {
   return location;
 }
 
-void Shader::Reset() noexcept {
+void Program::Reset() noexcept {
   if (handle_ != 0) {
     glDeleteProgram(handle_);
     handle_ = 0;

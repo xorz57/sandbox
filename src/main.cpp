@@ -3,8 +3,8 @@
 #include "mesh.hpp"
 #include "point_light.hpp"
 #include "primitives.hpp"
+#include "program.hpp"
 #include "scope_exit.hpp"
-#include "shader.hpp"
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -139,8 +139,8 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto lit_shader{Shader::Create("assets/shaders/lit")};
-  if (!lit_shader.has_value()) {
+  auto lit_program{Program::Create("assets/shaders/lit")};
+  if (!lit_program.has_value()) {
     return EXIT_FAILURE;
   }
 
@@ -184,50 +184,50 @@ int main() {
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
-    lit_shader->ReloadIfChanged();
+    lit_program->ReloadIfChanged();
 
-    lit_shader->Use();
-    lit_shader->SetUniform("u_projection", projection);
-    lit_shader->SetUniform("u_view", view);
-    lit_shader->SetUniform("u_point_light.position", point_light.position);
-    lit_shader->SetUniform("u_point_light.ambient", point_light.ambient);
-    lit_shader->SetUniform("u_point_light.diffuse", point_light.diffuse);
-    lit_shader->SetUniform("u_point_light.specular", point_light.specular);
-    lit_shader->SetUniform("u_point_light.kc", point_light.kc);
-    lit_shader->SetUniform("u_point_light.kl", point_light.kl);
-    lit_shader->SetUniform("u_point_light.kq", point_light.kq);
-    lit_shader->SetUniform("u_camera_position", camera.position);
+    lit_program->Use();
+    lit_program->SetUniform("u_projection", projection);
+    lit_program->SetUniform("u_view", view);
+    lit_program->SetUniform("u_point_light.position", point_light.position);
+    lit_program->SetUniform("u_point_light.ambient", point_light.ambient);
+    lit_program->SetUniform("u_point_light.diffuse", point_light.diffuse);
+    lit_program->SetUniform("u_point_light.specular", point_light.specular);
+    lit_program->SetUniform("u_point_light.kc", point_light.kc);
+    lit_program->SetUniform("u_point_light.kl", point_light.kl);
+    lit_program->SetUniform("u_point_light.kq", point_light.kq);
+    lit_program->SetUniform("u_camera_position", camera.position);
 
-    lit_shader->SetUniform("u_model", cube1_model);
-    lit_shader->SetUniform("u_normal_matrix", cube1_normal_matrix);
-    lit_shader->SetUniform("u_material.ambient", cube1_material.ambient);
-    lit_shader->SetUniform("u_material.diffuse", cube1_material.diffuse);
-    lit_shader->SetUniform("u_material.specular", cube1_material.specular);
-    lit_shader->SetUniform("u_material.shininess", cube1_material.shininess);
+    lit_program->SetUniform("u_model", cube1_model);
+    lit_program->SetUniform("u_normal_matrix", cube1_normal_matrix);
+    lit_program->SetUniform("u_material.ambient", cube1_material.ambient);
+    lit_program->SetUniform("u_material.diffuse", cube1_material.diffuse);
+    lit_program->SetUniform("u_material.specular", cube1_material.specular);
+    lit_program->SetUniform("u_material.shininess", cube1_material.shininess);
     cube_mesh->Draw();
 
-    lit_shader->SetUniform("u_model", cube2_model);
-    lit_shader->SetUniform("u_normal_matrix", cube2_normal_matrix);
-    lit_shader->SetUniform("u_material.ambient", cube2_material.ambient);
-    lit_shader->SetUniform("u_material.diffuse", cube2_material.diffuse);
-    lit_shader->SetUniform("u_material.specular", cube2_material.specular);
-    lit_shader->SetUniform("u_material.shininess", cube2_material.shininess);
+    lit_program->SetUniform("u_model", cube2_model);
+    lit_program->SetUniform("u_normal_matrix", cube2_normal_matrix);
+    lit_program->SetUniform("u_material.ambient", cube2_material.ambient);
+    lit_program->SetUniform("u_material.diffuse", cube2_material.diffuse);
+    lit_program->SetUniform("u_material.specular", cube2_material.specular);
+    lit_program->SetUniform("u_material.shininess", cube2_material.shininess);
     cube_mesh->Draw();
 
-    lit_shader->SetUniform("u_model", cube3_model);
-    lit_shader->SetUniform("u_normal_matrix", cube3_normal_matrix);
-    lit_shader->SetUniform("u_material.ambient", cube3_material.ambient);
-    lit_shader->SetUniform("u_material.diffuse", cube3_material.diffuse);
-    lit_shader->SetUniform("u_material.specular", cube3_material.specular);
-    lit_shader->SetUniform("u_material.shininess", cube3_material.shininess);
+    lit_program->SetUniform("u_model", cube3_model);
+    lit_program->SetUniform("u_normal_matrix", cube3_normal_matrix);
+    lit_program->SetUniform("u_material.ambient", cube3_material.ambient);
+    lit_program->SetUniform("u_material.diffuse", cube3_material.diffuse);
+    lit_program->SetUniform("u_material.specular", cube3_material.specular);
+    lit_program->SetUniform("u_material.shininess", cube3_material.shininess);
     cube_mesh->Draw();
 
-    lit_shader->SetUniform("u_model", cube4_model);
-    lit_shader->SetUniform("u_normal_matrix", cube4_normal_matrix);
-    lit_shader->SetUniform("u_material.ambient", cube4_material.ambient);
-    lit_shader->SetUniform("u_material.diffuse", cube4_material.diffuse);
-    lit_shader->SetUniform("u_material.specular", cube4_material.specular);
-    lit_shader->SetUniform("u_material.shininess", cube4_material.shininess);
+    lit_program->SetUniform("u_model", cube4_model);
+    lit_program->SetUniform("u_normal_matrix", cube4_normal_matrix);
+    lit_program->SetUniform("u_material.ambient", cube4_material.ambient);
+    lit_program->SetUniform("u_material.diffuse", cube4_material.diffuse);
+    lit_program->SetUniform("u_material.specular", cube4_material.specular);
+    lit_program->SetUniform("u_material.shininess", cube4_material.shininess);
     cube_mesh->Draw();
 
     SDL_GL_SwapWindow(window);

@@ -8,20 +8,20 @@
 #include <string>
 #include <unordered_map>
 
-class Shader final {
+class Program final {
 public:
-  ~Shader();
+  ~Program();
 
-  Shader(const Shader &) = delete;
-  Shader(Shader &&other) noexcept;
+  Program(const Program &) = delete;
+  Program(Program &&other) noexcept;
 
-  Shader &operator=(const Shader &) = delete;
-  Shader &operator=(Shader &&other) noexcept;
+  Program &operator=(const Program &) = delete;
+  Program &operator=(Program &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Shader> Create(const char *vs_source, const char *fs_source);
-  [[nodiscard]] static std::optional<Shader> Create(const std::filesystem::path &vs_path,
-                                                    const std::filesystem::path &fs_path);
-  [[nodiscard]] static std::optional<Shader> Create(const std::filesystem::path &path);
+  [[nodiscard]] static std::optional<Program> Create(const char *vs_source, const char *fs_source);
+  [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &vs_path,
+                                                     const std::filesystem::path &fs_path);
+  [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &path);
 
   void ReloadIfChanged();
 
@@ -44,7 +44,7 @@ public:
   void SetUniform(const char *name, const glm::mat4 &value) const;
 
 private:
-  explicit Shader(std::uint32_t handle);
+  explicit Program(std::uint32_t handle);
 
   [[nodiscard]] std::int32_t GetUniformLocation(const char *name) const;
 
