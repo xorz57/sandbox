@@ -1,7 +1,7 @@
 #include "program.hpp"
 
-#include "shader.hpp"
 #include "scope_exit.hpp"
+#include "shader.hpp"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -53,7 +53,6 @@ namespace {
   }
 
   program_guard.Release();
-
   return std::optional<std::uint32_t>{handle};
 }
 

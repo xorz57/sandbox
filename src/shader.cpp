@@ -44,15 +44,10 @@ namespace {
 
 } // namespace
 
-Shader::Shader(std::uint32_t handle) noexcept : handle_{handle} {}
+Shader::~Shader() { Reset(); }
 
-Shader::~Shader() {
-  if (handle_ != 0) {
-    glDeleteShader(handle_);
-  }
-}
-
-Shader::Shader(Shader &&other) noexcept : handle_{std::exchange(other.handle_, 0)} {}
+Shader::Shader(Shader &&other) noexcept
+    : handle_{std::exchange(other.handle_, 0)} {}
 
 std::optional<Shader> Shader::Create(std::uint32_t type, const char *source) {
   const auto handle{CompileShader(type, source)};
@@ -60,4 +55,14 @@ std::optional<Shader> Shader::Create(std::uint32_t type, const char *source) {
     return std::nullopt;
   }
   return std::optional<Shader>{Shader{*handle}};
+}
+
+Shader::Shader(std::uint32_t handle) noexcept
+    : handle_{handle} {}
+
+void Shader::Reset() noexcept {
+  if (handle_ != 0) {
+    glDeleteShader(handle_);
+    handle_ = 0;
+  }
 }

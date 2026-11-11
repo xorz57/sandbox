@@ -20,5 +20,7 @@ public:
 private:
   explicit Shader(std::uint32_t handle) noexcept;
 
+  void Reset() noexcept;
+
   std::uint32_t handle_;
 };
