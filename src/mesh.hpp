@@ -1,9 +1,9 @@
 #pragma once
 
-#include "mesh_data.hpp"
-
 #include <cstdint>
 #include <optional>
+
+#include "mesh_data.hpp"
 
 class Mesh final {
 public:

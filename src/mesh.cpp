@@ -1,9 +1,5 @@
 #include "mesh.hpp"
 
-#include "mesh_data.hpp"
-#include "scope_exit.hpp"
-#include "vertex.hpp"
-
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
@@ -11,6 +7,10 @@
 #include <cstdint>
 #include <optional>
 #include <utility>
+
+#include "mesh_data.hpp"
+#include "scope_exit.hpp"
+#include "vertex.hpp"
 
 Mesh::~Mesh() { Reset(); }
 

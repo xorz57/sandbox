@@ -1,8 +1,5 @@
 #include "program.hpp"
 
-#include "scope_exit.hpp"
-#include "shader.hpp"
-
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -19,6 +16,9 @@
 #include <string>
 #include <system_error>
 #include <utility>
+
+#include "scope_exit.hpp"
+#include "shader.hpp"
 
 namespace {
 

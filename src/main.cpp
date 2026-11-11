@@ -1,11 +1,3 @@
-#include "camera.hpp"
-#include "material.hpp"
-#include "mesh.hpp"
-#include "point_light.hpp"
-#include "primitives.hpp"
-#include "program.hpp"
-#include "scope_exit.hpp"
-
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -18,6 +10,14 @@
 
 #include <cstdint>
 #include <cstdlib>
+
+#include "camera.hpp"
+#include "material.hpp"
+#include "mesh.hpp"
+#include "point_light.hpp"
+#include "primitives.hpp"
+#include "program.hpp"
+#include "scope_exit.hpp"
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {

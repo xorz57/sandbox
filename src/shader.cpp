@@ -1,7 +1,5 @@
 #include "shader.hpp"
 
-#include "scope_exit.hpp"
-
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
@@ -10,6 +8,8 @@
 #include <optional>
 #include <string>
 #include <utility>
+
+#include "scope_exit.hpp"
 
 namespace {
 
