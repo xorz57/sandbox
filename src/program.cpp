@@ -59,7 +59,7 @@ namespace {
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
-    spdlog::error("Failed to open shader file '{}'.", path.string());
+    spdlog::error("Failed to open file '{}'.", path.string());
     return std::nullopt;
   }
 
