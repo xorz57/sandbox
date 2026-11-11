@@ -72,14 +72,12 @@ int main() {
     return EXIT_FAILURE;
   }
 
-#pragma region LogContextInfo
   // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
   spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
   spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
   spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
   spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
   // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-#pragma endregion LogContextInfo
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
