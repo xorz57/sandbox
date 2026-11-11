@@ -119,7 +119,6 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
   if (!handle.has_value()) {
     return std::nullopt;
   }
-
   return std::optional<Program>{Program{*handle}};
 }
 
