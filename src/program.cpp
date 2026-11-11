@@ -105,17 +105,17 @@ Program &Program::operator=(Program &&other) noexcept {
 }
 
 std::optional<Program> Program::Create(const char *vs_source, const char *fs_source) {
-  const auto vs_handle{Shader::Create(GL_VERTEX_SHADER, vs_source)};
-  if (!vs_handle.has_value()) {
+  const auto vs{Shader::Create(GL_VERTEX_SHADER, vs_source)};
+  if (!vs.has_value()) {
     return std::nullopt;
   }
 
-  const auto fs_handle{Shader::Create(GL_FRAGMENT_SHADER, fs_source)};
-  if (!fs_handle.has_value()) {
+  const auto fs{Shader::Create(GL_FRAGMENT_SHADER, fs_source)};
+  if (!fs.has_value()) {
     return std::nullopt;
   }
 
-  const auto handle{LinkProgram(*vs_handle, *fs_handle)};
+  const auto handle{LinkProgram(*vs, *fs)};
   if (!handle.has_value()) {
     return std::nullopt;
   }
