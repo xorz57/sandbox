@@ -24,8 +24,7 @@ target_sources(
           src/camera.cpp
           src/mesh.cpp
           src/primitives.cpp
-          src/program.cpp
-          src/shader.cpp)
+          src/program.cpp)
 
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)

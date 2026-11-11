@@ -18,9 +18,37 @@
 #include <utility>
 
 #include "scope_exit.hpp"
-#include "shader.hpp"
 
 namespace {
+
+[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
+  const std::uint32_t handle{glCreateShader(type)};
+  if (handle == 0) {
+    spdlog::error("Failed to create shader.");
+    return std::nullopt;
+  }
+  ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
+
+  glShaderSource(handle, 1, &source, nullptr);
+  glCompileShader(handle);
+
+  std::int32_t success{};
+  glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
+  if (success == 0) {
+    std::int32_t info_log_length{};
+    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
+    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    glGetShaderInfoLog(handle, info_log_length, nullptr, info_log.data());
+    if (info_log_length > 0) {
+      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+    }
+    spdlog::error("Failed to compile shader:\n{}", info_log);
+    return std::nullopt;
+  }
+
+  shader_guard.Release();
+  return std::optional<std::uint32_t>{handle};
+}
 
 [[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs_handle, std::uint32_t fs_handle) {
   const std::uint32_t handle{glCreateProgram()};
@@ -105,17 +133,19 @@ Program &Program::operator=(Program &&other) noexcept {
 }
 
 std::optional<Program> Program::Create(const char *vs_source, const char *fs_source) {
-  const auto vs{Shader::Create(GL_VERTEX_SHADER, vs_source)};
-  if (!vs.has_value()) {
+  const auto vs_handle{CompileShader(GL_VERTEX_SHADER, vs_source)};
+  if (!vs_handle.has_value()) {
     return std::nullopt;
   }
+  ScopeExit vs_guard{[handle = *vs_handle] { glDeleteShader(handle); }};
 
-  const auto fs{Shader::Create(GL_FRAGMENT_SHADER, fs_source)};
-  if (!fs.has_value()) {
+  const auto fs_handle{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
+  if (!fs_handle.has_value()) {
     return std::nullopt;
   }
+  ScopeExit fs_guard{[handle = *fs_handle] { glDeleteShader(handle); }};
 
-  const auto handle{LinkProgram(vs->GetHandle(), fs->GetHandle())};
+  const auto handle{LinkProgram(*vs_handle, *fs_handle)};
   if (!handle.has_value()) {
     return std::nullopt;
   }
