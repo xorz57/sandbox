@@ -22,7 +22,7 @@
 
 namespace {
 
-[[nodiscard]] std::optional<std::uint32_t> LinkProgram(const Shader &vs, const Shader &fs) {
+[[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs_handle, std::uint32_t fs_handle) {
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
     spdlog::error("Failed to create program.");
@@ -30,13 +30,13 @@ namespace {
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
 
-  glAttachShader(handle, vs.GetHandle());
-  glAttachShader(handle, fs.GetHandle());
+  glAttachShader(handle, vs_handle);
+  glAttachShader(handle, fs_handle);
 
   glLinkProgram(handle);
 
-  glDetachShader(handle, vs.GetHandle());
-  glDetachShader(handle, fs.GetHandle());
+  glDetachShader(handle, vs_handle);
+  glDetachShader(handle, fs_handle);
 
   std::int32_t success{};
   glGetProgramiv(handle, GL_LINK_STATUS, &success);
@@ -115,7 +115,7 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
     return std::nullopt;
   }
 
-  const auto handle{LinkProgram(*vs, *fs)};
+  const auto handle{LinkProgram(vs->GetHandle(), fs->GetHandle())};
   if (!handle.has_value()) {
     return std::nullopt;
   }
