@@ -1,5 +1,6 @@
 #include "program.hpp"
 
+#include "shader.hpp"
 #include "scope_exit.hpp"
 
 #include <glad/gl.h>
@@ -21,38 +22,7 @@
 
 namespace {
 
-[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
-  const std::uint32_t handle{glCreateShader(type)};
-  if (handle == 0) {
-    spdlog::error("Failed to create shader.");
-    return std::nullopt;
-  }
-  ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
-
-  glShaderSource(handle, 1, &source, nullptr);
-
-  glCompileShader(handle);
-
-  std::int32_t success{};
-  glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
-    std::int32_t info_log_length{};
-    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
-    glGetShaderInfoLog(handle, info_log_length, nullptr, info_log.data());
-    if (info_log_length > 0) {
-      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
-    }
-    spdlog::error("Failed to compile shader:\n{}", info_log);
-    return std::nullopt;
-  }
-
-  shader_guard.Release();
-
-  return std::optional<std::uint32_t>{handle};
-}
-
-[[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs, std::uint32_t fs) {
+[[nodiscard]] std::optional<std::uint32_t> LinkProgram(const Shader &vs, const Shader &fs) {
   const std::uint32_t handle{glCreateProgram()};
   if (handle == 0) {
     spdlog::error("Failed to create program.");
@@ -60,13 +30,13 @@ namespace {
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
 
-  glAttachShader(handle, vs);
-  glAttachShader(handle, fs);
+  glAttachShader(handle, vs.GetHandle());
+  glAttachShader(handle, fs.GetHandle());
 
   glLinkProgram(handle);
 
-  glDetachShader(handle, vs);
-  glDetachShader(handle, fs);
+  glDetachShader(handle, vs.GetHandle());
+  glDetachShader(handle, fs.GetHandle());
 
   std::int32_t success{};
   glGetProgramiv(handle, GL_LINK_STATUS, &success);
@@ -136,17 +106,15 @@ Program &Program::operator=(Program &&other) noexcept {
 }
 
 std::optional<Program> Program::Create(const char *vs_source, const char *fs_source) {
-  const auto vs_handle{CompileShader(GL_VERTEX_SHADER, vs_source)};
+  const auto vs_handle{Shader::Create(GL_VERTEX_SHADER, vs_source)};
   if (!vs_handle.has_value()) {
     return std::nullopt;
   }
-  const ScopeExit vs_guard{[&vs_handle] { glDeleteShader(*vs_handle); }};
 
-  const auto fs_handle{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
+  const auto fs_handle{Shader::Create(GL_FRAGMENT_SHADER, fs_source)};
   if (!fs_handle.has_value()) {
     return std::nullopt;
   }
-  const ScopeExit fs_guard{[&fs_handle] { glDeleteShader(*fs_handle); }};
 
   const auto handle{LinkProgram(*vs_handle, *fs_handle)};
   if (!handle.has_value()) {
