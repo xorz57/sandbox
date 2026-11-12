@@ -134,7 +134,7 @@ int main() {
   const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
   const glm::mat3 cube4_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube4_model}))};
 
-  const MeshData cube_data{primitives::MakeCube()};
+  const MeshData cube_mesh_data{primitives::MakeCube()};
 
   u32 cube_vbo{};
   glCreateBuffers(1, &cube_vbo);
@@ -160,11 +160,11 @@ int main() {
   }
   const auto cube_vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &cube_vao); }}};
 
-  const isize vertices_bytes{static_cast<isize>(cube_data.vertices.size() * sizeof(Vertex))};
-  glNamedBufferStorage(cube_vbo, vertices_bytes, cube_data.vertices.data(), 0);
+  const isize vertices_bytes{static_cast<isize>(cube_mesh_data.vertices.size() * sizeof(Vertex))};
+  glNamedBufferStorage(cube_vbo, vertices_bytes, cube_mesh_data.vertices.data(), 0);
 
-  const isize indices_bytes{static_cast<isize>(cube_data.indices.size() * sizeof(u32))};
-  glNamedBufferStorage(cube_ebo, indices_bytes, cube_data.indices.data(), 0);
+  const isize indices_bytes{static_cast<isize>(cube_mesh_data.indices.size() * sizeof(u32))};
+  glNamedBufferStorage(cube_ebo, indices_bytes, cube_mesh_data.indices.data(), 0);
 
   glVertexArrayVertexBuffer(cube_vao, 0, cube_vbo, 0, static_cast<i32>(sizeof(Vertex)));
   glVertexArrayElementBuffer(cube_vao, cube_ebo);
@@ -181,7 +181,7 @@ int main() {
   glVertexArrayAttribBinding(cube_vao, 1, 0);
   glVertexArrayAttribBinding(cube_vao, 2, 0);
 
-  const i32 cube_index_count{static_cast<i32>(cube_data.indices.size())};
+  const i32 cube_index_count{static_cast<i32>(cube_mesh_data.indices.size())};
 
   auto lit_program{Program::Create("assets/shaders/lit")};
   if (!lit_program.has_value()) {
