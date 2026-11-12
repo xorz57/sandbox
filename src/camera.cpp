@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "types.hpp"
+
 namespace {
 
 constexpr glm::vec3 kWorldUp{0.0F, 1.0F, 0.0F};
@@ -11,7 +13,7 @@ constexpr glm::vec3 kWorldForward{0.0F, 0.0F, -1.0F};
 
 } // namespace
 
-glm::mat4 Camera::ComputeProjectionMatrix(float aspect_ratio) const {
+glm::mat4 Camera::ComputeProjectionMatrix(f32 aspect_ratio) const {
   return glm::perspective(glm::radians(fov), aspect_ratio, near_plane, far_plane);
 }
 

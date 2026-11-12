@@ -2,11 +2,12 @@
 
 #include <glm/glm.hpp>
 
-#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <string>
 #include <unordered_map>
+
+#include "types.hpp"
 
 class Program final {
 public:
@@ -27,9 +28,9 @@ public:
 
   void Use() const;
 
-  void SetUniform(const char *name, float value) const;
-  void SetUniform(const char *name, std::int32_t value) const;
-  void SetUniform(const char *name, std::uint32_t value) const;
+  void SetUniform(const char *name, f32 value) const;
+  void SetUniform(const char *name, i32 value) const;
+  void SetUniform(const char *name, u32 value) const;
   void SetUniform(const char *name, const glm::vec2 &value) const;
   void SetUniform(const char *name, const glm::vec3 &value) const;
   void SetUniform(const char *name, const glm::vec4 &value) const;
@@ -44,16 +45,16 @@ public:
   void SetUniform(const char *name, const glm::mat4 &value) const;
 
 private:
-  explicit Program(std::uint32_t handle);
+  explicit Program(u32 handle);
 
-  [[nodiscard]] std::int32_t GetUniformLocation(const char *name) const;
+  [[nodiscard]] i32 GetUniformLocation(const char *name) const;
 
   void Reset() noexcept;
 
-  std::uint32_t handle_;
+  u32 handle_;
   std::filesystem::path vs_path_;
   std::filesystem::path fs_path_;
   std::filesystem::file_time_type vs_attempted_write_time_;
   std::filesystem::file_time_type fs_attempted_write_time_;
-  mutable std::unordered_map<std::string, std::int32_t> uniform_locations_;
+  mutable std::unordered_map<std::string, i32> uniform_locations_;
 };

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
+#include "types.hpp"
 #include "vertex.hpp"
 
 struct MeshData final {
   std::vector<Vertex> vertices;
-  std::vector<std::uint32_t> indices;
+  std::vector<u32> indices;
 };

@@ -6,8 +6,6 @@
 #include <spdlog/spdlog.h>
 
 #include <cassert>
-#include <cstddef>
-#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -18,11 +16,12 @@
 #include <utility>
 
 #include "scope_exit.hpp"
+#include "types.hpp"
 
 namespace {
 
-[[nodiscard]] std::optional<std::uint32_t> CompileShader(std::uint32_t type, const char *source) {
-  const std::uint32_t handle{glCreateShader(type)};
+[[nodiscard]] std::optional<u32> CompileShader(u32 type, const char *source) {
+  const u32 handle{glCreateShader(type)};
   if (handle == 0) {
     spdlog::error("Failed to create shader.");
     return std::nullopt;
@@ -32,26 +31,26 @@ namespace {
   glShaderSource(handle, 1, &source, nullptr);
   glCompileShader(handle);
 
-  std::int32_t success{};
+  i32 success{};
   glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
   if (success == 0) {
-    std::int32_t info_log_length{};
+    i32 info_log_length{};
     glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    std::string info_log(static_cast<usize>(info_log_length), '\0');
     glGetShaderInfoLog(handle, info_log_length, nullptr, info_log.data());
     if (info_log_length > 0) {
-      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+      info_log.resize(static_cast<usize>(info_log_length) - 1);
     }
     spdlog::error("Failed to compile shader:\n{}", info_log);
     return std::nullopt;
   }
 
   shader_guard.Release();
-  return std::optional<std::uint32_t>{handle};
+  return std::optional<u32>{handle};
 }
 
-[[nodiscard]] std::optional<std::uint32_t> LinkProgram(std::uint32_t vs_handle, std::uint32_t fs_handle) {
-  const std::uint32_t handle{glCreateProgram()};
+[[nodiscard]] std::optional<u32> LinkProgram(u32 vs_handle, u32 fs_handle) {
+  const u32 handle{glCreateProgram()};
   if (handle == 0) {
     spdlog::error("Failed to create program.");
     return std::nullopt;
@@ -66,22 +65,22 @@ namespace {
   glDetachShader(handle, vs_handle);
   glDetachShader(handle, fs_handle);
 
-  std::int32_t success{};
+  i32 success{};
   glGetProgramiv(handle, GL_LINK_STATUS, &success);
   if (success == 0) {
-    std::int32_t info_log_length{};
+    i32 info_log_length{};
     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::string info_log(static_cast<std::size_t>(info_log_length), '\0');
+    std::string info_log(static_cast<usize>(info_log_length), '\0');
     glGetProgramInfoLog(handle, info_log_length, nullptr, info_log.data());
     if (info_log_length > 0) {
-      info_log.resize(static_cast<std::size_t>(info_log_length) - 1);
+      info_log.resize(static_cast<usize>(info_log_length) - 1);
     }
     spdlog::error("Failed to link program:\n{}", info_log);
     return std::nullopt;
   }
 
   program_guard.Release();
-  return std::optional<std::uint32_t>{handle};
+  return std::optional<u32>{handle};
 }
 
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
@@ -137,13 +136,13 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
   if (!vs_handle.has_value()) {
     return std::nullopt;
   }
-  ScopeExit vs_guard{[handle = *vs_handle] { glDeleteShader(handle); }};
+  ScopeExit vs_guard{[&vs_handle] { glDeleteShader(*vs_handle); }};
 
   const auto fs_handle{CompileShader(GL_FRAGMENT_SHADER, fs_source)};
   if (!fs_handle.has_value()) {
     return std::nullopt;
   }
-  ScopeExit fs_guard{[handle = *fs_handle] { glDeleteShader(handle); }};
+  ScopeExit fs_guard{[&fs_handle] { glDeleteShader(*fs_handle); }};
 
   const auto handle{LinkProgram(*vs_handle, *fs_handle)};
   if (!handle.has_value()) {
@@ -244,17 +243,17 @@ void Program::Use() const {
   glUseProgram(handle_);
 }
 
-void Program::SetUniform(const char *name, float value) const {
+void Program::SetUniform(const char *name, f32 value) const {
   assert(handle_ != 0);
   glProgramUniform1f(handle_, GetUniformLocation(name), value);
 }
 
-void Program::SetUniform(const char *name, std::int32_t value) const {
+void Program::SetUniform(const char *name, i32 value) const {
   assert(handle_ != 0);
   glProgramUniform1i(handle_, GetUniformLocation(name), value);
 }
 
-void Program::SetUniform(const char *name, std::uint32_t value) const {
+void Program::SetUniform(const char *name, u32 value) const {
   assert(handle_ != 0);
   glProgramUniform1ui(handle_, GetUniformLocation(name), value);
 }
@@ -319,16 +318,16 @@ void Program::SetUniform(const char *name, const glm::mat4 &value) const {
   glProgramUniformMatrix4fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-Program::Program(std::uint32_t handle)
+Program::Program(u32 handle)
     : handle_{handle} {}
 
-std::int32_t Program::GetUniformLocation(const char *name) const {
+i32 Program::GetUniformLocation(const char *name) const {
   const auto it{uniform_locations_.find(name)};
   if (it != uniform_locations_.end()) {
     return it->second;
   }
 
-  const std::int32_t location{glGetUniformLocation(handle_, name)};
+  const i32 location{glGetUniformLocation(handle_, name)};
   if (location == -1) {
     spdlog::warn("Shader uniform '{}' not found.", name);
   }

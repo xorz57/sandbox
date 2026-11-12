@@ -9,7 +9,6 @@
 #include <spdlog/spdlog.h>
 
 #include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 
 #include "camera.hpp"
@@ -19,6 +18,7 @@
 #include "primitives.hpp"
 #include "program.hpp"
 #include "scope_exit.hpp"
+#include "types.hpp"
 #include "vertex.hpp"
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -42,9 +42,9 @@ int main() {
 
 #pragma region CreateWindow
   const char *title{"sandbox"};
-  const float main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
-  const std::int32_t w{static_cast<std::int32_t>(1'280 * main_scale)};
-  const std::int32_t h{static_cast<std::int32_t>(720 * main_scale)};
+  const f32 main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
+  const i32 w{static_cast<i32>(1'280 * main_scale)};
+  const i32 h{static_cast<i32>(720 * main_scale)};
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
@@ -136,7 +136,7 @@ int main() {
 
   const MeshData cube_data{primitives::MakeCube()};
 
-  GLuint cube_vbo{};
+  u32 cube_vbo{};
   glCreateBuffers(1, &cube_vbo);
   if (cube_vbo == 0) {
     spdlog::error("Failed to create OpenGL vertex buffer.");
@@ -144,7 +144,7 @@ int main() {
   }
   const auto cube_vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &cube_vbo); }}};
 
-  GLuint cube_ebo{};
+  u32 cube_ebo{};
   glCreateBuffers(1, &cube_ebo);
   if (cube_ebo == 0) {
     spdlog::error("Failed to create OpenGL index buffer.");
@@ -152,7 +152,7 @@ int main() {
   }
   const auto cube_ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &cube_ebo); }}};
 
-  GLuint cube_vao{};
+  u32 cube_vao{};
   glCreateVertexArrays(1, &cube_vao);
   if (cube_vao == 0) {
     spdlog::error("Failed to create OpenGL vertex array.");
@@ -160,28 +160,28 @@ int main() {
   }
   const auto cube_vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &cube_vao); }}};
 
-  const std::ptrdiff_t vertices_bytes{static_cast<std::ptrdiff_t>(cube_data.vertices.size() * sizeof(Vertex))};
+  const isize vertices_bytes{static_cast<isize>(cube_data.vertices.size() * sizeof(Vertex))};
   glNamedBufferStorage(cube_vbo, vertices_bytes, cube_data.vertices.data(), 0);
 
-  const std::ptrdiff_t indices_bytes{static_cast<std::ptrdiff_t>(cube_data.indices.size() * sizeof(std::uint32_t))};
+  const isize indices_bytes{static_cast<isize>(cube_data.indices.size() * sizeof(u32))};
   glNamedBufferStorage(cube_ebo, indices_bytes, cube_data.indices.data(), 0);
 
-  glVertexArrayVertexBuffer(cube_vao, 0, cube_vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  glVertexArrayVertexBuffer(cube_vao, 0, cube_vbo, 0, static_cast<i32>(sizeof(Vertex)));
   glVertexArrayElementBuffer(cube_vao, cube_ebo);
 
   glEnableVertexArrayAttrib(cube_vao, 0);
   glEnableVertexArrayAttrib(cube_vao, 1);
   glEnableVertexArrayAttrib(cube_vao, 2);
 
-  glVertexArrayAttribFormat(cube_vao, 0, 3, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, position)));
-  glVertexArrayAttribFormat(cube_vao, 1, 3, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, normal)));
-  glVertexArrayAttribFormat(cube_vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, uv)));
+  glVertexArrayAttribFormat(cube_vao, 0, 3, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, position)));
+  glVertexArrayAttribFormat(cube_vao, 1, 3, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, normal)));
+  glVertexArrayAttribFormat(cube_vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, uv)));
 
   glVertexArrayAttribBinding(cube_vao, 0, 0);
   glVertexArrayAttribBinding(cube_vao, 1, 0);
   glVertexArrayAttribBinding(cube_vao, 2, 0);
 
-  const GLsizei cube_index_count{static_cast<GLsizei>(cube_data.indices.size())};
+  const i32 cube_index_count{static_cast<i32>(cube_data.indices.size())};
 
   auto lit_program{Program::Create("assets/shaders/lit")};
   if (!lit_program.has_value()) {
@@ -213,8 +213,8 @@ int main() {
 #pragma endregion ProcessEvents
 
 #pragma region UpdateViewport
-    std::int32_t framebuffer_w{};
-    std::int32_t framebuffer_h{};
+    i32 framebuffer_w{};
+    i32 framebuffer_h{};
     SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
 #pragma endregion UpdateViewport
@@ -224,7 +224,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #pragma endregion ClearFramebuffer
 
-    const float framebuffer_a{static_cast<float>(framebuffer_w) / static_cast<float>(framebuffer_h)};
+    const f32 framebuffer_a{static_cast<f32>(framebuffer_w) / static_cast<f32>(framebuffer_h)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
