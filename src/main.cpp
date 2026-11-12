@@ -8,16 +8,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 
 #include "camera.hpp"
 #include "material.hpp"
-#include "mesh.hpp"
+#include "mesh_data.hpp"
 #include "point_light.hpp"
 #include "primitives.hpp"
 #include "program.hpp"
 #include "scope_exit.hpp"
+#include "vertex.hpp"
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
@@ -132,10 +134,54 @@ int main() {
   const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
   const glm::mat3 cube4_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube4_model}))};
 
-  const auto cube_mesh{Mesh::Create(primitives::MakeCube())};
-  if (!cube_mesh.has_value()) {
+  const MeshData cube_data{primitives::MakeCube()};
+
+  GLuint cube_vbo{};
+  glCreateBuffers(1, &cube_vbo);
+  if (cube_vbo == 0) {
+    spdlog::error("Failed to create OpenGL vertex buffer.");
     return EXIT_FAILURE;
   }
+  const auto cube_vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &cube_vbo); }}};
+
+  GLuint cube_ebo{};
+  glCreateBuffers(1, &cube_ebo);
+  if (cube_ebo == 0) {
+    spdlog::error("Failed to create OpenGL index buffer.");
+    return EXIT_FAILURE;
+  }
+  const auto cube_ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &cube_ebo); }}};
+
+  GLuint cube_vao{};
+  glCreateVertexArrays(1, &cube_vao);
+  if (cube_vao == 0) {
+    spdlog::error("Failed to create OpenGL vertex array.");
+    return EXIT_FAILURE;
+  }
+  const auto cube_vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &cube_vao); }}};
+
+  const std::ptrdiff_t vertices_bytes{static_cast<std::ptrdiff_t>(cube_data.vertices.size() * sizeof(Vertex))};
+  glNamedBufferStorage(cube_vbo, vertices_bytes, cube_data.vertices.data(), 0);
+
+  const std::ptrdiff_t indices_bytes{static_cast<std::ptrdiff_t>(cube_data.indices.size() * sizeof(std::uint32_t))};
+  glNamedBufferStorage(cube_ebo, indices_bytes, cube_data.indices.data(), 0);
+
+  glVertexArrayVertexBuffer(cube_vao, 0, cube_vbo, 0, static_cast<std::int32_t>(sizeof(Vertex)));
+  glVertexArrayElementBuffer(cube_vao, cube_ebo);
+
+  glEnableVertexArrayAttrib(cube_vao, 0);
+  glEnableVertexArrayAttrib(cube_vao, 1);
+  glEnableVertexArrayAttrib(cube_vao, 2);
+
+  glVertexArrayAttribFormat(cube_vao, 0, 3, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, position)));
+  glVertexArrayAttribFormat(cube_vao, 1, 3, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, normal)));
+  glVertexArrayAttribFormat(cube_vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<GLuint>(offsetof(Vertex, uv)));
+
+  glVertexArrayAttribBinding(cube_vao, 0, 0);
+  glVertexArrayAttribBinding(cube_vao, 1, 0);
+  glVertexArrayAttribBinding(cube_vao, 2, 0);
+
+  const GLsizei cube_index_count{static_cast<GLsizei>(cube_data.indices.size())};
 
   auto lit_program{Program::Create("assets/shaders/lit")};
   if (!lit_program.has_value()) {
@@ -182,6 +228,8 @@ int main() {
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
+    glBindVertexArray(cube_vao);
+
     lit_program->ReloadIfChanged();
 
     lit_program->Use();
@@ -202,7 +250,7 @@ int main() {
     lit_program->SetUniform("u_material.diffuse", cube1_material.diffuse);
     lit_program->SetUniform("u_material.specular", cube1_material.specular);
     lit_program->SetUniform("u_material.shininess", cube1_material.shininess);
-    cube_mesh->Draw();
+    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube2_model);
     lit_program->SetUniform("u_normal_matrix", cube2_normal_matrix);
@@ -210,7 +258,7 @@ int main() {
     lit_program->SetUniform("u_material.diffuse", cube2_material.diffuse);
     lit_program->SetUniform("u_material.specular", cube2_material.specular);
     lit_program->SetUniform("u_material.shininess", cube2_material.shininess);
-    cube_mesh->Draw();
+    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube3_model);
     lit_program->SetUniform("u_normal_matrix", cube3_normal_matrix);
@@ -218,7 +266,7 @@ int main() {
     lit_program->SetUniform("u_material.diffuse", cube3_material.diffuse);
     lit_program->SetUniform("u_material.specular", cube3_material.specular);
     lit_program->SetUniform("u_material.shininess", cube3_material.shininess);
-    cube_mesh->Draw();
+    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube4_model);
     lit_program->SetUniform("u_normal_matrix", cube4_normal_matrix);
@@ -226,7 +274,7 @@ int main() {
     lit_program->SetUniform("u_material.diffuse", cube4_material.diffuse);
     lit_program->SetUniform("u_material.specular", cube4_material.specular);
     lit_program->SetUniform("u_material.shininess", cube4_material.shininess);
-    cube_mesh->Draw();
+    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
 
     SDL_GL_SwapWindow(window);
   }

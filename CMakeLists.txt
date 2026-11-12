@@ -22,7 +22,6 @@ target_sources(
   sandbox
   PRIVATE src/main.cpp
           src/camera.cpp
-          src/mesh.cpp
           src/primitives.cpp
           src/program.cpp)
 
