@@ -51,10 +51,10 @@ private:
 
   void Reset() noexcept;
 
-  u32 handle_;
-  std::filesystem::path vs_path_;
-  std::filesystem::path fs_path_;
-  std::filesystem::file_time_type vs_attempted_write_time_;
-  std::filesystem::file_time_type fs_attempted_write_time_;
-  mutable std::unordered_map<std::string, i32> uniform_locations_;
+  u32 m_handle;
+  std::filesystem::path m_vs_path;
+  std::filesystem::path m_fs_path;
+  std::filesystem::file_time_type m_vs_attempted_write_time;
+  std::filesystem::file_time_type m_fs_attempted_write_time;
+  mutable std::unordered_map<std::string, i32> m_uniform_locations;
 };

@@ -9,11 +9,11 @@ template <typename F>
 class [[nodiscard]] ScopeExit {
 public:
   explicit ScopeExit(F f) noexcept(std::is_nothrow_move_constructible_v<F>)
-      : f_{std::move(f)} {}
+      : m_f{std::move(f)} {}
 
   ~ScopeExit() {
-    if (active_) {
-      f_();
+    if (m_active) {
+      m_f();
     }
   }
 
@@ -23,9 +23,9 @@ public:
   auto operator=(const ScopeExit &) -> ScopeExit & = delete;
   auto operator=(ScopeExit &&) -> ScopeExit & = delete;
 
-  auto Release() noexcept -> void { active_ = false; }
+  auto Release() noexcept -> void { m_active = false; }
 
 private:
-  F f_;
-  bool active_{true};
+  F m_f;
+  bool m_active{true};
 };

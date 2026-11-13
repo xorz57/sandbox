@@ -111,22 +111,22 @@ namespace {
 Program::~Program() { Reset(); }
 
 Program::Program(Program &&other) noexcept
-    : handle_{std::exchange(other.handle_, 0)},
-      vs_path_{std::move(other.vs_path_)},
-      fs_path_{std::move(other.fs_path_)},
-      vs_attempted_write_time_{other.vs_attempted_write_time_},
-      fs_attempted_write_time_{other.fs_attempted_write_time_},
-      uniform_locations_{std::move(other.uniform_locations_)} {}
+    : m_handle{std::exchange(other.m_handle, 0)},
+      m_vs_path{std::move(other.m_vs_path)},
+      m_fs_path{std::move(other.m_fs_path)},
+      m_vs_attempted_write_time{other.m_vs_attempted_write_time},
+      m_fs_attempted_write_time{other.m_fs_attempted_write_time},
+      m_uniform_locations{std::move(other.m_uniform_locations)} {}
 
 Program &Program::operator=(Program &&other) noexcept {
   if (this != &other) {
     Reset();
-    handle_ = std::exchange(other.handle_, 0);
-    vs_path_ = std::move(other.vs_path_);
-    fs_path_ = std::move(other.fs_path_);
-    vs_attempted_write_time_ = other.vs_attempted_write_time_;
-    fs_attempted_write_time_ = other.fs_attempted_write_time_;
-    uniform_locations_ = std::move(other.uniform_locations_);
+    m_handle = std::exchange(other.m_handle, 0);
+    m_vs_path = std::move(other.m_vs_path);
+    m_fs_path = std::move(other.m_fs_path);
+    m_vs_attempted_write_time = other.m_vs_attempted_write_time;
+    m_fs_attempted_write_time = other.m_fs_attempted_write_time;
+    m_uniform_locations = std::move(other.m_uniform_locations);
   }
   return *this;
 }
@@ -177,11 +177,11 @@ std::optional<Program> Program::Create(const std::filesystem::path &vs_path, con
     return std::nullopt;
   }
 
-  program->vs_path_ = vs_path;
-  program->fs_path_ = fs_path;
+  program->m_vs_path = vs_path;
+  program->m_fs_path = fs_path;
 
-  program->vs_attempted_write_time_ = *vs_write_time;
-  program->fs_attempted_write_time_ = *fs_write_time;
+  program->m_vs_attempted_write_time = *vs_write_time;
+  program->m_fs_attempted_write_time = *fs_write_time;
 
   return program;
 }
@@ -191,153 +191,153 @@ std::optional<Program> Program::Create(const std::filesystem::path &path) {
 }
 
 void Program::ReloadIfChanged() {
-  if (vs_path_.empty()) {
+  if (m_vs_path.empty()) {
     return;
   }
 
-  if (fs_path_.empty()) {
+  if (m_fs_path.empty()) {
     return;
   }
 
-  const auto vs_write_time{GetLastWriteTime(vs_path_)};
+  const auto vs_write_time{GetLastWriteTime(m_vs_path)};
   if (!vs_write_time.has_value()) {
     return;
   }
 
-  const auto fs_write_time{GetLastWriteTime(fs_path_)};
+  const auto fs_write_time{GetLastWriteTime(m_fs_path)};
   if (!fs_write_time.has_value()) {
     return;
   }
 
   bool has_changed{false};
 
-  if (*vs_write_time != vs_attempted_write_time_) {
+  if (*vs_write_time != m_vs_attempted_write_time) {
     has_changed = true;
-    vs_attempted_write_time_ = *vs_write_time;
-    spdlog::info("Shader '{}' changed.", vs_path_.string());
+    m_vs_attempted_write_time = *vs_write_time;
+    spdlog::info("Shader '{}' changed.", m_vs_path.string());
   }
 
-  if (*fs_write_time != fs_attempted_write_time_) {
+  if (*fs_write_time != m_fs_attempted_write_time) {
     has_changed = true;
-    fs_attempted_write_time_ = *fs_write_time;
-    spdlog::info("Shader '{}' changed.", fs_path_.string());
+    m_fs_attempted_write_time = *fs_write_time;
+    spdlog::info("Shader '{}' changed.", m_fs_path.string());
   }
 
   if (!has_changed) {
     return;
   }
 
-  auto program{Create(vs_path_, fs_path_)};
+  auto program{Create(m_vs_path, m_fs_path)};
   if (!program.has_value()) {
     spdlog::warn("Keeping the previous program after a failed reload.");
     return;
   }
 
-  std::swap(handle_, program->handle_);
+  std::swap(m_handle, program->m_handle);
 
-  uniform_locations_.clear();
+  m_uniform_locations.clear();
 }
 
 void Program::Use() const {
-  assert(handle_ != 0);
-  glUseProgram(handle_);
+  assert(m_handle != 0);
+  glUseProgram(m_handle);
 }
 
 void Program::SetUniform(const char *name, f32 value) const {
-  assert(handle_ != 0);
-  glProgramUniform1f(handle_, GetUniformLocation(name), value);
+  assert(m_handle != 0);
+  glProgramUniform1f(m_handle, GetUniformLocation(name), value);
 }
 
 void Program::SetUniform(const char *name, i32 value) const {
-  assert(handle_ != 0);
-  glProgramUniform1i(handle_, GetUniformLocation(name), value);
+  assert(m_handle != 0);
+  glProgramUniform1i(m_handle, GetUniformLocation(name), value);
 }
 
 void Program::SetUniform(const char *name, u32 value) const {
-  assert(handle_ != 0);
-  glProgramUniform1ui(handle_, GetUniformLocation(name), value);
+  assert(m_handle != 0);
+  glProgramUniform1ui(m_handle, GetUniformLocation(name), value);
 }
 
 void Program::SetUniform(const char *name, const glm::vec2 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform2fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform2fv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::vec3 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform3fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform3fv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::vec4 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform4fv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform4fv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec2 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform2iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform2iv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec3 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform3iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform3iv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::ivec4 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform4iv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform4iv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec2 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform2uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform2uiv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec3 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform3uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform3uiv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::uvec4 &value) const {
-  assert(handle_ != 0);
-  glProgramUniform4uiv(handle_, GetUniformLocation(name), 1, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniform4uiv(m_handle, GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat2 &value) const {
-  assert(handle_ != 0);
-  glProgramUniformMatrix2fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniformMatrix2fv(m_handle, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat3 &value) const {
-  assert(handle_ != 0);
-  glProgramUniformMatrix3fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniformMatrix3fv(m_handle, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Program::SetUniform(const char *name, const glm::mat4 &value) const {
-  assert(handle_ != 0);
-  glProgramUniformMatrix4fv(handle_, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+  assert(m_handle != 0);
+  glProgramUniformMatrix4fv(m_handle, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 Program::Program(u32 handle)
-    : handle_{handle} {}
+    : m_handle{handle} {}
 
 i32 Program::GetUniformLocation(const char *name) const {
-  const auto it{uniform_locations_.find(name)};
-  if (it != uniform_locations_.end()) {
+  const auto it{m_uniform_locations.find(name)};
+  if (it != m_uniform_locations.end()) {
     return it->second;
   }
 
-  const i32 location{glGetUniformLocation(handle_, name)};
+  const i32 location{glGetUniformLocation(m_handle, name)};
   if (location == -1) {
     spdlog::warn("Shader uniform '{}' not found.", name);
   }
-  uniform_locations_.emplace(name, location);
+  m_uniform_locations.emplace(name, location);
   return location;
 }
 
 void Program::Reset() noexcept {
-  if (handle_ != 0) {
-    glDeleteProgram(handle_);
-    handle_ = 0;
+  if (m_handle != 0) {
+    glDeleteProgram(m_handle);
+    m_handle = 0;
   }
 }
