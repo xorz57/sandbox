@@ -84,16 +84,6 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  const PointLight point_light{
-      .position = {0.0F, 0.0F, 2.0F},
-      .ambient = {0.2F, 0.2F, 0.2F},
-      .diffuse = {1.0F, 1.0F, 1.0F},
-      .specular = {1.0F, 1.0F, 1.0F},
-      .kc = 1.0F,
-      .kl = 0.09F,
-      .kq = 0.032F,
-  };
-
   glm::mat4 cube1_model{glm::mat4{1.0F}};
   glm::mat4 cube2_model{glm::mat4{1.0F}};
   glm::mat4 cube3_model{glm::mat4{1.0F}};
@@ -191,6 +181,16 @@ int main() {
   if (!lit_program.has_value()) {
     return EXIT_FAILURE;
   }
+
+  const PointLight point_light{
+      .position = {0.0F, 0.0F, 2.0F},
+      .ambient = {0.1F, 0.1F, 0.1F},
+      .diffuse = {1.0F, 1.0F, 1.0F},
+      .specular = {0.3F, 0.3F, 0.3F},
+      .kc = 1.0F,
+      .kl = 0.09F,
+      .kq = 0.032F,
+  };
 
   const Camera camera{.position = {0.0F, 0.0F, 4.0F}};
 
