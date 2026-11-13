@@ -148,9 +148,9 @@ int main() {
   for (i32 y{}; y < texture_size; ++y) {
     for (i32 x{}; x < texture_size; ++x) {
       const bool is_light_tile{((x / 2) + (y / 2)) % 2 == 0};
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 224 : 72));
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 170 : 96));
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 96 : 160));
+      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 242 : 193));
+      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 204 : 102));
+      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 143 : 74));
       texture_pixels.push_back(255);
     }
   }
