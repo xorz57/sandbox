@@ -117,7 +117,7 @@ int main() {
     spdlog::error("Failed to create OpenGL vertex buffer.");
     return EXIT_FAILURE;
   }
-  const auto cube_vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &vbo); }}};
+  const auto vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &vbo); }}};
 
   u32 ebo{};
   glCreateBuffers(1, &ebo);
@@ -125,7 +125,7 @@ int main() {
     spdlog::error("Failed to create OpenGL index buffer.");
     return EXIT_FAILURE;
   }
-  const auto cube_ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &ebo); }}};
+  const auto ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &ebo); }}};
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
@@ -133,7 +133,7 @@ int main() {
     spdlog::error("Failed to create OpenGL vertex array.");
     return EXIT_FAILURE;
   }
-  const auto cube_vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
+  const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
   const isize vertices_bytes{static_cast<isize>(cube_mesh_data.vertices.size() * sizeof(Vertex))};
   glNamedBufferStorage(vbo, vertices_bytes, cube_mesh_data.vertices.data(), 0);
@@ -185,7 +185,7 @@ int main() {
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  const i32 cube_index_count{static_cast<i32>(cube_mesh_data.indices.size())};
+  const i32 index_count{static_cast<i32>(cube_mesh_data.indices.size())};
 
   auto lit_program{Program::Create("assets/shaders/lit")};
   if (!lit_program.has_value()) {
@@ -253,19 +253,19 @@ int main() {
 
     lit_program->SetUniform("u_model", cube1_model);
     lit_program->SetUniform("u_normal_matrix", cube1_normal_matrix);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube2_model);
     lit_program->SetUniform("u_normal_matrix", cube2_normal_matrix);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube3_model);
     lit_program->SetUniform("u_normal_matrix", cube3_normal_matrix);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
     lit_program->SetUniform("u_model", cube4_model);
     lit_program->SetUniform("u_normal_matrix", cube4_normal_matrix);
-    glDrawElements(GL_TRIANGLES, cube_index_count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
     SDL_GL_SwapWindow(window);
   }
