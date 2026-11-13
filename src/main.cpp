@@ -240,16 +240,20 @@ int main() {
 
     lit_program->Use();
 
-    lit_program->SetUniform("u_texture", 0);
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
+
+    lit_program->SetUniform("u_texture", 0);
+
     lit_program->SetUniform("u_point_light.position", point_light.position);
     lit_program->SetUniform("u_point_light.color", point_light.color);
     lit_program->SetUniform("u_point_light.intensity", point_light.intensity);
     lit_program->SetUniform("u_point_light.kc", point_light.kc);
     lit_program->SetUniform("u_point_light.kl", point_light.kl);
     lit_program->SetUniform("u_point_light.kq", point_light.kq);
+
     lit_program->SetUniform("u_ambient_light", ambient_light);
+
     lit_program->SetUniform("u_camera_position", camera.position);
 
     lit_program->SetUniform("u_model", cube1_model);
