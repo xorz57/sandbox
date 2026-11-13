@@ -10,7 +10,6 @@
 
 #include <cstddef>
 #include <cstdlib>
-#include <vector>
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
@@ -18,6 +17,7 @@
 #include "primitives.hpp"
 #include "program.hpp"
 #include "scope_exit.hpp"
+#include "texture.hpp"
 #include "types.hpp"
 #include "vertex.hpp"
 
@@ -84,22 +84,22 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  glm::mat4 cube1_model{glm::mat4{1.0F}};
-  glm::mat4 cube2_model{glm::mat4{1.0F}};
-  glm::mat4 cube3_model{glm::mat4{1.0F}};
-  glm::mat4 cube4_model{glm::mat4{1.0F}};
+  glm::mat4 model1{glm::mat4{1.0F}};
+  glm::mat4 model2{glm::mat4{1.0F}};
+  glm::mat4 model3{glm::mat4{1.0F}};
+  glm::mat4 model4{glm::mat4{1.0F}};
 
-  cube1_model = glm::translate(cube1_model, {-1.0F, 1.0F, 0.0F});
-  cube2_model = glm::translate(cube2_model, {1.0F, 1.0F, 0.0F});
-  cube3_model = glm::translate(cube3_model, {-1.0F, -1.0F, 0.0F});
-  cube4_model = glm::translate(cube4_model, {1.0F, -1.0F, 0.0F});
+  model1 = glm::translate(model1, {-1.0F, 1.0F, 0.0F});
+  model2 = glm::translate(model2, {1.0F, 1.0F, 0.0F});
+  model3 = glm::translate(model3, {-1.0F, -1.0F, 0.0F});
+  model4 = glm::translate(model4, {1.0F, -1.0F, 0.0F});
 
-  const glm::mat3 cube1_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube1_model}))};
-  const glm::mat3 cube2_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube2_model}))};
-  const glm::mat3 cube3_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube3_model}))};
-  const glm::mat3 cube4_normal_matrix{glm::transpose(glm::inverse(glm::mat3{cube4_model}))};
+  const glm::mat3 normal_matrix1{glm::transpose(glm::inverse(glm::mat3{model1}))};
+  const glm::mat3 normal_matrix2{glm::transpose(glm::inverse(glm::mat3{model2}))};
+  const glm::mat3 normal_matrix3{glm::transpose(glm::inverse(glm::mat3{model3}))};
+  const glm::mat3 normal_matrix4{glm::transpose(glm::inverse(glm::mat3{model4}))};
 
-  const MeshData cube_mesh_data{primitives::MakeCube()};
+  const MeshData mesh_data{primitives::MakeCube()};
 
   u32 vbo{};
   glCreateBuffers(1, &vbo);
@@ -125,40 +125,16 @@ int main() {
   }
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
-  const isize vertices_bytes{static_cast<isize>(cube_mesh_data.vertices.size() * sizeof(Vertex))};
-  glNamedBufferStorage(vbo, vertices_bytes, cube_mesh_data.vertices.data(), 0);
+  const isize vertices_bytes{static_cast<isize>(mesh_data.vertices.size() * sizeof(Vertex))};
+  glNamedBufferStorage(vbo, vertices_bytes, mesh_data.vertices.data(), 0);
 
-  const isize indices_bytes{static_cast<isize>(cube_mesh_data.indices.size() * sizeof(u32))};
-  glNamedBufferStorage(ebo, indices_bytes, cube_mesh_data.indices.data(), 0);
+  const isize indices_bytes{static_cast<isize>(mesh_data.indices.size() * sizeof(u32))};
+  glNamedBufferStorage(ebo, indices_bytes, mesh_data.indices.data(), 0);
 
-  constexpr i32 texture_size{8};
-  constexpr usize texture_pixel_count{static_cast<usize>(texture_size) * static_cast<usize>(texture_size) * 4U};
-  std::vector<u8> texture_pixels;
-  texture_pixels.reserve(texture_pixel_count);
-  for (i32 y{}; y < texture_size; ++y) {
-    for (i32 x{}; x < texture_size; ++x) {
-      const bool is_light_tile{((x / 2) + (y / 2)) % 2 == 0};
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 242 : 193));
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 204 : 102));
-      texture_pixels.push_back(static_cast<u8>(is_light_tile ? 143 : 74));
-      texture_pixels.push_back(255);
-    }
-  }
-
-  u32 texture{};
-  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-  if (texture == 0) {
-    spdlog::error("Failed to create OpenGL texture.");
+  auto texture{Texture::CreateCheckerboard(8, 8, 2, {242, 204, 143, 255}, {193, 102, 74, 255})};
+  if (!texture.has_value()) {
     return EXIT_FAILURE;
   }
-  const auto texture_guard{ScopeExit{[&] { glDeleteTextures(1, &texture); }}};
-
-  glTextureStorage2D(texture, 1, GL_RGBA8, texture_size, texture_size);
-  glTextureSubImage2D(texture, 0, 0, 0, texture_size, texture_size, GL_RGBA, GL_UNSIGNED_BYTE, texture_pixels.data());
-  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<i32>(sizeof(Vertex)));
   glVertexArrayElementBuffer(vao, ebo);
@@ -175,7 +151,7 @@ int main() {
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  const i32 index_count{static_cast<i32>(cube_mesh_data.indices.size())};
+  const i32 index_count{static_cast<i32>(mesh_data.indices.size())};
 
   auto lit_program{Program::Create("assets/shaders/lit")};
   if (!lit_program.has_value()) {
@@ -234,7 +210,8 @@ int main() {
     const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
 
     glBindVertexArray(vao);
-    glBindTextureUnit(0, texture);
+
+    texture->Bind(0);
 
     lit_program->ReloadIfChanged();
 
@@ -256,20 +233,20 @@ int main() {
 
     lit_program->SetUniform("u_camera_position", camera.position);
 
-    lit_program->SetUniform("u_model", cube1_model);
-    lit_program->SetUniform("u_normal_matrix", cube1_normal_matrix);
+    lit_program->SetUniform("u_model", model1);
+    lit_program->SetUniform("u_normal_matrix", normal_matrix1);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
-    lit_program->SetUniform("u_model", cube2_model);
-    lit_program->SetUniform("u_normal_matrix", cube2_normal_matrix);
+    lit_program->SetUniform("u_model", model2);
+    lit_program->SetUniform("u_normal_matrix", normal_matrix2);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
-    lit_program->SetUniform("u_model", cube3_model);
-    lit_program->SetUniform("u_normal_matrix", cube3_normal_matrix);
+    lit_program->SetUniform("u_model", model3);
+    lit_program->SetUniform("u_normal_matrix", normal_matrix3);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
-    lit_program->SetUniform("u_model", cube4_model);
-    lit_program->SetUniform("u_normal_matrix", cube4_normal_matrix);
+    lit_program->SetUniform("u_model", model4);
+    lit_program->SetUniform("u_normal_matrix", normal_matrix4);
     glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
 
     SDL_GL_SwapWindow(window);

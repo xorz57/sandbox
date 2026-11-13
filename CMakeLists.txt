@@ -23,11 +23,14 @@ target_sources(
   PRIVATE src/main.cpp
           src/camera.cpp
           src/primitives.cpp
-          src/program.cpp)
+          src/program.cpp
+          src/stb_image.cpp
+          src/texture.cpp)
 
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)
 target_link_libraries(sandbox PRIVATE SDL3::SDL3)
 target_link_libraries(sandbox PRIVATE spdlog::spdlog)
+target_link_libraries(sandbox PRIVATE stb::stb)
 
 target_copy_assets(sandbox "${CMAKE_CURRENT_SOURCE_DIR}/assets")
