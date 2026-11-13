@@ -79,7 +79,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   if (!handle) {
     return std::nullopt;
   }
-  return Texture{*handle};
+  return std::optional<Texture>{Texture{*handle}};
 }
 
 std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
@@ -91,7 +91,7 @@ std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
   if (!handle) {
     return std::nullopt;
   }
-  return Texture{*handle};
+  return std::optional<Texture>{Texture{*handle}};
 }
 
 std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, std::array<u8, 4> color1,
@@ -127,7 +127,7 @@ std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, 
   if (!handle) {
     return std::nullopt;
   }
-  return Texture{*handle};
+  return std::optional<Texture>{Texture{*handle}};
 }
 
 void Texture::Bind(u32 unit) const { glBindTextureUnit(unit, m_handle); }
