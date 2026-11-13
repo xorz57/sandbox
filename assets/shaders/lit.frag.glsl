@@ -2,16 +2,16 @@
 
 struct PointLight {
   vec3 position;
-  vec3 ambient;
-  vec3 diffuse;
-  vec3 specular;
+  vec3 color;
+  float intensity;
   float kc;
   float kl;
   float kq;
 };
 
-uniform PointLight u_point_light;
 uniform sampler2D u_texture;
+uniform PointLight u_point_light;
+uniform vec3 u_ambient_light;
 uniform vec3 u_camera_position;
 
 in vec3 v_world_position;
@@ -34,9 +34,9 @@ void main() {
   const float diffuse_factor = max(dot(world_normal, light_direction), 0.0F);
   const float specular_factor = pow(max(dot(world_normal, halfway_direction), 0.0F), 32.0F);
 
-  const vec3 ambient = u_point_light.ambient * albedo;
-  const vec3 diffuse = u_point_light.diffuse * diffuse_factor * albedo;
-  const vec3 specular = u_point_light.specular * specular_factor;
+  const vec3 ambient = u_ambient_light * albedo;
+  const vec3 diffuse = u_point_light.color * u_point_light.intensity * diffuse_factor * albedo;
+  const vec3 specular = u_point_light.color * u_point_light.intensity * specular_factor;
 
-  f_color = vec4(attenuation * (ambient + diffuse + specular), 1.0F);
+  f_color = vec4(ambient + attenuation * (diffuse + specular), 1.0F);
 }

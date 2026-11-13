@@ -6,9 +6,8 @@
 
 struct PointLight final {
   glm::vec3 position{};
-  glm::vec3 ambient{};
-  glm::vec3 diffuse{};
-  glm::vec3 specular{};
+  glm::vec3 color{};
+  f32 intensity{};
   f32 kc{};
   f32 kl{};
   f32 kq{};

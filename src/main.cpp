@@ -184,13 +184,14 @@ int main() {
 
   const PointLight point_light{
       .position = {0.0F, 0.0F, 2.0F},
-      .ambient = {0.1F, 0.1F, 0.1F},
-      .diffuse = {1.0F, 1.0F, 1.0F},
-      .specular = {0.3F, 0.3F, 0.3F},
+      .color = {1.0F, 1.0F, 1.0F},
+      .intensity = 1.0F,
       .kc = 1.0F,
       .kl = 0.09F,
       .kq = 0.032F,
   };
+
+  const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
   const Camera camera{.position = {0.0F, 0.0F, 4.0F}};
 
@@ -243,12 +244,12 @@ int main() {
     lit_program->SetUniform("u_projection", projection);
     lit_program->SetUniform("u_view", view);
     lit_program->SetUniform("u_point_light.position", point_light.position);
-    lit_program->SetUniform("u_point_light.ambient", point_light.ambient);
-    lit_program->SetUniform("u_point_light.diffuse", point_light.diffuse);
-    lit_program->SetUniform("u_point_light.specular", point_light.specular);
+    lit_program->SetUniform("u_point_light.color", point_light.color);
+    lit_program->SetUniform("u_point_light.intensity", point_light.intensity);
     lit_program->SetUniform("u_point_light.kc", point_light.kc);
     lit_program->SetUniform("u_point_light.kl", point_light.kl);
     lit_program->SetUniform("u_point_light.kq", point_light.kq);
+    lit_program->SetUniform("u_ambient_light", ambient_light);
     lit_program->SetUniform("u_camera_position", camera.position);
 
     lit_program->SetUniform("u_model", cube1_model);
