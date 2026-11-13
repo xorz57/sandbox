@@ -13,6 +13,40 @@
 #include "scope_exit.hpp"
 #include "types.hpp"
 
+namespace {
+
+bool IsTextureSizeSupported(i32 w, i32 h) {
+  i32 max_texture_size{};
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  if (w > max_texture_size || h > max_texture_size) {
+    spdlog::error("Texture dimensions {}x{} exceed the maximum supported size of {}.", w, h, max_texture_size);
+    return false;
+  }
+  return true;
+}
+
+std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
+  u32 handle{};
+  glCreateTextures(GL_TEXTURE_2D, 1, &handle);
+  if (handle == 0) {
+    spdlog::error("Failed to create OpenGL texture.");
+    return std::nullopt;
+  }
+  ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
+
+  glTextureStorage2D(handle, 1, GL_RGBA8, w, h);
+  glTextureSubImage2D(handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  texture_guard.Release();
+  return handle;
+}
+
+} // namespace
+
 Texture::~Texture() { Reset(); }
 
 Texture::Texture(Texture &&other) noexcept
@@ -37,60 +71,27 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   }
   ScopeExit pixels_guard{[pixels] { stbi_image_free(pixels); }};
 
-  i32 max_texture_size{};
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture dimensions {}x{} exceed the maximum supported size of {}.", w, h, max_texture_size);
+  if (!IsTextureSizeSupported(w, h)) {
     return std::nullopt;
   }
 
-  u32 handle{};
-  glCreateTextures(GL_TEXTURE_2D, 1, &handle);
-  if (handle == 0) {
-    spdlog::error("Failed to create OpenGL texture.");
+  const std::optional<u32> handle{CreateTextureFromPixels(w, h, pixels)};
+  if (!handle) {
     return std::nullopt;
   }
-  ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
-
-  glTextureStorage2D(handle, 1, GL_RGBA8, w, h);
-  glTextureSubImage2D(handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-  glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  texture_guard.Release();
-  return Texture{handle};
+  return Texture{*handle};
 }
 
 std::optional<Texture> Texture::CreateSolidColor(const std::array<u8, 4> &color) {
-  constexpr i32 w{1};
-  constexpr i32 h{1};
-
-  i32 max_texture_size{};
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture dimensions {}x{} exceed the maximum supported size of {}.", w, h, max_texture_size);
+  if (!IsTextureSizeSupported(1, 1)) {
     return std::nullopt;
   }
 
-  u32 handle{};
-  glCreateTextures(GL_TEXTURE_2D, 1, &handle);
-  if (handle == 0) {
-    spdlog::error("Failed to create OpenGL texture.");
+  const std::optional<u32> handle{CreateTextureFromPixels(1, 1, color.data())};
+  if (!handle) {
     return std::nullopt;
   }
-  ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
-
-  glTextureStorage2D(handle, 1, GL_RGBA8, w, h);
-  glTextureSubImage2D(handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, color.data());
-  glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  texture_guard.Release();
-  return Texture{handle};
+  return Texture{*handle};
 }
 
 std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, const std::array<u8, 4> &color1,
@@ -105,10 +106,7 @@ std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, 
     return std::nullopt;
   }
 
-  i32 max_texture_size{};
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture dimensions {}x{} exceed the maximum supported size of {}.", w, h, max_texture_size);
+  if (!IsTextureSizeSupported(w, h)) {
     return std::nullopt;
   }
 
@@ -125,23 +123,11 @@ std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, 
     }
   }
 
-  u32 handle{};
-  glCreateTextures(GL_TEXTURE_2D, 1, &handle);
-  if (handle == 0) {
-    spdlog::error("Failed to create OpenGL texture.");
+  const std::optional<u32> handle{CreateTextureFromPixels(w, h, pixels.data())};
+  if (!handle) {
     return std::nullopt;
   }
-  ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
-
-  glTextureStorage2D(handle, 1, GL_RGBA8, w, h);
-  glTextureSubImage2D(handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-  glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  texture_guard.Release();
-  return Texture{handle};
+  return Texture{*handle};
 }
 
 void Texture::Bind(u32 unit) const { glBindTextureUnit(unit, m_handle); }
