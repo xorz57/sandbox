@@ -82,7 +82,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   return Texture{*handle};
 }
 
-std::optional<Texture> Texture::CreateSolidColor(const std::array<u8, 4> &color) {
+std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
   if (!IsTextureSizeSupported(1, 1)) {
     return std::nullopt;
   }
@@ -94,8 +94,8 @@ std::optional<Texture> Texture::CreateSolidColor(const std::array<u8, 4> &color)
   return Texture{*handle};
 }
 
-std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, const std::array<u8, 4> &color1,
-                                                   const std::array<u8, 4> &color2) {
+std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, std::array<u8, 4> color1,
+                                                   std::array<u8, 4> color2) {
   if (tile_step <= 0) {
     spdlog::error("Checkerboard tile size must be positive (received {}).", tile_step);
     return std::nullopt;
