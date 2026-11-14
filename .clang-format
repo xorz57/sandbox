@@ -5,7 +5,6 @@ ColumnLimit: 120
 BreakTemplateDeclarations: Yes
 PackConstructorInitializers: Never
 IncludeBlocks: Regroup
-IncludeIsMainRegex: '(Test)?$'
 IncludeCategories:
   - Regex: '^<(([[:alnum:]_]+/)*[[:alnum:]_]+\.h)'
     Priority: 1
