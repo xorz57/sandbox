@@ -19,7 +19,7 @@ bool IsTextureSizeSupported(i32 w, i32 h) {
   i32 max_texture_size{};
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
   if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture dimensions {}x{} exceed the maximum supported size of {}.", w, h, max_texture_size);
+    spdlog::error("Texture size exceeds the maximum supported size: {}x{} (maximum {}).", w, h, max_texture_size);
     return false;
   }
   return true;
@@ -94,15 +94,15 @@ std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
   return std::optional<Texture>{Texture{*handle}};
 }
 
-std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, std::array<u8, 4> color1,
+std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_size, std::array<u8, 4> color1,
                                                    std::array<u8, 4> color2) {
-  if (tile_step <= 0) {
-    spdlog::error("Checkerboard tile size must be positive (received {}).", tile_step);
+  if (tile_size <= 0) {
+    spdlog::error("Invalid checkerboard tile size: {}.", tile_size);
     return std::nullopt;
   }
 
   if (w <= 0 || h <= 0) {
-    spdlog::error("Texture dimensions must be positive (received {}x{}).", w, h);
+    spdlog::error("Invalid texture dimensions: {}x{}.", w, h);
     return std::nullopt;
   }
 
@@ -114,7 +114,7 @@ std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_step, 
   std::vector<u8> pixels(pixel_bytes);
   for (i32 y{}; y < h; ++y) {
     for (i32 x{}; x < w; ++x) {
-      const auto &color{((x / tile_step) + (y / tile_step)) % 2 == 0 ? color1 : color2};
+      const auto &color{((x / tile_size) + (y / tile_size)) % 2 == 0 ? color1 : color2};
       const usize pixel_index{(static_cast<usize>(y) * static_cast<usize>(w)) + static_cast<usize>(x)};
       const usize pixel_offset{pixel_index * 4U};
       for (usize channel{}; channel < color.size(); ++channel) {
