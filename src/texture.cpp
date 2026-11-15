@@ -27,6 +27,10 @@ bool IsTextureSizeSupported(i32 w, i32 h) {
 }
 
 std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
+  if (!IsTextureSizeSupported(w, h)) {
+    return std::nullopt;
+  }
+
   u32 handle{};
   glCreateTextures(GL_TEXTURE_2D, 1, &handle);
   if (handle == 0) {
@@ -70,10 +74,6 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   }
   ScopeExit pixels_guard{[pixels] { stbi_image_free(pixels); }};
 
-  if (!IsTextureSizeSupported(w, h)) {
-    return std::nullopt;
-  }
-
   const std::optional<u32> handle{CreateTextureFromPixels(w, h, pixels)};
   if (!handle) {
     return std::nullopt;
@@ -83,10 +83,6 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 }
 
 std::optional<Texture> Texture::CreateSolidColor(Color color) {
-  if (!IsTextureSizeSupported(1, 1)) {
-    return std::nullopt;
-  }
-
   const std::optional<u32> handle{CreateTextureFromPixels(1, 1, color.data())};
   if (!handle) {
     return std::nullopt;
@@ -99,10 +95,6 @@ std::optional<Texture> Texture::CreateCheckerboard(Color color1, Color color2) {
   constexpr i32 w{8};
   constexpr i32 h{8};
   constexpr i32 tile_size{2};
-
-  if (!IsTextureSizeSupported(w, h)) {
-    return std::nullopt;
-  }
 
   const usize pixel_bytes{static_cast<usize>(w) * static_cast<usize>(h) * 4U};
   std::vector<u8> pixels(pixel_bytes);
