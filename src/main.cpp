@@ -38,6 +38,8 @@ int main() {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #pragma endregion SetAttributes
 
 #pragma region CreateWindow
@@ -83,6 +85,7 @@ int main() {
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
 
   glm::mat4 model1{glm::mat4{1.0F}};
   glm::mat4 model2{glm::mat4{1.0F}};
