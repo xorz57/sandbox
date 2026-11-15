@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <filesystem>
 #include <optional>
 
@@ -8,8 +7,6 @@
 
 class Texture final {
 public:
-  using Color = std::array<u8, 4>;
-
   ~Texture();
 
   Texture(const Texture &) = delete;
@@ -19,8 +16,6 @@ public:
   Texture &operator=(Texture &&other) noexcept;
 
   [[nodiscard]] static std::optional<Texture> Create(const std::filesystem::path &path);
-  [[nodiscard]] static std::optional<Texture> CreateSolidColor(Color color);
-  [[nodiscard]] static std::optional<Texture> CreateCheckerboard(Color color1, Color color2);
 
   void Bind(u32 unit) const;
 

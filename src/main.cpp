@@ -134,7 +134,7 @@ int main() {
   const isize indices_bytes{static_cast<isize>(mesh_data.indices.size() * sizeof(u32))};
   glNamedBufferStorage(ebo, indices_bytes, mesh_data.indices.data(), 0);
 
-  auto texture{Texture::CreateCheckerboard({242, 204, 143, 255}, {193, 102, 74, 255})};
+  auto texture{Texture::Create("assets/textures/checkerboard.png")};
   if (!texture.has_value()) {
     return EXIT_FAILURE;
   }

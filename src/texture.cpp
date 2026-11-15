@@ -4,12 +4,10 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
-#include <array>
 #include <cassert>
 #include <filesystem>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "scope_exit.hpp"
 #include "types.hpp"
@@ -75,41 +73,6 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   ScopeExit pixels_guard{[pixels] { stbi_image_free(pixels); }};
 
   const std::optional<u32> handle{CreateTextureFromPixels(w, h, pixels)};
-  if (!handle) {
-    return std::nullopt;
-  }
-
-  return std::optional<Texture>{Texture{*handle}};
-}
-
-std::optional<Texture> Texture::CreateSolidColor(Color color) {
-  const std::optional<u32> handle{CreateTextureFromPixels(1, 1, color.data())};
-  if (!handle) {
-    return std::nullopt;
-  }
-
-  return std::optional<Texture>{Texture{*handle}};
-}
-
-std::optional<Texture> Texture::CreateCheckerboard(Color color1, Color color2) {
-  constexpr i32 w{8};
-  constexpr i32 h{8};
-  constexpr i32 tile_size{2};
-
-  const usize pixel_bytes{static_cast<usize>(w) * static_cast<usize>(h) * 4U};
-  std::vector<u8> pixels(pixel_bytes);
-  for (i32 y{}; y < h; ++y) {
-    for (i32 x{}; x < w; ++x) {
-      const auto &color{((x / tile_size) + (y / tile_size)) % 2 == 0 ? color1 : color2};
-      const usize pixel_index{(static_cast<usize>(y) * static_cast<usize>(w)) + static_cast<usize>(x)};
-      const usize pixel_offset{pixel_index * 4U};
-      for (usize channel{}; channel < color.size(); ++channel) {
-        pixels.at(pixel_offset + channel) = color.at(channel);
-      }
-    }
-  }
-
-  const std::optional<u32> handle{CreateTextureFromPixels(w, h, pixels.data())};
   if (!handle) {
     return std::nullopt;
   }
