@@ -82,7 +82,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   return std::optional<Texture>{Texture{*handle}};
 }
 
-std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
+std::optional<Texture> Texture::CreateSolidColor(Color color) {
   if (!IsTextureSizeSupported(1, 1)) {
     return std::nullopt;
   }
@@ -94,10 +94,9 @@ std::optional<Texture> Texture::CreateSolidColor(std::array<u8, 4> color) {
   return std::optional<Texture>{Texture{*handle}};
 }
 
-std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_size, std::array<u8, 4> color1,
-                                                   std::array<u8, 4> color2) {
-  if (tile_size <= 0) {
-    spdlog::error("Invalid checkerboard tile size: {}.", tile_size);
+std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 ts, Color color1, Color color2) {
+  if (ts <= 0) {
+    spdlog::error("Invalid checkerboard tile size: {}.", ts);
     return std::nullopt;
   }
 
@@ -114,7 +113,7 @@ std::optional<Texture> Texture::CreateCheckerboard(i32 w, i32 h, i32 tile_size, 
   std::vector<u8> pixels(pixel_bytes);
   for (i32 y{}; y < h; ++y) {
     for (i32 x{}; x < w; ++x) {
-      const auto &color{((x / tile_size) + (y / tile_size)) % 2 == 0 ? color1 : color2};
+      const auto &color{((x / ts) + (y / ts)) % 2 == 0 ? color1 : color2};
       const usize pixel_index{(static_cast<usize>(y) * static_cast<usize>(w)) + static_cast<usize>(x)};
       const usize pixel_offset{pixel_index * 4U};
       for (usize channel{}; channel < color.size(); ++channel) {

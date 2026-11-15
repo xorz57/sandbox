@@ -8,6 +8,8 @@
 
 class Texture final {
 public:
+  using Color = std::array<u8, 4>;
+
   ~Texture();
 
   Texture(const Texture &) = delete;
@@ -17,9 +19,8 @@ public:
   Texture &operator=(Texture &&other) noexcept;
 
   [[nodiscard]] static std::optional<Texture> Create(const std::filesystem::path &path);
-  [[nodiscard]] static std::optional<Texture> CreateSolidColor(std::array<u8, 4> color);
-  [[nodiscard]] static std::optional<Texture> CreateCheckerboard(i32 w, i32 h, i32 tile_size, std::array<u8, 4> color1,
-                                                                 std::array<u8, 4> color2);
+  [[nodiscard]] static std::optional<Texture> CreateSolidColor(Color color);
+  [[nodiscard]] static std::optional<Texture> CreateCheckerboard(i32 w, i32 h, i32 ts, Color color1, Color color2);
 
   void Bind(u32 unit) const;
 
