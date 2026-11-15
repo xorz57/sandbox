@@ -19,7 +19,7 @@ bool IsTextureSizeSupported(i32 w, i32 h) {
   i32 max_texture_size{};
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
   if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture size exceeds the maximum supported size: {}x{} (maximum {}).", w, h, max_texture_size);
+    spdlog::error("Texture: size {}x{} exceeds the maximum supported size of {}.", w, h, max_texture_size);
     return false;
   }
   return true;
@@ -29,7 +29,7 @@ std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
   u32 handle{};
   glCreateTextures(GL_TEXTURE_2D, 1, &handle);
   if (handle == 0) {
-    spdlog::error("Failed to create OpenGL texture.");
+    spdlog::error("Texture: failed to create OpenGL texture.");
     return std::nullopt;
   }
   ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
@@ -66,7 +66,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, nullptr, STBI_rgb_alpha)};
   if (pixels == nullptr) {
     const char *reason{stbi_failure_reason()};
-    spdlog::error("Failed to load texture '{}': {}", path.string(), reason != nullptr ? reason : "unknown error");
+    spdlog::error("Texture: failed to load '{}': {}.", path.string(), reason != nullptr ? reason : "unknown error");
     return std::nullopt;
   }
   ScopeExit pixels_guard{[pixels] { stbi_image_free(pixels); }};
@@ -122,7 +122,14 @@ std::optional<Texture> Texture::CreateCheckerboard(Color color1, Color color2) {
   return std::optional<Texture>{Texture{*handle}};
 }
 
-void Texture::Bind(u32 unit) const { glBindTextureUnit(unit, m_handle); }
+void Texture::Bind(u32 unit) const {
+  if (m_handle == 0) {
+    spdlog::warn("Texture: attempted to bind an invalid texture object.");
+    return;
+  }
+
+  glBindTextureUnit(unit, m_handle);
+}
 
 Texture::Texture(u32 handle)
     : m_handle{handle} {}

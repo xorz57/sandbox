@@ -23,7 +23,7 @@ namespace {
 [[nodiscard]] std::optional<u32> CompileShader(u32 type, const char *source) {
   const u32 handle{glCreateShader(type)};
   if (handle == 0) {
-    spdlog::error("Failed to create shader.");
+    spdlog::error("Shader: failed to create shader object.");
     return std::nullopt;
   }
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
@@ -41,7 +41,7 @@ namespace {
     if (info_log_length > 0) {
       info_log.resize(static_cast<usize>(info_log_length) - 1);
     }
-    spdlog::error("Failed to compile shader:\n{}", info_log);
+    spdlog::error("Shader: compilation failed:\n{}", info_log);
     return std::nullopt;
   }
 
@@ -52,7 +52,7 @@ namespace {
 [[nodiscard]] std::optional<u32> LinkProgram(u32 vs_handle, u32 fs_handle) {
   const u32 handle{glCreateProgram()};
   if (handle == 0) {
-    spdlog::error("Failed to create program.");
+    spdlog::error("Program: failed to create program object.");
     return std::nullopt;
   }
   ScopeExit program_guard{[handle] { glDeleteProgram(handle); }};
@@ -75,7 +75,7 @@ namespace {
     if (info_log_length > 0) {
       info_log.resize(static_cast<usize>(info_log_length) - 1);
     }
-    spdlog::error("Failed to link program:\n{}", info_log);
+    spdlog::error("Program: linking failed:\n{}", info_log);
     return std::nullopt;
   }
 
@@ -86,7 +86,7 @@ namespace {
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
-    spdlog::error("Failed to open file '{}'.", path.string());
+    spdlog::error("Shader: failed to open file '{}'.", path.string());
     return std::nullopt;
   }
 
@@ -100,7 +100,7 @@ namespace {
   std::error_code error;
   const std::filesystem::file_time_type last_write_time{std::filesystem::last_write_time(path, error)};
   if (error) {
-    spdlog::error("Failed to get last write time for shader file '{}': {}", path.string(), error.message());
+    spdlog::error("Shader: failed to get last write time for '{}': {}.", path.string(), error.message());
     return std::nullopt;
   }
   return std::optional<std::filesystem::file_time_type>{last_write_time};
@@ -214,13 +214,13 @@ void Program::ReloadIfChanged() {
   if (*vs_write_time != m_vs_attempted_write_time) {
     has_changed = true;
     m_vs_attempted_write_time = *vs_write_time;
-    spdlog::info("Shader '{}' changed.", m_vs_path.string());
+    spdlog::info("Shader: '{}' changed.", m_vs_path.string());
   }
 
   if (*fs_write_time != m_fs_attempted_write_time) {
     has_changed = true;
     m_fs_attempted_write_time = *fs_write_time;
-    spdlog::info("Shader '{}' changed.", m_fs_path.string());
+    spdlog::info("Shader: '{}' changed.", m_fs_path.string());
   }
 
   if (!has_changed) {
@@ -229,7 +229,7 @@ void Program::ReloadIfChanged() {
 
   auto program{Create(m_vs_path, m_fs_path)};
   if (!program.has_value()) {
-    spdlog::warn("Keeping the previous program after a failed reload.");
+    spdlog::warn("Program: keeping the previous version after a failed reload.");
     return;
   }
 
@@ -329,7 +329,7 @@ i32 Program::GetUniformLocation(const char *name) const {
 
   const i32 location{glGetUniformLocation(m_handle, name)};
   if (location == -1) {
-    spdlog::warn("Shader uniform '{}' not found.", name);
+    spdlog::warn("Shader: uniform '{}' not found.", name);
   }
   m_uniform_locations.emplace(name, location);
   return location;

@@ -25,7 +25,7 @@
 int main() {
 #pragma region InitSDL
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
-    spdlog::error("Failed to initialize SDL: {}", SDL_GetError());
+    spdlog::error("SDL: failed to initialize: {}.", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
@@ -48,7 +48,7 @@ int main() {
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
-    spdlog::error("Failed to create SDL window: {}", SDL_GetError());
+    spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto window_guard{ScopeExit{[window] { SDL_DestroyWindow(window); }}};
@@ -57,7 +57,7 @@ int main() {
 #pragma region CreateContext
   const SDL_GLContext context{SDL_GL_CreateContext(window)};
   if (context == nullptr) {
-    spdlog::error("Failed to create OpenGL context: {}", SDL_GetError());
+    spdlog::error("OpenGL: failed to create context: {}.", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto context_guard{ScopeExit{[context] { SDL_GL_DestroyContext(context); }}};
@@ -70,15 +70,15 @@ int main() {
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
-    spdlog::error("Failed to initialize GLAD.");
+    spdlog::error("OpenGL: failed to initialize GLAD.");
     return EXIT_FAILURE;
   }
 
   // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL Version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-  spdlog::info("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-  spdlog::info("Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-  spdlog::info("Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+  spdlog::info("OpenGL: version {}.", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+  spdlog::info("OpenGL: GLSL version {}.", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  spdlog::info("OpenGL: vendor {}.", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+  spdlog::info("OpenGL: renderer {}.", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
   // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
   glEnable(GL_CULL_FACE);
@@ -104,7 +104,7 @@ int main() {
   u32 vbo{};
   glCreateBuffers(1, &vbo);
   if (vbo == 0) {
-    spdlog::error("Failed to create OpenGL vertex buffer.");
+    spdlog::error("OpenGL: failed to create vertex buffer.");
     return EXIT_FAILURE;
   }
   const auto vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &vbo); }}};
@@ -112,7 +112,7 @@ int main() {
   u32 ebo{};
   glCreateBuffers(1, &ebo);
   if (ebo == 0) {
-    spdlog::error("Failed to create OpenGL index buffer.");
+    spdlog::error("OpenGL: failed to create index buffer.");
     return EXIT_FAILURE;
   }
   const auto ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &ebo); }}};
@@ -120,7 +120,7 @@ int main() {
   u32 vao{};
   glCreateVertexArrays(1, &vao);
   if (vao == 0) {
-    spdlog::error("Failed to create OpenGL vertex array.");
+    spdlog::error("OpenGL: failed to create vertex array.");
     return EXIT_FAILURE;
   }
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
