@@ -5,6 +5,7 @@
 #include <stb_image.h>
 
 #include <array>
+#include <cassert>
 #include <filesystem>
 #include <optional>
 #include <utility>
@@ -32,7 +33,6 @@ std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
     spdlog::error("Texture: failed to create OpenGL texture.");
     return std::nullopt;
   }
-  ScopeExit texture_guard{[handle] { glDeleteTextures(1, &handle); }};
 
   glTextureStorage2D(handle, 1, GL_RGBA8, w, h);
   glTextureSubImage2D(handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
@@ -41,7 +41,6 @@ std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
   glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  texture_guard.Release();
   return handle;
 }
 
@@ -79,6 +78,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   if (!handle) {
     return std::nullopt;
   }
+
   return std::optional<Texture>{Texture{*handle}};
 }
 
@@ -91,6 +91,7 @@ std::optional<Texture> Texture::CreateSolidColor(Color color) {
   if (!handle) {
     return std::nullopt;
   }
+
   return std::optional<Texture>{Texture{*handle}};
 }
 
@@ -98,6 +99,7 @@ std::optional<Texture> Texture::CreateCheckerboard(Color color1, Color color2) {
   constexpr i32 w{8};
   constexpr i32 h{8};
   constexpr i32 tile_size{2};
+
   if (!IsTextureSizeSupported(w, h)) {
     return std::nullopt;
   }
@@ -119,15 +121,12 @@ std::optional<Texture> Texture::CreateCheckerboard(Color color1, Color color2) {
   if (!handle) {
     return std::nullopt;
   }
+
   return std::optional<Texture>{Texture{*handle}};
 }
 
 void Texture::Bind(u32 unit) const {
-  if (m_handle == 0) {
-    spdlog::warn("Texture: attempted to bind an invalid texture object.");
-    return;
-  }
-
+  assert(m_handle != 0);
   glBindTextureUnit(unit, m_handle);
 }
 
