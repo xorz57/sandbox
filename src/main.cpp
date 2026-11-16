@@ -44,9 +44,8 @@ int main() {
 
 #pragma region CreateWindow
   const char *title{"sandbox"};
-  const f32 main_scale{SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay())};
-  const i32 w{static_cast<i32>(1'280 * main_scale)};
-  const i32 h{static_cast<i32>(720 * main_scale)};
+  const i32 w{1'280};
+  const i32 h{720};
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
   SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
