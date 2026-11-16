@@ -43,11 +43,8 @@ int main() {
 #pragma endregion SetAttributes
 
 #pragma region CreateWindow
-  const char *title{"sandbox"};
-  const i32 w{1'280};
-  const i32 h{720};
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
-  SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
+  SDL_Window *window{SDL_CreateWindow("sandbox", 1'280, 720, flags)};
   if (window == nullptr) {
     spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
     return EXIT_FAILURE;
