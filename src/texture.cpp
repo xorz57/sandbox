@@ -64,6 +64,7 @@ Texture &Texture::operator=(Texture &&other) noexcept {
 std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   i32 w{};
   i32 h{};
+  stbi_set_flip_vertically_on_load(1);
   stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, nullptr, STBI_rgb_alpha)};
   if (pixels == nullptr) {
     const char *reason{stbi_failure_reason()};
