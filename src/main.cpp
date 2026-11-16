@@ -8,8 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
+#include <array>
 #include <cstddef>
 #include <cstdlib>
+#include <utility>
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
@@ -31,16 +33,22 @@ int main() {
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 #pragma endregion InitSDL
 
-#pragma region SetAttributes
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
-#pragma endregion SetAttributes
+  constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> gl_attribute_settings{{
+      {SDL_GL_CONTEXT_MAJOR_VERSION, 4},
+      {SDL_GL_CONTEXT_MINOR_VERSION, 6},
+      {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE},
+      {SDL_GL_DOUBLEBUFFER, 1},
+      {SDL_GL_DEPTH_SIZE, 24},
+      {SDL_GL_STENCIL_SIZE, 8},
+      {SDL_GL_MULTISAMPLEBUFFERS, 1},
+      {SDL_GL_MULTISAMPLESAMPLES, 4},
+  }};
+  for (const auto &[attribute, value] : gl_attribute_settings) {
+    if (!SDL_GL_SetAttribute(attribute, value)) {
+      spdlog::error("SDL: failed to set OpenGL attribute {}: {}.", static_cast<i32>(attribute), SDL_GetError());
+      return EXIT_FAILURE;
+    }
+  }
 
 #pragma region CreateWindow
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
@@ -192,17 +200,13 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-#pragma region UpdateViewport
     i32 framebuffer_w{};
     i32 framebuffer_h{};
     SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
     glViewport(0, 0, framebuffer_w, framebuffer_h);
-#pragma endregion UpdateViewport
 
-#pragma region ClearFramebuffer
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#pragma endregion ClearFramebuffer
 
     const f32 framebuffer_a{static_cast<f32>(framebuffer_w) / static_cast<f32>(framebuffer_h)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
