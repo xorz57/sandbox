@@ -108,7 +108,7 @@ namespace {
 
 } // namespace
 
-Program::~Program() { Reset(); }
+Program::~Program() { glDeleteProgram(m_handle); }
 
 Program::Program(Program &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)},
@@ -120,7 +120,7 @@ Program::Program(Program &&other) noexcept
 
 Program &Program::operator=(Program &&other) noexcept {
   if (this != &other) {
-    Reset();
+    glDeleteProgram(m_handle);
     m_handle = std::exchange(other.m_handle, 0);
     m_vs_path = std::move(other.m_vs_path);
     m_fs_path = std::move(other.m_fs_path);
@@ -333,11 +333,4 @@ i32 Program::GetUniformLocation(const char *name) const {
   }
   m_uniform_locations.emplace(name, location);
   return location;
-}
-
-void Program::Reset() noexcept {
-  if (m_handle != 0) {
-    glDeleteProgram(m_handle);
-    m_handle = 0;
-  }
 }

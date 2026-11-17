@@ -4,7 +4,7 @@
 
 #include <filesystem>
 #include <optional>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "types.hpp"
@@ -49,12 +49,10 @@ private:
 
   [[nodiscard]] i32 GetUniformLocation(const char *name) const;
 
-  void Reset() noexcept;
-
   u32 m_handle;
   std::filesystem::path m_vs_path;
   std::filesystem::path m_fs_path;
   std::filesystem::file_time_type m_vs_attempted_write_time;
   std::filesystem::file_time_type m_fs_attempted_write_time;
-  mutable std::unordered_map<std::string, i32> m_uniform_locations;
+  mutable std::unordered_map<std::string_view, i32> m_uniform_locations;
 };
