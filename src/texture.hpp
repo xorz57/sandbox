@@ -22,7 +22,5 @@ public:
 private:
   explicit Texture(u32 handle);
 
-  void Reset() noexcept;
-
   u32 m_handle;
 };

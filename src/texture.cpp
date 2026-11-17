@@ -48,14 +48,14 @@ std::optional<u32> CreateTextureFromPixels(i32 w, i32 h, const u8 *pixels) {
 
 } // namespace
 
-Texture::~Texture() { Reset(); }
+Texture::~Texture() { glDeleteTextures(1, &m_handle); }
 
 Texture::Texture(Texture &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)} {}
 
 Texture &Texture::operator=(Texture &&other) noexcept {
   if (this != &other) {
-    Reset();
+    glDeleteTextures(1, &m_handle);
     m_handle = std::exchange(other.m_handle, 0);
   }
   return *this;
@@ -88,10 +88,3 @@ void Texture::Bind(u32 unit) const {
 
 Texture::Texture(u32 handle)
     : m_handle{handle} {}
-
-void Texture::Reset() noexcept {
-  if (m_handle != 0) {
-    glDeleteTextures(1, &m_handle);
-    m_handle = 0;
-  }
-}
