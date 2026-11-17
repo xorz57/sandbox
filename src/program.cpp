@@ -20,6 +20,7 @@
 
 namespace {
 
+// TODO: Consider using std::expected
 [[nodiscard]] std::optional<u32> CompileShader(u32 type, const char *source) {
   const u32 handle{glCreateShader(type)};
   if (handle == 0) {
@@ -49,6 +50,7 @@ namespace {
   return std::optional<u32>{handle};
 }
 
+// TODO: Consider using std::expected
 [[nodiscard]] std::optional<u32> LinkProgram(u32 vs_handle, u32 fs_handle) {
   const u32 handle{glCreateProgram()};
   if (handle == 0) {
@@ -83,6 +85,7 @@ namespace {
   return std::optional<u32>{handle};
 }
 
+// TODO: Consider using std::expected
 [[nodiscard]] std::optional<std::string> ReadFile(const std::filesystem::path &path) {
   const std::ifstream file{path, std::ios::in | std::ios::binary};
   if (!file) {
@@ -96,6 +99,7 @@ namespace {
   return std::optional<std::string>{buffer.str()};
 }
 
+// TODO: Consider using std::expected
 [[nodiscard]] std::optional<std::filesystem::file_time_type> GetLastWriteTime(const std::filesystem::path &path) {
   std::error_code error;
   const std::filesystem::file_time_type last_write_time{std::filesystem::last_write_time(path, error)};
@@ -131,6 +135,7 @@ Program &Program::operator=(Program &&other) noexcept {
   return *this;
 }
 
+// TODO: Consider using std::expected
 std::optional<Program> Program::Create(const char *vs_source, const char *fs_source) {
   const auto vs_handle{CompileShader(GL_VERTEX_SHADER, vs_source)};
   if (!vs_handle.has_value()) {
@@ -151,6 +156,7 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
   return std::optional<Program>{Program{*handle}};
 }
 
+// TODO: Consider using std::expected
 std::optional<Program> Program::Create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
   const auto vs_write_time{GetLastWriteTime(vs_path)};
   if (!vs_write_time.has_value()) {
@@ -186,6 +192,7 @@ std::optional<Program> Program::Create(const std::filesystem::path &vs_path, con
   return program;
 }
 
+// TODO: Consider using std::expected
 std::optional<Program> Program::Create(const std::filesystem::path &path) {
   return Create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
 }
