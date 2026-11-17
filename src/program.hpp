@@ -19,9 +19,14 @@ public:
   Program &operator=(const Program &) = delete;
   Program &operator=(Program &&other) noexcept;
 
+  // TODO: Consider using std::expected
   [[nodiscard]] static std::optional<Program> Create(const char *vs_source, const char *fs_source);
+
+  // TODO: Consider using std::expected
   [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &vs_path,
                                                      const std::filesystem::path &fs_path);
+
+  // TODO: Consider using std::expected
   [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &path);
 
   void ReloadIfChanged();
