@@ -27,11 +27,11 @@ Texture &Texture::operator=(Texture &&other) noexcept {
 
 // TODO: Consider using std::expected
 std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
-  i32 width{};
-  i32 height{};
-  i32 channels{};
+  i32 w{};
+  i32 h{};
+  i32 n{};
   stbi_set_flip_vertically_on_load(1);
-  stbi_uc *pixels{stbi_load(path.string().c_str(), &width, &height, &channels, STBI_rgb_alpha)};
+  stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, &n, 0)};
   if (pixels == nullptr) {
     const char *reason{stbi_failure_reason()};
     spdlog::error("Texture: failed to load '{}': {}.", path.string(), reason != nullptr ? reason : "unknown error");
@@ -41,8 +41,25 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 
   i32 max_texture_size{};
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (width > max_texture_size || height > max_texture_size) {
-    spdlog::error("Texture: size {}x{} exceeds the maximum supported size of {}.", width, height, max_texture_size);
+  if (w > max_texture_size || h > max_texture_size) {
+    spdlog::error("Texture: size {}x{} exceeds the maximum supported size of {}.", w, h, max_texture_size);
+    return std::nullopt;
+  }
+
+  u32 internal_format{};
+  u32 format{};
+
+  switch (n) {
+  case 3:
+    internal_format = GL_RGB8;
+    format = GL_RGB;
+    break;
+  case 4:
+    internal_format = GL_RGBA8;
+    format = GL_RGBA;
+    break;
+  default:
+    spdlog::error("Texture: unsupported number of channels {} in '{}'.", n, path.string());
     return std::nullopt;
   }
 
@@ -53,29 +70,12 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     return std::nullopt;
   }
 
-  u32 internal_format{};
-  u32 format{};
+  glTextureStorage2D(handle, 1, internal_format, w, h);
 
-  switch (channels) {
-  case 3:
-    internal_format = GL_RGB8;
-    format = GL_RGB;
-    break;
-  case 4:
-    internal_format = GL_RGBA8;
-    format = GL_RGBA;
-    break;
-  default:
-    break;
-  }
-
-  glTextureStorage2D(handle, 1, internal_format, width, height);
-
-  glTextureSubImage2D(handle, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, pixels);
+  glTextureSubImage2D(handle, 0, 0, 0, w, h, format, GL_UNSIGNED_BYTE, pixels);
 
   glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
   glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
