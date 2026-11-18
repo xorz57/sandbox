@@ -220,7 +220,7 @@ int main() {
     {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{-1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 0.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
@@ -229,7 +229,7 @@ int main() {
     {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
@@ -238,7 +238,7 @@ int main() {
     {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{-1.0F, -1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 0.0F, 1.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);

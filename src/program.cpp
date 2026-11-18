@@ -112,7 +112,11 @@ namespace {
 
 } // namespace
 
-Program::~Program() { glDeleteProgram(m_handle); }
+Program::~Program() {
+  if (m_handle != 0) {
+    glDeleteProgram(m_handle);
+  }
+}
 
 Program::Program(Program &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)},

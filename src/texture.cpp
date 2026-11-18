@@ -11,7 +11,11 @@
 #include "scope_exit.hpp"
 #include "types.hpp"
 
-Texture::~Texture() { glDeleteTextures(1, &m_handle); }
+Texture::~Texture() {
+  if (m_handle != 0) {
+    glDeleteTextures(1, &m_handle);
+  }
+}
 
 Texture::Texture(Texture &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)} {}
