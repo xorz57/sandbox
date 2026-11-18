@@ -87,5 +87,7 @@ void Texture::Bind(u32 unit) const {
   glBindTextureUnit(unit, m_handle);
 }
 
+void Texture::Unbind(u32 unit) { glBindTextureUnit(unit, 0); }
+
 Texture::Texture(u32 handle)
     : m_handle{handle} {}
