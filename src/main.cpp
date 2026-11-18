@@ -132,8 +132,6 @@ int main() {
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  const i32 index_count{static_cast<i32>(mesh_data.indices.size())};
-
   auto texture{Texture::Create("assets/textures/checkerboard.png")};
   if (!texture.has_value()) {
     return EXIT_FAILURE;
@@ -223,7 +221,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -232,7 +230,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -241,7 +239,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -250,7 +248,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     SDL_GL_SwapWindow(window);
