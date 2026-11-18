@@ -117,11 +117,6 @@ int main() {
   const isize indices_bytes{static_cast<isize>(mesh_data.indices.size() * sizeof(u32))};
   glNamedBufferStorage(ebo, indices_bytes, mesh_data.indices.data(), 0);
 
-  auto texture{Texture::Create("assets/textures/checkerboard.png")};
-  if (!texture.has_value()) {
-    return EXIT_FAILURE;
-  }
-
   glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<i32>(sizeof(Vertex)));
   glVertexArrayElementBuffer(vao, ebo);
 
@@ -139,8 +134,13 @@ int main() {
 
   const i32 index_count{static_cast<i32>(mesh_data.indices.size())};
 
-  auto lit_program{Program::Create("assets/shaders/lit")};
-  if (!lit_program.has_value()) {
+  auto texture{Texture::Create("assets/textures/checkerboard.png")};
+  if (!texture.has_value()) {
+    return EXIT_FAILURE;
+  }
+
+  auto program{Program::Create("assets/shaders/lit")};
+  if (!program.has_value()) {
     return EXIT_FAILURE;
   }
 
@@ -195,25 +195,25 @@ int main() {
 
     texture->Bind(0);
 
-    lit_program->ReloadIfChanged();
+    program->ReloadIfChanged();
 
-    lit_program->Use();
+    program->Use();
 
-    lit_program->SetUniform("u_projection", projection);
-    lit_program->SetUniform("u_view", view);
+    program->SetUniform("u_projection", projection);
+    program->SetUniform("u_view", view);
 
-    lit_program->SetUniform("u_texture", 0);
+    program->SetUniform("u_texture", 0);
 
-    lit_program->SetUniform("u_point_light.position", point_light.position);
-    lit_program->SetUniform("u_point_light.color", point_light.color);
-    lit_program->SetUniform("u_point_light.intensity", point_light.intensity);
-    lit_program->SetUniform("u_point_light.kc", point_light.kc);
-    lit_program->SetUniform("u_point_light.kl", point_light.kl);
-    lit_program->SetUniform("u_point_light.kq", point_light.kq);
+    program->SetUniform("u_point_light.position", point_light.position);
+    program->SetUniform("u_point_light.color", point_light.color);
+    program->SetUniform("u_point_light.intensity", point_light.intensity);
+    program->SetUniform("u_point_light.kc", point_light.kc);
+    program->SetUniform("u_point_light.kl", point_light.kl);
+    program->SetUniform("u_point_light.kq", point_light.kq);
 
-    lit_program->SetUniform("u_ambient_light", ambient_light);
+    program->SetUniform("u_ambient_light", ambient_light);
 
-    lit_program->SetUniform("u_camera_position", camera.position);
+    program->SetUniform("u_camera_position", camera.position);
 
     const f32 time{static_cast<f32>(SDL_GetTicks()) / 1'000.0F};
 
@@ -221,8 +221,8 @@ int main() {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{-1.0F, 1.0F, 0.0F});
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 0.0F, 0.0F});
-      lit_program->SetUniform("u_model", model);
-      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      program->SetUniform("u_model", model);
+      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
     }
 
@@ -230,8 +230,8 @@ int main() {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{1.0F, 1.0F, 0.0F});
       model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 1.0F, 0.0F});
-      lit_program->SetUniform("u_model", model);
-      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      program->SetUniform("u_model", model);
+      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
     }
 
@@ -239,8 +239,8 @@ int main() {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{-1.0F, -1.0F, 0.0F});
       model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 0.0F, 1.0F});
-      lit_program->SetUniform("u_model", model);
-      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      program->SetUniform("u_model", model);
+      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
     }
 
@@ -248,8 +248,8 @@ int main() {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, glm::vec3{1.0F, -1.0F, 0.0F});
       model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
-      lit_program->SetUniform("u_model", model);
-      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      program->SetUniform("u_model", model);
+      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
     }
 
