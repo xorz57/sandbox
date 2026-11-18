@@ -4,7 +4,6 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
-#include <cassert>
 #include <filesystem>
 #include <optional>
 #include <utility>
@@ -83,7 +82,10 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 }
 
 void Texture::Bind(u32 unit) const {
-  assert(m_handle != 0);
+  if (m_handle == 0) {
+    spdlog::error("Texture: cannot bind texture.");
+    return;
+  }
   glBindTextureUnit(unit, m_handle);
 }
 
