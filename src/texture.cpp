@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
+#include <cassert>
 #include <filesystem>
 #include <optional>
 #include <utility>
@@ -36,8 +37,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   stbi_set_flip_vertically_on_load(1);
   stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, &n, 0)};
   if (pixels == nullptr) {
-    const char *reason{stbi_failure_reason()};
-    spdlog::error("Texture: failed to load '{}': {}.", path.string(), reason != nullptr ? reason : "unknown error");
+    spdlog::error("Texture: failed to load '{}': {}.", path.string(), stbi_failure_reason());
     return std::nullopt;
   }
   ScopeExit pixels_guard{[pixels] { stbi_image_free(pixels); }};
@@ -86,10 +86,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 }
 
 void Texture::Bind(u32 unit) const {
-  if (m_handle == 0) {
-    spdlog::error("Texture: cannot bind texture.");
-    return;
-  }
+  assert(m_handle != 0);
   glBindTextureUnit(unit, m_handle);
 }
 
