@@ -2,6 +2,7 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keycode.h>
+#include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_video.h>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -90,21 +91,6 @@ int main() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
-
-  glm::mat4 model1{glm::mat4{1.0F}};
-  glm::mat4 model2{glm::mat4{1.0F}};
-  glm::mat4 model3{glm::mat4{1.0F}};
-  glm::mat4 model4{glm::mat4{1.0F}};
-
-  model1 = glm::translate(model1, {-1.0F, 1.0F, 0.0F});
-  model2 = glm::translate(model2, {1.0F, 1.0F, 0.0F});
-  model3 = glm::translate(model3, {-1.0F, -1.0F, 0.0F});
-  model4 = glm::translate(model4, {1.0F, -1.0F, 0.0F});
-
-  const glm::mat3 normal_matrix1{glm::transpose(glm::inverse(glm::mat3{model1}))};
-  const glm::mat3 normal_matrix2{glm::transpose(glm::inverse(glm::mat3{model2}))};
-  const glm::mat3 normal_matrix3{glm::transpose(glm::inverse(glm::mat3{model3}))};
-  const glm::mat3 normal_matrix4{glm::transpose(glm::inverse(glm::mat3{model4}))};
 
   const MeshData mesh_data{primitives::MakeCube()};
 
@@ -236,21 +222,43 @@ int main() {
 
     lit_program->SetUniform("u_camera_position", camera.position);
 
-    lit_program->SetUniform("u_model", model1);
-    lit_program->SetUniform("u_normal_matrix", normal_matrix1);
-    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    const f32 time{static_cast<f32>(SDL_GetTicks()) / 1'000.0F};
 
-    lit_program->SetUniform("u_model", model2);
-    lit_program->SetUniform("u_normal_matrix", normal_matrix2);
-    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, glm::vec3{-1.0F, 1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 0.0F, 0.0F});
+      lit_program->SetUniform("u_model", model);
+      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    }
 
-    lit_program->SetUniform("u_model", model3);
-    lit_program->SetUniform("u_normal_matrix", normal_matrix3);
-    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, glm::vec3{1.0F, 1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 1.0F, 0.0F});
+      lit_program->SetUniform("u_model", model);
+      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    }
 
-    lit_program->SetUniform("u_model", model4);
-    lit_program->SetUniform("u_normal_matrix", normal_matrix4);
-    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, glm::vec3{-1.0F, -1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{0.0F, 0.0F, 1.0F});
+      lit_program->SetUniform("u_model", model);
+      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    }
+
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, glm::vec3{1.0F, -1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
+      lit_program->SetUniform("u_model", model);
+      lit_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+    }
 
     SDL_GL_SwapWindow(window);
   }
