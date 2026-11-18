@@ -81,13 +81,6 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-  spdlog::info("OpenGL: version {}.", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-  spdlog::info("OpenGL: GLSL version {}.", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-  spdlog::info("OpenGL: vendor {}.", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-  spdlog::info("OpenGL: renderer {}.", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
-  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
@@ -186,17 +179,17 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-    i32 framebuffer_w{};
-    i32 framebuffer_h{};
-    SDL_GetWindowSizeInPixels(window, &framebuffer_w, &framebuffer_h);
-    glViewport(0, 0, framebuffer_w, framebuffer_h);
+    i32 w{};
+    i32 h{};
+    SDL_GetWindowSizeInPixels(window, &w, &h);
+    glViewport(0, 0, w, h);
 
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const f32 framebuffer_a{static_cast<f32>(framebuffer_w) / static_cast<f32>(framebuffer_h)};
+    const f32 aspect_ratio{static_cast<f32>(w) / static_cast<f32>(h)};
     const glm::mat4 view{camera.ComputeViewMatrix()};
-    const glm::mat4 projection{camera.ComputeProjectionMatrix(framebuffer_a)};
+    const glm::mat4 projection{camera.ComputeProjectionMatrix(aspect_ratio)};
 
     glBindVertexArray(vao);
 
