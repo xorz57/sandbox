@@ -12,6 +12,5 @@ struct Camera final {
   f32 far_plane{100.0F};
 
   [[nodiscard]] glm::mat4 ComputeProjectionMatrix(f32 aspect_ratio) const;
-
   [[nodiscard]] glm::mat4 ComputeViewMatrix() const;
 };
