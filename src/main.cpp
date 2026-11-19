@@ -153,8 +153,6 @@ int main() {
 
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
-  const Camera camera{.position = {0.0F, 0.0F, 4.0F}};
-
   bool running{true};
 
   while (running) {
@@ -186,8 +184,11 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const f32 aspect_ratio{static_cast<f32>(w) / static_cast<f32>(h)};
+
+    const Camera camera{.position = {0.0F, 0.0F, 4.0F}, .aspect_ratio = aspect_ratio};
+
     const glm::mat4 view{camera.ComputeViewMatrix()};
-    const glm::mat4 projection{camera.ComputeProjectionMatrix(aspect_ratio)};
+    const glm::mat4 projection{camera.ComputeProjectionMatrix()};
 
     glBindVertexArray(vao);
 
@@ -213,7 +214,7 @@ int main() {
 
     program->SetUniform("u_camera_position", camera.position);
 
-    const f32 time{static_cast<f32>(SDL_GetTicks()) / 1'000.0F};
+    const f32 time{static_cast<f32>(SDL_GetTicks()) / SDL_MS_PER_SECOND};
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
