@@ -126,8 +126,8 @@ void Window::ToggleFullscreen() {
 void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }
 
 std::pair<i32, i32> Window::GetSize() const {
-  i32 w{};
-  i32 h{};
-  SDL_GetWindowSizeInPixels(m_window, &w, &h);
-  return {w, h};
+  i32 width{};
+  i32 height{};
+  SDL_GetWindowSizeInPixels(m_window, &width, &height);
+  return {width, height};
 }

@@ -13,11 +13,11 @@
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
+#include "platform/program.hpp"
 #include "platform/renderer.hpp"
 #include "platform/window.hpp"
 #include "point_light.hpp"
 #include "primitives.hpp"
-#include "program.hpp"
 #include "scope_exit.hpp"
 #include "texture.hpp"
 #include "types.hpp"
