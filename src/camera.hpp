@@ -2,12 +2,13 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "types.hpp"
 
 struct Camera final {
   glm::vec3 position{};
-  glm::vec3 orientation{};
+  glm::quat orientation{1.0F, 0.0F, 0.0F, 0.0F};
   f32 aspect_ratio{};
   f32 yfov{glm::pi<float>() / 3.0F};
   f32 zfar{100.0F};
