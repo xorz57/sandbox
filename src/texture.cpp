@@ -23,7 +23,9 @@ Texture::Texture(Texture &&other) noexcept
 
 Texture &Texture::operator=(Texture &&other) noexcept {
   if (this != &other) {
-    glDeleteTextures(1, &m_handle);
+    if (m_handle != 0) {
+      glDeleteTextures(1, &m_handle);
+    }
     m_handle = std::exchange(other.m_handle, 0);
   }
   return *this;

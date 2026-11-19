@@ -125,7 +125,9 @@ Program::Program(Program &&other) noexcept
 
 Program &Program::operator=(Program &&other) noexcept {
   if (this != &other) {
-    glDeleteProgram(m_handle);
+    if (m_handle != 0) {
+      glDeleteProgram(m_handle);
+    }
     m_handle = std::exchange(other.m_handle, 0);
     m_vs_path = std::move(other.m_vs_path);
     m_fs_path = std::move(other.m_fs_path);
