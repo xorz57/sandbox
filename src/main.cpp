@@ -3,16 +3,13 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_timer.h>
-#include <SDL3/SDL_video.h>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
-#include <array>
 #include <cstddef>
 #include <cstdlib>
-#include <utility>
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
@@ -23,6 +20,7 @@
 #include "texture.hpp"
 #include "types.hpp"
 #include "vertex.hpp"
+#include "window.hpp"
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
@@ -34,52 +32,14 @@ int main() {
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 #pragma endregion InitSDL
 
-  constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> gl_attribute_settings{{
-      {SDL_GL_CONTEXT_MAJOR_VERSION, 4},
-      {SDL_GL_CONTEXT_MINOR_VERSION, 6},
-      {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE},
-      {SDL_GL_DOUBLEBUFFER, 1},
-      {SDL_GL_DEPTH_SIZE, 24},
-      {SDL_GL_STENCIL_SIZE, 8},
-      {SDL_GL_MULTISAMPLEBUFFERS, 1},
-      {SDL_GL_MULTISAMPLESAMPLES, 4},
-  }};
-  for (const auto &[attribute, value] : gl_attribute_settings) {
-    if (!SDL_GL_SetAttribute(attribute, value)) {
-      spdlog::error("SDL: failed to set OpenGL attribute {}: {}.", static_cast<i32>(attribute), SDL_GetError());
-      return EXIT_FAILURE;
-    }
-  }
-
 #pragma region CreateWindow
-  const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
-  SDL_Window *window{SDL_CreateWindow("sandbox", 1'280, 720, flags)};
-  if (window == nullptr) {
-    spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
+  auto window{Window::Create("sandbox", 1'280, 720)};
+  if (!window) {
     return EXIT_FAILURE;
   }
-  const auto window_guard{ScopeExit{[window] { SDL_DestroyWindow(window); }}};
 #pragma endregion CreateWindow
 
-#pragma region CreateContext
-  const SDL_GLContext context{SDL_GL_CreateContext(window)};
-  if (context == nullptr) {
-    spdlog::error("OpenGL: failed to create context: {}.", SDL_GetError());
-    return EXIT_FAILURE;
-  }
-  const auto context_guard{ScopeExit{[context] { SDL_GL_DestroyContext(context); }}};
-#pragma endregion CreateContext
-
-  SDL_GL_SetSwapInterval(1);
-
-  SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  SDL_ShowWindow(window);
-
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
-    spdlog::error("OpenGL: failed to initialize GLAD.");
-    return EXIT_FAILURE;
-  }
+  window->Show();
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -165,8 +125,7 @@ int main() {
         break;
       case SDL_EVENT_KEY_DOWN:
         if (!event.key.repeat && (event.key.key == SDLK_RETURN) && static_cast<bool>(event.key.mod & SDL_KMOD_ALT)) {
-          const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN)};
-          SDL_SetWindowFullscreen(window, !is_fullscreen);
+          window->ToggleFullscreen();
         }
         break;
       default:
@@ -175,9 +134,7 @@ int main() {
     }
 #pragma endregion ProcessEvents
 
-    i32 w{};
-    i32 h{};
-    SDL_GetWindowSizeInPixels(window, &w, &h);
+    const auto [w, h]{window->GetSize()};
     glViewport(0, 0, w, h);
 
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
@@ -252,7 +209,7 @@ int main() {
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
     }
 
-    SDL_GL_SwapWindow(window);
+    window->SwapBuffers();
   }
 
   return EXIT_SUCCESS;

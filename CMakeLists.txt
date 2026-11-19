@@ -25,7 +25,8 @@ target_sources(
           src/primitives.cpp
           src/program.cpp
           src/stb_image.cpp
-          src/texture.cpp)
+          src/texture.cpp
+          src/window.cpp)
 
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)
