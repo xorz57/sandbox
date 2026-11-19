@@ -27,9 +27,9 @@ public:
 
   void Show();
 
-  void SetFullscreen(bool fullscreen);
+  static void SetVSync(VSyncMode mode);
 
-  void SetVSync(VSyncMode mode);
+  void SetFullscreen(bool fullscreen);
 
   void ToggleFullscreen();
 

@@ -37,6 +37,8 @@ int main() {
 
   window->Show();
 
+  Window::SetVSync(Window::VSyncMode::Enabled);
+
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);

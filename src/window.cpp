@@ -92,15 +92,7 @@ void Window::Show() {
   SDL_ShowWindow(m_window);
 }
 
-void Window::SetFullscreen(bool fullscreen) {
-  if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
-    spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
-  }
-}
-
 void Window::SetVSync(Window::VSyncMode mode) {
-  assert(SDL_GL_GetCurrentContext() == m_context);
-
   i32 interval{};
   switch (mode) {
     using enum Window::VSyncMode;
@@ -117,6 +109,12 @@ void Window::SetVSync(Window::VSyncMode mode) {
 
   if (!SDL_GL_SetSwapInterval(interval)) {
     spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
+  }
+}
+
+void Window::SetFullscreen(bool fullscreen) {
+  if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
+    spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
   }
 }
 
