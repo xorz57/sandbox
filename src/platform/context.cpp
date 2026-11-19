@@ -8,6 +8,8 @@
 #include <optional>
 #include <utility>
 
+#include "types.hpp"
+
 Context::Context(SDL_GLContext handle)
     : m_handle{handle} {}
 
@@ -45,4 +47,24 @@ std::optional<Context> Context::Create(SDL_Window *window) {
   }
 
   return std::optional<Context>{Context{context}};
+}
+
+void Context::SetVSync(VSyncMode mode) {
+  i32 interval{};
+  switch (mode) {
+    using enum VSyncMode;
+  case Disabled:
+    interval = 0;
+    break;
+  case Enabled:
+    interval = 1;
+    break;
+  case Adaptive:
+    interval = -1;
+    break;
+  }
+
+  if (!SDL_GL_SetSwapInterval(interval)) {
+    spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
+  }
 }

@@ -9,12 +9,6 @@
 
 class Window final {
 public:
-  enum class VSyncMode : u8 {
-    Disabled,
-    Enabled,
-    Adaptive,
-  };
-
   ~Window();
 
   Window(const Window &) = delete;
@@ -24,8 +18,6 @@ public:
   Window &operator=(Window &&other) noexcept;
 
   [[nodiscard]] static std::optional<Window> Create(const char *title, i32 width, i32 height);
-
-  static void SetVSync(VSyncMode mode);
 
   void Show();
 

@@ -42,7 +42,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Window::SetVSync(Window::VSyncMode::Enabled);
+  Context::SetVSync(Context::VSyncMode::Enabled);
 
   window->Show();
 

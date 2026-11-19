@@ -4,8 +4,16 @@
 
 #include <optional>
 
+#include "types.hpp"
+
 class Context final {
 public:
+  enum class VSyncMode : u8 {
+    Disabled,
+    Enabled,
+    Adaptive,
+  };
+
   ~Context();
 
   Context(const Context &) = delete;
@@ -15,6 +23,8 @@ public:
   Context &operator=(Context &&other) noexcept;
 
   [[nodiscard]] static std::optional<Context> Create(SDL_Window *window);
+
+  static void SetVSync(VSyncMode mode);
 
 private:
   explicit Context(SDL_GLContext handle);
