@@ -36,10 +36,10 @@ public:
   void SwapBuffers();
 
   [[nodiscard]] std::pair<i32, i32> GetSize() const;
+  [[nodiscard]] SDL_Window *GetNativeHandle() const;
 
 private:
-  Window(SDL_Window *window, SDL_GLContext context);
+  explicit Window(SDL_Window *window);
 
   SDL_Window *m_window;
-  SDL_GLContext m_context;
 };

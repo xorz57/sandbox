@@ -13,6 +13,7 @@
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
+#include "platform/context.hpp"
 #include "platform/program.hpp"
 #include "platform/renderer.hpp"
 #include "platform/texture.hpp"
@@ -33,6 +34,11 @@ int main() {
 
   auto window{Window::Create("sandbox", 1'280, 720)};
   if (!window) {
+    return EXIT_FAILURE;
+  }
+
+  auto context{Context::Create(window->GetNativeHandle())};
+  if (!context) {
     return EXIT_FAILURE;
   }
 

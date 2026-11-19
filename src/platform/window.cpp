@@ -2,7 +2,6 @@
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_video.h>
-#include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
 #include <array>
@@ -12,33 +11,23 @@
 
 #include "types.hpp"
 
-Window::Window(SDL_Window *window, SDL_GLContext context)
-    : m_window{window},
-      m_context{context} {}
+Window::Window(SDL_Window *window) : m_window{window} {}
 
 Window::~Window() {
-  if (m_context != nullptr) {
-    SDL_GL_DestroyContext(m_context);
-  }
   if (m_window != nullptr) {
     SDL_DestroyWindow(m_window);
   }
 }
 
 Window::Window(Window &&other) noexcept
-    : m_window{std::exchange(other.m_window, nullptr)},
-      m_context{std::exchange(other.m_context, nullptr)} {}
+    : m_window{std::exchange(other.m_window, nullptr)} {}
 
 Window &Window::operator=(Window &&other) noexcept {
   if (this != &other) {
-    if (m_context != nullptr) {
-      SDL_GL_DestroyContext(m_context);
-    }
     if (m_window != nullptr) {
       SDL_DestroyWindow(m_window);
     }
     m_window = std::exchange(other.m_window, nullptr);
-    m_context = std::exchange(other.m_context, nullptr);
   }
   return *this;
 }
@@ -69,22 +58,7 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
     return std::nullopt;
   }
 
-  SDL_GLContext context{SDL_GL_CreateContext(window)};
-  if (context == nullptr) {
-    spdlog::error("OpenGL: failed to create context: {}.", SDL_GetError());
-    SDL_DestroyWindow(window);
-    return std::nullopt;
-  }
-
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
-    spdlog::error("OpenGL: failed to initialize GLAD.");
-    SDL_GL_DestroyContext(context);
-    SDL_DestroyWindow(window);
-    return std::nullopt;
-  }
-
-  return std::optional<Window>{Window{window, context}};
+  return std::optional<Window>{Window{window}};
 }
 
 void Window::SetVSync(Window::VSyncMode mode) {
@@ -131,3 +105,5 @@ std::pair<i32, i32> Window::GetSize() const {
   SDL_GetWindowSizeInPixels(m_window, &width, &height);
   return {width, height};
 }
+
+SDL_Window *Window::GetNativeHandle() const { return m_window; }
