@@ -8,23 +8,24 @@
 #include <optional>
 #include <utility>
 
-Context::Context(SDL_GLContext context) : m_context{context} {}
+Context::Context(SDL_GLContext handle)
+    : m_handle{handle} {}
 
 Context::~Context() {
-  if (m_context != nullptr) {
-    SDL_GL_DestroyContext(m_context);
+  if (m_handle != nullptr) {
+    SDL_GL_DestroyContext(m_handle);
   }
 }
 
 Context::Context(Context &&other) noexcept
-    : m_context{std::exchange(other.m_context, nullptr)} {}
+    : m_handle{std::exchange(other.m_handle, nullptr)} {}
 
 Context &Context::operator=(Context &&other) noexcept {
   if (this != &other) {
-    if (m_context != nullptr) {
-      SDL_GL_DestroyContext(m_context);
+    if (m_handle != nullptr) {
+      SDL_GL_DestroyContext(m_handle);
     }
-    m_context = std::exchange(other.m_context, nullptr);
+    m_handle = std::exchange(other.m_handle, nullptr);
   }
   return *this;
 }

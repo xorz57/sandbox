@@ -39,7 +39,7 @@ public:
   [[nodiscard]] SDL_Window *GetNativeHandle() const;
 
 private:
-  explicit Window(SDL_Window *window);
+  explicit Window(SDL_Window *handle);
 
-  SDL_Window *m_window;
+  SDL_Window *m_handle;
 };

@@ -11,23 +11,23 @@
 
 #include "types.hpp"
 
-Window::Window(SDL_Window *window) : m_window{window} {}
+Window::Window(SDL_Window *handle) : m_handle{handle} {}
 
 Window::~Window() {
-  if (m_window != nullptr) {
-    SDL_DestroyWindow(m_window);
+  if (m_handle != nullptr) {
+    SDL_DestroyWindow(m_handle);
   }
 }
 
 Window::Window(Window &&other) noexcept
-    : m_window{std::exchange(other.m_window, nullptr)} {}
+    : m_handle{std::exchange(other.m_handle, nullptr)} {}
 
 Window &Window::operator=(Window &&other) noexcept {
   if (this != &other) {
-    if (m_window != nullptr) {
-      SDL_DestroyWindow(m_window);
+    if (m_handle != nullptr) {
+      SDL_DestroyWindow(m_handle);
     }
-    m_window = std::exchange(other.m_window, nullptr);
+    m_handle = std::exchange(other.m_handle, nullptr);
   }
   return *this;
 }
@@ -82,28 +82,28 @@ void Window::SetVSync(Window::VSyncMode mode) {
 }
 
 void Window::Show() {
-  SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  SDL_ShowWindow(m_window);
+  SDL_SetWindowPosition(m_handle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  SDL_ShowWindow(m_handle);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
-  if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
+  if (!SDL_SetWindowFullscreen(m_handle, fullscreen)) {
     spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
   }
 }
 
 void Window::ToggleFullscreen() {
-  const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN)};
+  const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_handle) & SDL_WINDOW_FULLSCREEN)};
   SetFullscreen(!is_fullscreen);
 }
 
-void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }
+void Window::SwapBuffers() { SDL_GL_SwapWindow(m_handle); }
 
 std::pair<i32, i32> Window::GetSize() const {
   i32 width{};
   i32 height{};
-  SDL_GetWindowSizeInPixels(m_window, &width, &height);
+  SDL_GetWindowSizeInPixels(m_handle, &width, &height);
   return {width, height};
 }
 
-SDL_Window *Window::GetNativeHandle() const { return m_window; }
+SDL_Window *Window::GetNativeHandle() const { return m_handle; }

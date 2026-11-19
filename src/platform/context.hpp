@@ -17,7 +17,7 @@ public:
   [[nodiscard]] static std::optional<Context> Create(SDL_Window *window);
 
 private:
-  explicit Context(SDL_GLContext context);
+  explicit Context(SDL_GLContext handle);
 
-  SDL_GLContext m_context;
+  SDL_GLContext m_handle;
 };
