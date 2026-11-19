@@ -23,11 +23,11 @@ target_sources(
   PRIVATE src/main.cpp
           src/platform/program.cpp
           src/platform/renderer.cpp
+          src/platform/texture.cpp
           src/platform/window.cpp
           src/camera.cpp
           src/primitives.cpp
-          src/stb_image.cpp
-          src/texture.cpp)
+          src/stb_image.cpp)
 
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)
