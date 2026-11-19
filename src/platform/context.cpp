@@ -10,24 +10,24 @@
 
 #include "types.hpp"
 
-Context::Context(SDL_GLContext handle)
-    : m_handle{handle} {}
+Context::Context(SDL_GLContext context)
+    : m_context{context} {}
 
 Context::~Context() {
-  if (m_handle != nullptr) {
-    SDL_GL_DestroyContext(m_handle);
+  if (m_context != nullptr) {
+    SDL_GL_DestroyContext(m_context);
   }
 }
 
 Context::Context(Context &&other) noexcept
-    : m_handle{std::exchange(other.m_handle, nullptr)} {}
+    : m_context{std::exchange(other.m_context, nullptr)} {}
 
 Context &Context::operator=(Context &&other) noexcept {
   if (this != &other) {
-    if (m_handle != nullptr) {
-      SDL_GL_DestroyContext(m_handle);
+    if (m_context != nullptr) {
+      SDL_GL_DestroyContext(m_context);
     }
-    m_handle = std::exchange(other.m_handle, nullptr);
+    m_context = std::exchange(other.m_context, nullptr);
   }
   return *this;
 }
@@ -69,4 +69,4 @@ void Context::SetVSync(VSyncMode mode) {
   }
 }
 
-SDL_GLContext Context::GetHandle() const { return m_handle; }
+SDL_GLContext Context::GetHandle() const { return m_context; }

@@ -11,24 +11,24 @@
 
 #include "types.hpp"
 
-Window::Window(SDL_Window *handle)
-    : m_handle{handle} {}
+Window::Window(SDL_Window *window)
+    : m_window{window} {}
 
 Window::~Window() {
-  if (m_handle != nullptr) {
-    SDL_DestroyWindow(m_handle);
+  if (m_window != nullptr) {
+    SDL_DestroyWindow(m_window);
   }
 }
 
 Window::Window(Window &&other) noexcept
-    : m_handle{std::exchange(other.m_handle, nullptr)} {}
+    : m_window{std::exchange(other.m_window, nullptr)} {}
 
 Window &Window::operator=(Window &&other) noexcept {
   if (this != &other) {
-    if (m_handle != nullptr) {
-      SDL_DestroyWindow(m_handle);
+    if (m_window != nullptr) {
+      SDL_DestroyWindow(m_window);
     }
-    m_handle = std::exchange(other.m_handle, nullptr);
+    m_window = std::exchange(other.m_window, nullptr);
   }
   return *this;
 }
@@ -53,38 +53,38 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
   }
 
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
-  SDL_Window *handle{SDL_CreateWindow(title, width, height, flags)};
-  if (handle == nullptr) {
+  SDL_Window *window{SDL_CreateWindow(title, width, height, flags)};
+  if (window == nullptr) {
     spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
     return std::nullopt;
   }
 
-  return std::optional<Window>{Window{handle}};
+  return std::optional<Window>{Window{window}};
 }
 
 void Window::Show() {
-  SDL_SetWindowPosition(m_handle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  SDL_ShowWindow(m_handle);
+  SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  SDL_ShowWindow(m_window);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
-  if (!SDL_SetWindowFullscreen(m_handle, fullscreen)) {
+  if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
     spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
   }
 }
 
 void Window::ToggleFullscreen() {
-  const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_handle) & SDL_WINDOW_FULLSCREEN)};
+  const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN)};
   SetFullscreen(!is_fullscreen);
 }
 
-void Window::SwapBuffers() { SDL_GL_SwapWindow(m_handle); }
+void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }
 
 std::pair<i32, i32> Window::GetSize() const {
   i32 w{};
   i32 h{};
-  SDL_GetWindowSizeInPixels(m_handle, &w, &h);
+  SDL_GetWindowSizeInPixels(m_window, &w, &h);
   return {w, h};
 }
 
-SDL_Window *Window::GetHandle() const { return m_handle; }
+SDL_Window *Window::GetHandle() const { return m_window; }

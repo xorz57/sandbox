@@ -29,7 +29,7 @@ public:
   [[nodiscard]] SDL_GLContext GetHandle() const;
 
 private:
-  explicit Context(SDL_GLContext handle);
+  explicit Context(SDL_GLContext context);
 
-  SDL_GLContext m_handle;
+  SDL_GLContext m_context;
 };
