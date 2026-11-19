@@ -15,7 +15,6 @@ public:
   Texture &operator=(const Texture &) = delete;
   Texture &operator=(Texture &&other) noexcept;
 
-  // TODO: Consider using std::expected
   [[nodiscard]] static std::optional<Texture> Create(const std::filesystem::path &path);
 
   void Bind(u32 unit) const;

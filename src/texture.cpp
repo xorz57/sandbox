@@ -29,7 +29,6 @@ Texture &Texture::operator=(Texture &&other) noexcept {
   return *this;
 }
 
-// TODO: Consider using std::expected
 std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   i32 w{};
   i32 h{};
