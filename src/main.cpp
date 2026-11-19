@@ -13,6 +13,8 @@
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
+#include "platform/renderer.hpp"
+#include "platform/window.hpp"
 #include "point_light.hpp"
 #include "primitives.hpp"
 #include "program.hpp"
@@ -20,7 +22,6 @@
 #include "texture.hpp"
 #include "types.hpp"
 #include "vertex.hpp"
-#include "window.hpp"
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
@@ -35,9 +36,9 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  window->Show();
-
   Window::SetVSync(Window::VSyncMode::Enabled);
+
+  window->Show();
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -136,8 +137,8 @@ int main() {
 
     glViewport(0, 0, w, h);
 
-    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
+    Renderer::Clear();
 
     const f32 aspect_ratio{static_cast<f32>(w) / static_cast<f32>(h)};
 
@@ -174,8 +175,8 @@ int main() {
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, glm::vec3{-1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
+      model = glm::translate(model, {-1.0F, 1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -183,8 +184,8 @@ int main() {
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, glm::vec3{1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
+      model = glm::translate(model, {1.0F, 1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -192,8 +193,8 @@ int main() {
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, glm::vec3{-1.0F, -1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
+      model = glm::translate(model, {-1.0F, -1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -201,8 +202,8 @@ int main() {
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, glm::vec3{1.0F, -1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, glm::vec3{1.0F, 1.0F, 1.0F});
+      model = glm::translate(model, {1.0F, -1.0F, 0.0F});
+      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);

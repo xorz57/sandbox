@@ -21,12 +21,13 @@ target_include_directories(sandbox PUBLIC src)
 target_sources(
   sandbox
   PRIVATE src/main.cpp
+          src/platform/renderer.cpp
+          src/platform/window.cpp
           src/camera.cpp
           src/primitives.cpp
           src/program.cpp
           src/stb_image.cpp
-          src/texture.cpp
-          src/window.cpp)
+          src/texture.cpp)
 
 target_link_libraries(sandbox PRIVATE glad::glad)
 target_link_libraries(sandbox PRIVATE glm::glm)
