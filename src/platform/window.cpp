@@ -53,13 +53,13 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
   }
 
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
-  SDL_Window *window{SDL_CreateWindow(title, width, height, flags)};
-  if (window == nullptr) {
+  SDL_Window *handle{SDL_CreateWindow(title, width, height, flags)};
+  if (handle == nullptr) {
     spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
     return std::nullopt;
   }
 
-  return std::optional<Window>{Window{window}};
+  return std::optional<Window>{Window{handle}};
 }
 
 void Window::Show() {
@@ -81,10 +81,10 @@ void Window::ToggleFullscreen() {
 void Window::SwapBuffers() { SDL_GL_SwapWindow(m_handle); }
 
 std::pair<i32, i32> Window::GetSize() const {
-  i32 width{};
-  i32 height{};
-  SDL_GetWindowSizeInPixels(m_handle, &width, &height);
-  return {width, height};
+  i32 w{};
+  i32 h{};
+  SDL_GetWindowSizeInPixels(m_handle, &w, &h);
+  return {w, h};
 }
 
 SDL_Window *Window::GetHandle() const { return m_handle; }
