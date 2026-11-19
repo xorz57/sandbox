@@ -9,6 +9,12 @@
 
 class Window final {
 public:
+  enum class VSyncMode : u8 {
+    Disabled,
+    Enabled,
+    Adaptive,
+  };
+
   ~Window();
 
   Window(const Window &) = delete;
@@ -22,6 +28,8 @@ public:
   void Show();
 
   void SetFullscreen(bool fullscreen);
+
+  void SetVSync(VSyncMode mode);
 
   void ToggleFullscreen();
 

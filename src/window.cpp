@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include <array>
+#include <cassert>
 #include <optional>
 #include <utility>
 
@@ -83,11 +84,7 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
     return std::nullopt;
   }
 
-  if (!SDL_GL_SetSwapInterval(1)) {
-    spdlog::warn("OpenGL: failed to enable vertical synchronization: {}.", SDL_GetError());
-  }
-
-  return Window{window, context};
+  return std::optional<Window>{Window{window, context}};
 }
 
 void Window::Show() {
@@ -98,6 +95,28 @@ void Window::Show() {
 void Window::SetFullscreen(bool fullscreen) {
   if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
     spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
+  }
+}
+
+void Window::SetVSync(Window::VSyncMode mode) {
+  assert(SDL_GL_GetCurrentContext() == m_context);
+
+  i32 interval{};
+  switch (mode) {
+    using enum Window::VSyncMode;
+  case Disabled:
+    interval = 0;
+    break;
+  case Enabled:
+    interval = 1;
+    break;
+  case Adaptive:
+    interval = -1;
+    break;
+  }
+
+  if (!SDL_GL_SetSwapInterval(interval)) {
+    spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
   }
 }
 
