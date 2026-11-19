@@ -36,7 +36,8 @@ public:
   void SwapBuffers();
 
   [[nodiscard]] std::pair<i32, i32> GetSize() const;
-  [[nodiscard]] SDL_Window *GetNativeHandle() const;
+
+  [[nodiscard]] SDL_Window *GetHandle() const;
 
 private:
   explicit Window(SDL_Window *handle);

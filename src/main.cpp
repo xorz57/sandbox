@@ -37,7 +37,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto context{Context::Create(window->GetNativeHandle())};
+  auto context{Context::Create(window->GetHandle())};
   if (!context) {
     return EXIT_FAILURE;
   }
