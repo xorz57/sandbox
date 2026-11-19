@@ -141,8 +141,7 @@ int main() {
 
     const auto [w, h]{window->GetSize()};
 
-    glViewport(0, 0, w, h);
-
+    Renderer::SetViewport(0, 0, w, h);
     Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
     Renderer::Clear();
 
