@@ -87,4 +87,4 @@ std::pair<i32, i32> Window::GetSize() const {
   return {w, h};
 }
 
-SDL_Window *Window::GetHandle() const { return m_window; }
+SDL_Window *Window::GetWindow() const { return m_window; }

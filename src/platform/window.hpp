@@ -29,7 +29,7 @@ public:
 
   [[nodiscard]] std::pair<i32, i32> GetSize() const;
 
-  [[nodiscard]] SDL_Window *GetHandle() const;
+  [[nodiscard]] SDL_Window *GetWindow() const;
 
 private:
   explicit Window(SDL_Window *window);

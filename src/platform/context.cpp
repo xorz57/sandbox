@@ -69,4 +69,4 @@ void Context::SetVSync(VSyncMode mode) {
   }
 }
 
-SDL_GLContext Context::GetHandle() const { return m_context; }
+SDL_GLContext Context::GetContext() const { return m_context; }
