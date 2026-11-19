@@ -95,9 +95,15 @@ void Window::Show() {
   SDL_ShowWindow(m_window);
 }
 
+void Window::SetFullscreen(bool fullscreen) {
+  if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
+    spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
+  }
+}
+
 void Window::ToggleFullscreen() {
   const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN)};
-  SDL_SetWindowFullscreen(m_window, !is_fullscreen);
+  SetFullscreen(!is_fullscreen);
 }
 
 void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }

@@ -21,6 +21,8 @@ public:
 
   void Show();
 
+  void SetFullscreen(bool fullscreen);
+
   void ToggleFullscreen();
 
   void SwapBuffers();
