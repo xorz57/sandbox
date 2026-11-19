@@ -24,20 +24,16 @@
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
-#pragma region InitSDL
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
     spdlog::error("SDL: failed to initialize: {}.", SDL_GetError());
     return EXIT_FAILURE;
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
-#pragma endregion InitSDL
 
-#pragma region CreateWindow
   auto window{Window::Create("sandbox", 1'280, 720)};
   if (!window) {
     return EXIT_FAILURE;
   }
-#pragma endregion CreateWindow
 
   window->Show();
 
@@ -135,6 +131,7 @@ int main() {
 #pragma endregion ProcessEvents
 
     const auto [w, h]{window->GetSize()};
+
     glViewport(0, 0, w, h);
 
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
