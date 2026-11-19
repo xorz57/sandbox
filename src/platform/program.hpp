@@ -20,10 +20,8 @@ public:
   Program &operator=(Program &&other) noexcept;
 
   [[nodiscard]] static std::optional<Program> Create(const char *vs_source, const char *fs_source);
-
   [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &vs_path,
                                                      const std::filesystem::path &fs_path);
-
   [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &path);
 
   void ReloadIfChanged();

@@ -25,9 +25,9 @@ public:
 
   [[nodiscard]] static std::optional<Window> Create(const char *title, i32 width, i32 height);
 
-  void Show();
-
   static void SetVSync(VSyncMode mode);
+
+  void Show();
 
   void SetFullscreen(bool fullscreen);
 

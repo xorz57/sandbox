@@ -87,11 +87,6 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
   return std::optional<Window>{Window{window, context}};
 }
 
-void Window::Show() {
-  SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-  SDL_ShowWindow(m_window);
-}
-
 void Window::SetVSync(Window::VSyncMode mode) {
   i32 interval{};
   switch (mode) {
@@ -110,6 +105,11 @@ void Window::SetVSync(Window::VSyncMode mode) {
   if (!SDL_GL_SetSwapInterval(interval)) {
     spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
   }
+}
+
+void Window::Show() {
+  SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  SDL_ShowWindow(m_window);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
