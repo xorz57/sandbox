@@ -30,6 +30,7 @@ namespace {
   ScopeExit shader_guard{[handle] { glDeleteShader(handle); }};
 
   glShaderSource(handle, 1, &source, nullptr);
+
   glCompileShader(handle);
 
   i32 success{};
