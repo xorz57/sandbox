@@ -68,3 +68,5 @@ void Context::SetVSync(VSyncMode mode) {
     spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
   }
 }
+
+SDL_GLContext Context::GetHandle() const { return m_handle; }

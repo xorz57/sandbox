@@ -26,6 +26,8 @@ public:
 
   static void SetVSync(VSyncMode mode);
 
+  [[nodiscard]] SDL_GLContext GetHandle() const;
+
 private:
   explicit Context(SDL_GLContext handle);
 
