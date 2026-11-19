@@ -18,6 +18,7 @@ add_subdirectory(glm)
 add_subdirectory(SDL)
 add_subdirectory(simdjson)
 add_subdirectory(spdlog)
+add_subdirectory(stb)
 
 add_library(
   imgui
@@ -33,9 +34,3 @@ target_include_directories(
   imgui PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
                $<INSTALL_INTERFACE:imgui>)
 target_link_libraries(imgui PRIVATE SDL3::SDL3 ${CMAKE_DL_LIBS})
-
-add_library(stb INTERFACE)
-add_library(stb::stb ALIAS stb)
-target_include_directories(
-  stb INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/stb>
-                $<INSTALL_INTERFACE:stb>)

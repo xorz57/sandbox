@@ -2,7 +2,7 @@
 
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include <cassert>
 #include <filesystem>
