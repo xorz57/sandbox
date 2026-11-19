@@ -11,7 +11,8 @@
 
 #include "types.hpp"
 
-Window::Window(SDL_Window *handle) : m_handle{handle} {}
+Window::Window(SDL_Window *handle)
+    : m_handle{handle} {}
 
 Window::~Window() {
   if (m_handle != nullptr) {
