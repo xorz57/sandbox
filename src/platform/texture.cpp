@@ -32,11 +32,11 @@ Texture &Texture::operator=(Texture &&other) noexcept {
 }
 
 std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
-  i32 w{};
-  i32 h{};
-  i32 n{};
+  i32 width{};
+  i32 height{};
+  i32 channels{};
   stbi_set_flip_vertically_on_load(1);
-  stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, &n, 0)};
+  stbi_uc *pixels{stbi_load(path.string().c_str(), &width, &height, &channels, 0)};
   if (pixels == nullptr) {
     spdlog::error("Texture: failed to load '{}': {}.", path.string(), stbi_failure_reason());
     return std::nullopt;
@@ -45,15 +45,15 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 
   i32 max_texture_size{};
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (w > max_texture_size || h > max_texture_size) {
-    spdlog::error("Texture: size {}x{} exceeds the maximum supported size of {}.", w, h, max_texture_size);
+  if (width > max_texture_size || height > max_texture_size) {
+    spdlog::error("Texture: size {}x{} exceeds the maximum supported size of {}.", width, height, max_texture_size);
     return std::nullopt;
   }
 
   u32 internal_format{};
   u32 format{};
 
-  switch (n) {
+  switch (channels) {
   case 3:
     internal_format = GL_RGB8;
     format = GL_RGB;
@@ -63,7 +63,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     format = GL_RGBA;
     break;
   default:
-    spdlog::error("Texture: unsupported number of channels {} in '{}'.", n, path.string());
+    spdlog::error("Texture: unsupported number of channels {} in '{}'.", channels, path.string());
     return std::nullopt;
   }
 
@@ -74,9 +74,9 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     return std::nullopt;
   }
 
-  glTextureStorage2D(handle, 1, internal_format, w, h);
+  glTextureStorage2D(handle, 1, internal_format, width, height);
 
-  glTextureSubImage2D(handle, 0, 0, 0, w, h, format, GL_UNSIGNED_BYTE, pixels);
+  glTextureSubImage2D(handle, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, pixels);
 
   glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
