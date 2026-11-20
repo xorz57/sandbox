@@ -44,6 +44,8 @@ public:
   void SetUniform(const char *name, const glm::mat3 &value) const;
   void SetUniform(const char *name, const glm::mat4 &value) const;
 
+  [[nodiscard]] u32 GetHandle() const;
+
 private:
   explicit Program(u32 handle);
 

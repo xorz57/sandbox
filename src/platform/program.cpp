@@ -325,6 +325,8 @@ void Program::SetUniform(const char *name, const glm::mat4 &value) const {
   glProgramUniformMatrix4fv(m_handle, GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
+u32 Program::GetHandle() const { return m_handle; }
+
 Program::Program(u32 handle)
     : m_handle{handle} {}
 

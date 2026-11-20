@@ -93,5 +93,7 @@ void Texture::Bind(u32 unit) const {
 
 void Texture::Unbind(u32 unit) { glBindTextureUnit(unit, 0); }
 
+u32 Texture::GetHandle() const { return m_handle; }
+
 Texture::Texture(u32 handle)
     : m_handle{handle} {}

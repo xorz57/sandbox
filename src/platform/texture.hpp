@@ -21,6 +21,8 @@ public:
 
   static void Unbind(u32 unit);
 
+  [[nodiscard]] u32 GetHandle() const;
+
 private:
   explicit Texture(u32 handle);
 
