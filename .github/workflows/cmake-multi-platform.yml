@@ -52,16 +52,7 @@ jobs:
             libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev \
             libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
             libthai-dev libusb-1.0-0-dev libpipewire-0.3-dev libwayland-dev libdecor-0-dev \
-            liburing-dev ccache
-
-      - name: Cache compiler outputs (Linux)
-        if: runner.os == 'Linux'
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ccache
-          key: ${{ runner.os }}-${{ matrix.c_compiler }}-ccache-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.c_compiler }}-ccache-
+            liburing-dev
 
       - name: Set reusable strings
         id: strings
@@ -74,16 +65,11 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          ${{ runner.os == 'Linux' && '-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -S ${{ github.workspace }}
 
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
-
-      - name: Show compiler cache stats (Linux)
-        if: runner.os == 'Linux'
-        run: ccache --show-stats
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
