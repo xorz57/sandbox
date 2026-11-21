@@ -54,8 +54,8 @@ int main() {
 
   const MeshData mesh_data{primitives::MakeCube()};
 
-  platform::Buffer vbo{"Vertex Buffer", std::as_bytes(std::span{mesh_data.vertices})};
-  platform::Buffer ebo{"Element Buffer", std::as_bytes(std::span{mesh_data.elements})};
+  platform::Buffer vbo{"vbo", std::as_bytes(std::span{mesh_data.vertices})};
+  platform::Buffer ebo{"ebo", std::as_bytes(std::span{mesh_data.elements})};
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
