@@ -11,6 +11,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 Window::Window(SDL_Window *window)
     : m_window{window} {}
 
@@ -88,3 +90,5 @@ std::pair<i32, i32> Window::GetSize() const {
 }
 
 SDL_Window *Window::GetWindow() const { return m_window; }
+
+} // namespace platform

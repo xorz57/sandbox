@@ -10,6 +10,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 Context::Context(SDL_GLContext context)
     : m_context{context} {}
 
@@ -70,3 +72,5 @@ void Context::SetVSync(VSyncMode mode) {
 }
 
 SDL_GLContext Context::GetContext() const { return m_context; }
+
+} // namespace platform

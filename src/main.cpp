@@ -32,17 +32,17 @@ int main() {
   }
   const auto sdl_guard{ScopeExit{[] { SDL_Quit(); }}};
 
-  auto window{Window::Create("sandbox", 1'280, 720)};
+  auto window{platform::Window::Create("sandbox", 1'280, 720)};
   if (!window) {
     return EXIT_FAILURE;
   }
 
-  auto context{Context::Create(window->GetWindow())};
+  auto context{platform::Context::Create(window->GetWindow())};
   if (!context) {
     return EXIT_FAILURE;
   }
 
-  Context::SetVSync(Context::VSyncMode::Enabled);
+  platform::Context::SetVSync(platform::Context::VSyncMode::Enabled);
 
   window->Show();
 
@@ -97,12 +97,12 @@ int main() {
   glVertexArrayAttribBinding(vao, 1, 0);
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  auto texture{Texture::Create("assets/textures/checkerboard.png")};
+  auto texture{platform::Texture::Create("assets/textures/checkerboard.png")};
   if (!texture.has_value()) {
     return EXIT_FAILURE;
   }
 
-  auto program{Program::Create("assets/shaders/lit")};
+  auto program{platform::Program::Create("assets/shaders/lit")};
   if (!program.has_value()) {
     return EXIT_FAILURE;
   }
@@ -141,9 +141,9 @@ int main() {
 
     const auto [w, h]{window->GetSize()};
 
-    Renderer::SetViewport(0, 0, w, h);
-    Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
-    Renderer::Clear();
+    platform::Renderer::SetViewport(0, 0, w, h);
+    platform::Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
+    platform::Renderer::Clear();
 
     const f32 aspect_ratio{static_cast<f32>(w) / static_cast<f32>(h)};
 

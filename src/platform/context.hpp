@@ -6,6 +6,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 class Context final {
 public:
   enum class VSyncMode : u8 {
@@ -33,3 +35,5 @@ private:
 
   SDL_GLContext m_context;
 };
+
+} // namespace platform

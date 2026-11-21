@@ -4,6 +4,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 class Renderer final {
 public:
   static void SetViewport(i32 x, i32 y, i32 width, i32 height);
@@ -12,3 +14,5 @@ public:
 
   static void Clear();
 };
+
+} // namespace platform

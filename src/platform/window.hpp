@@ -7,6 +7,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 class Window final {
 public:
   ~Window();
@@ -36,3 +38,5 @@ private:
 
   SDL_Window *m_window;
 };
+
+} // namespace platform

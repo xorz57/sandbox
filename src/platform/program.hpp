@@ -9,6 +9,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 class Program final {
 public:
   ~Program();
@@ -58,3 +60,5 @@ private:
   std::filesystem::file_time_type m_fs_attempted_write_time;
   mutable std::unordered_map<std::string_view, i32> m_uniform_locations;
 };
+
+} // namespace platform

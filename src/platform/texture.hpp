@@ -5,6 +5,8 @@
 
 #include "types.hpp"
 
+namespace platform {
+
 class Texture final {
 public:
   ~Texture();
@@ -28,3 +30,5 @@ private:
 
   u32 m_handle;
 };
+
+} // namespace platform

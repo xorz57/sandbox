@@ -109,6 +109,8 @@ namespace {
 
 } // namespace
 
+namespace platform {
+
 Program::~Program() {
   if (m_handle != 0) {
     glDeleteProgram(m_handle);
@@ -343,3 +345,5 @@ i32 Program::GetUniformLocation(const char *name) const {
   m_uniform_locations.emplace(name, location);
   return location;
 }
+
+} // namespace platform

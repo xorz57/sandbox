@@ -12,6 +12,8 @@
 #include "scope_exit.hpp"
 #include "types.hpp"
 
+namespace platform {
+
 Texture::~Texture() {
   if (m_handle != 0) {
     glDeleteTextures(1, &m_handle);
@@ -97,3 +99,5 @@ u32 Texture::GetHandle() const { return m_handle; }
 
 Texture::Texture(u32 handle)
     : m_handle{handle} {}
+
+} // namespace platform
