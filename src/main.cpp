@@ -54,13 +54,13 @@ int main() {
 
   const MeshData mesh_data{primitives::MakeCube()};
 
-  const auto vertex_data{std::as_bytes(std::span{mesh_data.vertices})};
-  platform::Buffer vertex_buffer{"Vertex Buffer", vertex_data.size()};
-  vertex_buffer.Update(vertex_data, 0);
+  const auto vertices{std::as_bytes(std::span{mesh_data.vertices})};
+  platform::Buffer vbo{"Vertex Buffer", vertices.size()};
+  vbo.Update(vertices, 0);
 
-  const auto index_data{std::as_bytes(std::span{mesh_data.indices})};
-  platform::Buffer index_buffer{"Index Buffer", index_data.size()};
-  index_buffer.Update(index_data, 0);
+  const auto indices{std::as_bytes(std::span{mesh_data.indices})};
+  platform::Buffer ebo{"Element Buffer", indices.size()};
+  ebo.Update(indices, 0);
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
@@ -70,8 +70,8 @@ int main() {
   }
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
-  glVertexArrayVertexBuffer(vao, 0, vertex_buffer.GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
-  glVertexArrayElementBuffer(vao, index_buffer.GetHandle());
+  glVertexArrayVertexBuffer(vao, 0, vbo.GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
+  glVertexArrayElementBuffer(vao, ebo.GetHandle());
 
   glEnableVertexArrayAttrib(vao, 0);
   glEnableVertexArrayAttrib(vao, 1);
