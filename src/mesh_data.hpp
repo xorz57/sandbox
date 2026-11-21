@@ -7,5 +7,5 @@
 
 struct MeshData final {
   std::vector<Vertex> vertices;
-  std::vector<u32> indices;
+  std::vector<u32> elements;
 };

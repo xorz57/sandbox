@@ -54,13 +54,8 @@ int main() {
 
   const MeshData mesh_data{primitives::MakeCube()};
 
-  const auto vertices{std::as_bytes(std::span{mesh_data.vertices})};
-  platform::Buffer vbo{"Vertex Buffer", vertices.size()};
-  vbo.Update(vertices, 0);
-
-  const auto indices{std::as_bytes(std::span{mesh_data.indices})};
-  platform::Buffer ebo{"Element Buffer", indices.size()};
-  ebo.Update(indices, 0);
+  platform::Buffer vbo{"Vertex Buffer", std::as_bytes(std::span{mesh_data.vertices})};
+  platform::Buffer ebo{"Element Buffer", std::as_bytes(std::span{mesh_data.elements})};
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
@@ -172,7 +167,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -181,7 +176,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -190,7 +185,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
@@ -199,7 +194,7 @@ int main() {
       model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
       program->SetUniform("u_model", model);
       program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.indices.size()), GL_UNSIGNED_INT, nullptr);
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     window->SwapBuffers();

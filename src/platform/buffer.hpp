@@ -13,6 +13,8 @@ class Buffer final {
 public:
   Buffer(std::string_view label, usize size);
 
+  Buffer(std::string_view label, std::span<const std::byte> data);
+
   ~Buffer();
 
   Buffer(const Buffer &) = delete;
@@ -30,6 +32,8 @@ public:
   [[nodiscard]] u32 GetHandle() const noexcept;
 
 private:
+  void Initialize(const std::byte *data);
+
   std::string m_label;
   usize m_size{};
   u32 m_handle{};

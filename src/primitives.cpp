@@ -37,7 +37,7 @@ MeshData primitives::MakeCube() {
               {.position = {0.5F, -0.5F, 0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {1.0F, 1.0F}},
               {.position = {-0.5F, -0.5F, 0.5F}, .normal = {0.0F, -1.0F, 0.0F}, .uv = {0.0F, 1.0F}},
           },
-      .indices =
+      .elements =
           {
               0,  1,  2,  2,  3,  0,  // +z Front
               4,  5,  6,  6,  7,  4,  // -z Back
