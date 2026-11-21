@@ -21,6 +21,7 @@ target_include_directories(sandbox PUBLIC src)
 target_sources(
   sandbox
   PRIVATE src/main.cpp
+          src/platform/buffer.cpp
           src/platform/context.cpp
           src/platform/program.cpp
           src/platform/renderer.cpp

@@ -10,9 +10,11 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <span>
 
 #include "camera.hpp"
 #include "mesh_data.hpp"
+#include "platform/buffer.hpp"
 #include "platform/context.hpp"
 #include "platform/program.hpp"
 #include "platform/renderer.hpp"
@@ -52,21 +54,13 @@ int main() {
 
   const MeshData mesh_data{primitives::MakeCube()};
 
-  u32 vbo{};
-  glCreateBuffers(1, &vbo);
-  if (vbo == 0) {
-    spdlog::error("OpenGL: failed to create vertex buffer.");
-    return EXIT_FAILURE;
-  }
-  const auto vbo_guard{ScopeExit{[&] { glDeleteBuffers(1, &vbo); }}};
+  const auto vertex_data{std::as_bytes(std::span{mesh_data.vertices})};
+  platform::Buffer vertex_buffer{"Vertex Buffer", vertex_data.size()};
+  vertex_buffer.Write(vertex_data, 0);
 
-  u32 ebo{};
-  glCreateBuffers(1, &ebo);
-  if (ebo == 0) {
-    spdlog::error("OpenGL: failed to create index buffer.");
-    return EXIT_FAILURE;
-  }
-  const auto ebo_guard{ScopeExit{[&] { glDeleteBuffers(1, &ebo); }}};
+  const auto index_data{std::as_bytes(std::span{mesh_data.indices})};
+  platform::Buffer index_buffer{"Index Buffer", index_data.size()};
+  index_buffer.Write(index_data, 0);
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
@@ -76,14 +70,8 @@ int main() {
   }
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
-  const isize vertices_bytes{static_cast<isize>(mesh_data.vertices.size() * sizeof(Vertex))};
-  glNamedBufferStorage(vbo, vertices_bytes, mesh_data.vertices.data(), 0);
-
-  const isize indices_bytes{static_cast<isize>(mesh_data.indices.size() * sizeof(u32))};
-  glNamedBufferStorage(ebo, indices_bytes, mesh_data.indices.data(), 0);
-
-  glVertexArrayVertexBuffer(vao, 0, vbo, 0, static_cast<i32>(sizeof(Vertex)));
-  glVertexArrayElementBuffer(vao, ebo);
+  glVertexArrayVertexBuffer(vao, 0, vertex_buffer.GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
+  glVertexArrayElementBuffer(vao, index_buffer.GetHandle());
 
   glEnableVertexArrayAttrib(vao, 0);
   glEnableVertexArrayAttrib(vao, 1);
