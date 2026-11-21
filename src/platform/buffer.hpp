@@ -32,8 +32,6 @@ public:
   [[nodiscard]] u32 GetHandle() const noexcept;
 
 private:
-  void Initialize(const std::byte *data);
-
   std::string m_label;
   usize m_size{};
   u32 m_handle{};

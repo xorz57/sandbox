@@ -16,18 +16,16 @@ namespace platform {
 Buffer::Buffer(std::string_view label, usize size)
     : m_label{label},
       m_size{size} {
-  Initialize(nullptr);
+  glCreateBuffers(1, &m_handle);
+  glNamedBufferStorage(m_handle, static_cast<GLsizeiptr>(m_size), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glObjectLabel(GL_BUFFER, m_handle, static_cast<GLsizei>(m_label.size()), m_label.data());
 }
 
 Buffer::Buffer(std::string_view label, std::span<const std::byte> data)
     : m_label{label},
       m_size{data.size()} {
-  Initialize(data.data());
-}
-
-void Buffer::Initialize(const std::byte *data) {
   glCreateBuffers(1, &m_handle);
-  glNamedBufferStorage(m_handle, static_cast<GLsizeiptr>(m_size), data, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferStorage(m_handle, static_cast<GLsizeiptr>(m_size), data.data(), GL_DYNAMIC_STORAGE_BIT);
   glObjectLabel(GL_BUFFER, m_handle, static_cast<GLsizei>(m_label.size()), m_label.data());
 }
 
