@@ -53,13 +53,7 @@ Buffer &Buffer::operator=(Buffer &&other) noexcept {
 }
 
 void Buffer::Update(std::span<const std::byte> data, usize offset) const {
-  const usize end{offset + data.size()};
-  if (end < offset) {
-    spdlog::error("Buffer '{}': update range overflow.", m_label);
-    return;
-  }
-
-  if (end > m_size) {
+  if (offset + data.size() > m_size) {
     spdlog::error("Buffer '{}': update out of bounds.", m_label);
     return;
   }
