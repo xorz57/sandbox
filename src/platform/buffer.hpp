@@ -21,7 +21,7 @@ public:
   Buffer &operator=(const Buffer &) = delete;
   Buffer &operator=(Buffer &&other) noexcept;
 
-  void Write(std::span<const std::byte> data, usize offset) const;
+  void Update(std::span<const std::byte> data, usize offset) const;
 
   [[nodiscard]] std::string_view GetLabel() const noexcept;
 

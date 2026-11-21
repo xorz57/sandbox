@@ -56,11 +56,11 @@ int main() {
 
   const auto vertex_data{std::as_bytes(std::span{mesh_data.vertices})};
   platform::Buffer vertex_buffer{"Vertex Buffer", vertex_data.size()};
-  vertex_buffer.Write(vertex_data, 0);
+  vertex_buffer.Update(vertex_data, 0);
 
   const auto index_data{std::as_bytes(std::span{mesh_data.indices})};
   platform::Buffer index_buffer{"Index Buffer", index_data.size()};
-  index_buffer.Write(index_data, 0);
+  index_buffer.Update(index_data, 0);
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);

@@ -43,7 +43,7 @@ Buffer &Buffer::operator=(Buffer &&other) noexcept {
   return *this;
 }
 
-void Buffer::Write(std::span<const std::byte> data, usize offset) const {
+void Buffer::Update(std::span<const std::byte> data, usize offset) const {
   glNamedBufferSubData(m_handle, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(data.size()), data.data());
 }
 
