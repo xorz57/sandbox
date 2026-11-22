@@ -65,7 +65,6 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     format = GL_RGBA;
     break;
   default:
-    spdlog::error("Texture: unsupported number of channels {} in '{}'.", channels, path.string());
     return std::nullopt;
   }
 
@@ -82,6 +81,7 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 
   glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
   glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 

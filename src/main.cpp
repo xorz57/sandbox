@@ -58,6 +58,7 @@ int main() {
   if (!vbo) {
     return EXIT_FAILURE;
   }
+
   auto ebo{platform::Buffer::Create("ebo", std::as_bytes(std::span{mesh_data.elements}))};
   if (!ebo) {
     return EXIT_FAILURE;
