@@ -54,8 +54,14 @@ int main() {
 
   const MeshData mesh_data{primitives::MakeCube()};
 
-  platform::Buffer vbo{"vbo", std::as_bytes(std::span{mesh_data.vertices})};
-  platform::Buffer ebo{"ebo", std::as_bytes(std::span{mesh_data.elements})};
+  auto vbo{platform::Buffer::Create("vbo", std::as_bytes(std::span{mesh_data.vertices}))};
+  if (!vbo) {
+    return EXIT_FAILURE;
+  }
+  auto ebo{platform::Buffer::Create("ebo", std::as_bytes(std::span{mesh_data.elements}))};
+  if (!ebo) {
+    return EXIT_FAILURE;
+  }
 
   u32 vao{};
   glCreateVertexArrays(1, &vao);
@@ -65,8 +71,8 @@ int main() {
   }
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
-  glVertexArrayVertexBuffer(vao, 0, vbo.GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
-  glVertexArrayElementBuffer(vao, ebo.GetHandle());
+  glVertexArrayVertexBuffer(vao, 0, vbo->GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
+  glVertexArrayElementBuffer(vao, ebo->GetHandle());
 
   glEnableVertexArrayAttrib(vao, 0);
   glEnableVertexArrayAttrib(vao, 1);

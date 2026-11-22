@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -11,9 +12,8 @@ namespace platform {
 
 class Buffer final {
 public:
-  Buffer(std::string_view label, usize size);
-
-  Buffer(std::string_view label, std::span<const std::byte> data);
+  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, usize size);
+  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, std::span<const std::byte> data);
 
   ~Buffer();
 
@@ -25,13 +25,15 @@ public:
 
   void Update(std::span<const std::byte> data, usize offset) const;
 
-  [[nodiscard]] std::string_view GetLabel() const noexcept;
+  [[nodiscard]] std::string_view GetLabel() const;
 
-  [[nodiscard]] usize GetSize() const noexcept;
+  [[nodiscard]] usize GetSize() const;
 
-  [[nodiscard]] u32 GetHandle() const noexcept;
+  [[nodiscard]] u32 GetHandle() const;
 
 private:
+  Buffer(std::string_view label, usize size, u32 handle);
+
   std::string m_label;
   usize m_size{};
   u32 m_handle{};
