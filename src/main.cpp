@@ -73,18 +73,19 @@ int main() {
   const auto vao_guard{ScopeExit{[&] { glDeleteVertexArrays(1, &vao); }}};
 
   glVertexArrayVertexBuffer(vao, 0, vbo->GetHandle(), 0, static_cast<i32>(sizeof(Vertex)));
+
   glVertexArrayElementBuffer(vao, ebo->GetHandle());
 
   glEnableVertexArrayAttrib(vao, 0);
-  glEnableVertexArrayAttrib(vao, 1);
-  glEnableVertexArrayAttrib(vao, 2);
-
   glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, position)));
-  glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, normal)));
-  glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, uv)));
-
   glVertexArrayAttribBinding(vao, 0, 0);
+
+  glEnableVertexArrayAttrib(vao, 1);
+  glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, normal)));
   glVertexArrayAttribBinding(vao, 1, 0);
+
+  glEnableVertexArrayAttrib(vao, 2);
+  glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, uv)));
   glVertexArrayAttribBinding(vao, 2, 0);
 
   auto texture{platform::Texture::Create("assets/textures/checkerboard.png")};
