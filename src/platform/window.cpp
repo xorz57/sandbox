@@ -36,7 +36,7 @@ Window &Window::operator=(Window &&other) noexcept {
 }
 
 std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
-  constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> gl_attribute_settings{{
+  constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> attributes{{
       {SDL_GL_CONTEXT_MAJOR_VERSION, 4},
       {SDL_GL_CONTEXT_MINOR_VERSION, 6},
       {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE},
@@ -47,9 +47,9 @@ std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
       {SDL_GL_MULTISAMPLESAMPLES, 4},
   }};
 
-  for (const auto &[attribute, value] : gl_attribute_settings) {
-    if (!SDL_GL_SetAttribute(attribute, value)) {
-      spdlog::error("SDL: failed to set OpenGL attribute {}: {}.", static_cast<i32>(attribute), SDL_GetError());
+  for (const auto &[key, value] : attributes) {
+    if (!SDL_GL_SetAttribute(key, value)) {
+      spdlog::error("SDL: failed to set OpenGL attribute {}: {}.", static_cast<i32>(key), SDL_GetError());
       return std::nullopt;
     }
   }
