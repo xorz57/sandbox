@@ -19,7 +19,7 @@ public:
   Window &operator=(const Window &) = delete;
   Window &operator=(Window &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Window> Create(const char *title, i32 width, i32 height);
+  [[nodiscard]] static std::optional<Window> Create(const char *title, i32 w, i32 h);
 
   void Show();
 

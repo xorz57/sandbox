@@ -35,7 +35,7 @@ Window &Window::operator=(Window &&other) noexcept {
   return *this;
 }
 
-std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
+std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
   constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> gl_attribute_settings{{
       {SDL_GL_CONTEXT_MAJOR_VERSION, 4},
       {SDL_GL_CONTEXT_MINOR_VERSION, 6},
@@ -55,7 +55,7 @@ std::optional<Window> Window::Create(const char *title, i32 width, i32 height) {
   }
 
   const SDL_WindowFlags flags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
-  SDL_Window *window{SDL_CreateWindow(title, width, height, flags)};
+  SDL_Window *window{SDL_CreateWindow(title, w, h, flags)};
   if (window == nullptr) {
     spdlog::error("SDL: failed to create window: {}.", SDL_GetError());
     return std::nullopt;
@@ -83,10 +83,10 @@ void Window::ToggleFullscreen() {
 void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }
 
 std::pair<i32, i32> Window::GetSize() const {
-  i32 width{};
-  i32 height{};
-  SDL_GetWindowSizeInPixels(m_window, &width, &height);
-  return {width, height};
+  i32 w{};
+  i32 h{};
+  SDL_GetWindowSizeInPixels(m_window, &w, &h);
+  return std::pair<i32, i32>{w, h};
 }
 
 SDL_Window *Window::GetWindow() const { return m_window; }
