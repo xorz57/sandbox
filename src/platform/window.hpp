@@ -27,8 +27,6 @@ public:
 
   void ToggleFullscreen();
 
-  void SwapBuffers();
-
   [[nodiscard]] std::pair<i32, i32> GetSize() const;
 
   [[nodiscard]] SDL_Window *GetWindow() const;

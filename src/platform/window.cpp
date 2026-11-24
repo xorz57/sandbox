@@ -77,11 +77,6 @@ void Window::ToggleFullscreen() {
   }
 }
 
-void Window::SwapBuffers() {
-  assert(m_window != nullptr);
-  SDL_GL_SwapWindow(m_window);
-}
-
 std::pair<i32, i32> Window::GetSize() const {
   i32 w{};
   i32 h{};

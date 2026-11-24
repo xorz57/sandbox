@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "platform/window.hpp"
 #include "types.hpp"
 
 namespace platform {
@@ -24,9 +25,11 @@ public:
   Context &operator=(const Context &) = delete;
   Context &operator=(Context &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Context> Create(SDL_Window *window);
+  [[nodiscard]] static std::optional<Context> Create(const std::optional<Window> &window);
 
   static void SetVSync(VSyncMode mode);
+
+  static void SwapBuffers(const std::optional<Window> &window);
 
   [[nodiscard]] SDL_GLContext GetContext() const;
 

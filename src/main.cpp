@@ -39,7 +39,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto context{platform::Context::Create(window->GetWindow())};
+  auto context{platform::Context::Create(window)};
   if (!context) {
     return EXIT_FAILURE;
   }
@@ -203,7 +203,7 @@ int main() {
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
-    window->SwapBuffers();
+    platform::Context::SwapBuffers(window);
   }
 
   return EXIT_SUCCESS;

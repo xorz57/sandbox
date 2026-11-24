@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "platform/window.hpp"
 #include "types.hpp"
 
 namespace platform {
@@ -26,8 +27,13 @@ Context &Context::operator=(Context &&other) noexcept {
   return *this;
 }
 
-std::optional<Context> Context::Create(SDL_Window *window) {
-  SDL_GLContext context{SDL_GL_CreateContext(window)};
+std::optional<Context> Context::Create(const std::optional<Window> &window) {
+  if (!window.has_value()) {
+    // TODO: Log something here
+    return std::nullopt;
+  }
+
+  SDL_GLContext context{SDL_GL_CreateContext(window->GetWindow())};
   if (context == nullptr) {
     spdlog::error("OpenGL: failed to create context: {}.", SDL_GetError());
     return std::nullopt;
@@ -61,6 +67,15 @@ void Context::SetVSync(VSyncMode mode) {
   if (!SDL_GL_SetSwapInterval(interval)) {
     spdlog::warn("OpenGL: failed to set vertical synchronization mode: {}.", SDL_GetError());
   }
+}
+
+void Context::SwapBuffers(const std::optional<Window> &window) {
+  if (!window.has_value()) {
+    // TODO: Log something here
+    return;
+  }
+
+  SDL_GL_SwapWindow(window->GetWindow());
 }
 
 SDL_GLContext Context::GetContext() const { return m_context; }
