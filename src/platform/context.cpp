@@ -30,7 +30,9 @@ Context &Context::operator=(Context &&other) noexcept {
 }
 
 std::optional<Context> Context::Create(const std::optional<Window> &window) {
-  assert(window.has_value());
+  if (!window.has_value()) {
+    return std::nullopt;
+  }
 
   SDL_GLContext context{SDL_GL_CreateContext(window->GetWindow())};
   if (context == nullptr) {
@@ -72,7 +74,9 @@ void Context::SetVSync(VSyncMode mode) {
 }
 
 void Context::SwapBuffers(const std::optional<Window> &window) {
-  assert(window.has_value());
+  if (!window.has_value()) {
+    return;
+  }
 
   SDL_GL_SwapWindow(window->GetWindow());
 }
