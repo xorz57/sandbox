@@ -26,8 +26,6 @@ public:
                                                      const std::filesystem::path &fs_path);
   [[nodiscard]] static std::optional<Program> Create(const std::filesystem::path &path);
 
-  void ReloadIfChanged();
-
   void Use() const;
 
   void SetUniform(const char *name, f32 value) const;
@@ -54,10 +52,6 @@ private:
   [[nodiscard]] i32 GetUniformLocation(const char *name) const;
 
   u32 m_handle;
-  std::filesystem::path m_vs_path;
-  std::filesystem::path m_fs_path;
-  std::filesystem::file_time_type m_vs_attempted_write_time;
-  std::filesystem::file_time_type m_fs_attempted_write_time;
   mutable std::unordered_map<std::string_view, i32> m_uniform_locations;
 };
 

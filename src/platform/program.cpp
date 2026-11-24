@@ -119,10 +119,6 @@ Program::~Program() {
 
 Program::Program(Program &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)},
-      m_vs_path{std::move(other.m_vs_path)},
-      m_fs_path{std::move(other.m_fs_path)},
-      m_vs_attempted_write_time{other.m_vs_attempted_write_time},
-      m_fs_attempted_write_time{other.m_fs_attempted_write_time},
       m_uniform_locations{std::move(other.m_uniform_locations)} {}
 
 Program &Program::operator=(Program &&other) noexcept {
@@ -131,10 +127,6 @@ Program &Program::operator=(Program &&other) noexcept {
       glDeleteProgram(m_handle);
     }
     m_handle = std::exchange(other.m_handle, 0);
-    m_vs_path = std::move(other.m_vs_path);
-    m_fs_path = std::move(other.m_fs_path);
-    m_vs_attempted_write_time = other.m_vs_attempted_write_time;
-    m_fs_attempted_write_time = other.m_fs_attempted_write_time;
     m_uniform_locations = std::move(other.m_uniform_locations);
   }
   return *this;
@@ -186,65 +178,11 @@ std::optional<Program> Program::Create(const std::filesystem::path &vs_path, con
     return std::nullopt;
   }
 
-  program->m_vs_path = vs_path;
-  program->m_fs_path = fs_path;
-
-  program->m_vs_attempted_write_time = *vs_write_time;
-  program->m_fs_attempted_write_time = *fs_write_time;
-
   return program;
 }
 
 std::optional<Program> Program::Create(const std::filesystem::path &path) {
   return Create(std::filesystem::path{path} += ".vert.glsl", std::filesystem::path{path} += ".frag.glsl");
-}
-
-void Program::ReloadIfChanged() {
-  if (m_vs_path.empty()) {
-    return;
-  }
-
-  if (m_fs_path.empty()) {
-    return;
-  }
-
-  const auto vs_write_time{GetLastWriteTime(m_vs_path)};
-  if (!vs_write_time.has_value()) {
-    return;
-  }
-
-  const auto fs_write_time{GetLastWriteTime(m_fs_path)};
-  if (!fs_write_time.has_value()) {
-    return;
-  }
-
-  bool has_changed{false};
-
-  if (*vs_write_time != m_vs_attempted_write_time) {
-    has_changed = true;
-    m_vs_attempted_write_time = *vs_write_time;
-    spdlog::info("Shader: '{}' changed.", m_vs_path.string());
-  }
-
-  if (*fs_write_time != m_fs_attempted_write_time) {
-    has_changed = true;
-    m_fs_attempted_write_time = *fs_write_time;
-    spdlog::info("Shader: '{}' changed.", m_fs_path.string());
-  }
-
-  if (!has_changed) {
-    return;
-  }
-
-  auto program{Create(m_vs_path, m_fs_path)};
-  if (!program.has_value()) {
-    spdlog::warn("Program: keeping the previous version after a failed reload.");
-    return;
-  }
-
-  std::swap(m_handle, program->m_handle);
-
-  m_uniform_locations.clear();
 }
 
 void Program::Use() const {

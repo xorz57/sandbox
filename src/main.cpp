@@ -147,8 +147,6 @@ int main() {
 
     texture->Bind(0);
 
-    program->ReloadIfChanged();
-
     program->Use();
 
     program->SetUniform("u_projection", projection);
