@@ -5,7 +5,6 @@
 #include <glad/gl.h>
 #include <spdlog/spdlog.h>
 
-#include <cassert>
 #include <optional>
 #include <utility>
 
