@@ -46,17 +46,23 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     return std::nullopt;
   }
 
-  u32 internal_format{};
-  u32 format{};
+  PixelFormat pixel_format{};
 
   switch (n) {
+  case 2:
+    pixel_format.internal_format = GL_RG8;
+    pixel_format.format = GL_RG;
+    pixel_format.type = GL_UNSIGNED_BYTE;
+    break;
   case 3:
-    internal_format = GL_RGB8;
-    format = GL_RGB;
+    pixel_format.internal_format = GL_RGB8;
+    pixel_format.format = GL_RGB;
+    pixel_format.type = GL_UNSIGNED_BYTE;
     break;
   case 4:
-    internal_format = GL_RGBA8;
-    format = GL_RGBA;
+    pixel_format.internal_format = GL_RGBA8;
+    pixel_format.format = GL_RGBA;
+    pixel_format.type = GL_UNSIGNED_BYTE;
     break;
   default:
     return std::nullopt;
@@ -69,9 +75,9 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     return std::nullopt;
   }
 
-  glTextureStorage2D(handle, 1, internal_format, w, h);
+  glTextureStorage2D(handle, 1, pixel_format.internal_format, w, h);
 
-  glTextureSubImage2D(handle, 0, 0, 0, w, h, format, GL_UNSIGNED_BYTE, pixels);
+  glTextureSubImage2D(handle, 0, 0, 0, w, h, pixel_format.format, pixel_format.type, pixels);
 
   glTextureParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

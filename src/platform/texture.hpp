@@ -9,6 +9,12 @@ namespace platform {
 
 class Texture final {
 public:
+  struct PixelFormat {
+    u32 internal_format{};
+    u32 format{};
+    u32 type{};
+  };
+
   ~Texture();
 
   Texture(const Texture &) = delete;
