@@ -2,7 +2,6 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keycode.h>
-#include <SDL3/SDL_timer.h>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -95,13 +94,18 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto program{platform::Program::Create("assets/shaders/blinn_phong")};
-  if (!program.has_value()) {
+  auto blinn_phong_program{platform::Program::Create("assets/shaders/blinn_phong")};
+  if (!blinn_phong_program.has_value()) {
+    return EXIT_FAILURE;
+  }
+
+  auto unlit_program{platform::Program::Create("assets/shaders/unlit")};
+  if (!unlit_program.has_value()) {
     return EXIT_FAILURE;
   }
 
   std::array<PointLight, 2> point_lights{PointLight{
-                                             .position = {8.0F, 0.0F, 8.0F},
+                                             .position = {2.0F, 1.0F, 2.0F},
                                              .color = {0.0F, 1.0F, 0.0F},
                                              .intensity = 1.0F,
                                              .kc = 1.0F,
@@ -109,7 +113,7 @@ int main() {
                                              .kq = 0.032F,
                                          },
                                          PointLight{
-                                             .position = {-8.0F, 0.0F, 8.0F},
+                                             .position = {-2.0F, 1.0F, -2.0F},
                                              .color = {0.0F, 0.0F, 1.0F},
                                              .intensity = 1.0F,
                                              .kc = 1.0F,
@@ -118,14 +122,14 @@ int main() {
                                          }};
 
   const DirectionalLight directional_light{
-      .direction = {0.0F, -1.0F, 0.0F},
+      .direction = {0.0F, 1.0F, 0.0F},
       .color = {1.0F, 0.0F, 0.0F},
       .intensity = 1.0F,
   };
 
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
 
-  Camera camera{.position = {0.0F, 0.0F, 4.0F}};
+  Camera camera{.position = {0.0F, 2.0F, 8.0F}};
 
   bool running{true};
 
@@ -163,70 +167,62 @@ int main() {
 
     texture->Bind(0);
 
-    program->Use();
+    blinn_phong_program->Use();
 
-    program->SetUniform("u_projection", projection);
-    program->SetUniform("u_view", view);
+    blinn_phong_program->SetUniform("u_projection", projection);
+    blinn_phong_program->SetUniform("u_view", view);
 
-    program->SetUniform("u_texture", 0);
+    blinn_phong_program->SetUniform("u_texture", 0);
 
-    program->SetUniform("u_point_lights[0].position", point_lights.at(0).position);
-    program->SetUniform("u_point_lights[0].color", point_lights.at(0).color);
-    program->SetUniform("u_point_lights[0].intensity", point_lights.at(0).intensity);
-    program->SetUniform("u_point_lights[0].kc", point_lights.at(0).kc);
-    program->SetUniform("u_point_lights[0].kl", point_lights.at(0).kl);
-    program->SetUniform("u_point_lights[0].kq", point_lights.at(0).kq);
+    blinn_phong_program->SetUniform("u_point_lights[0].position", point_lights.at(0).position);
+    blinn_phong_program->SetUniform("u_point_lights[0].color", point_lights.at(0).color);
+    blinn_phong_program->SetUniform("u_point_lights[0].intensity", point_lights.at(0).intensity);
+    blinn_phong_program->SetUniform("u_point_lights[0].kc", point_lights.at(0).kc);
+    blinn_phong_program->SetUniform("u_point_lights[0].kl", point_lights.at(0).kl);
+    blinn_phong_program->SetUniform("u_point_lights[0].kq", point_lights.at(0).kq);
 
-    program->SetUniform("u_point_lights[1].position", point_lights.at(1).position);
-    program->SetUniform("u_point_lights[1].color", point_lights.at(1).color);
-    program->SetUniform("u_point_lights[1].intensity", point_lights.at(1).intensity);
-    program->SetUniform("u_point_lights[1].kc", point_lights.at(1).kc);
-    program->SetUniform("u_point_lights[1].kl", point_lights.at(1).kl);
-    program->SetUniform("u_point_lights[1].kq", point_lights.at(1).kq);
+    blinn_phong_program->SetUniform("u_point_lights[1].position", point_lights.at(1).position);
+    blinn_phong_program->SetUniform("u_point_lights[1].color", point_lights.at(1).color);
+    blinn_phong_program->SetUniform("u_point_lights[1].intensity", point_lights.at(1).intensity);
+    blinn_phong_program->SetUniform("u_point_lights[1].kc", point_lights.at(1).kc);
+    blinn_phong_program->SetUniform("u_point_lights[1].kl", point_lights.at(1).kl);
+    blinn_phong_program->SetUniform("u_point_lights[1].kq", point_lights.at(1).kq);
 
-    program->SetUniform("u_directional_light.direction", directional_light.direction);
-    program->SetUniform("u_directional_light.color", directional_light.color);
-    program->SetUniform("u_directional_light.intensity", directional_light.intensity);
+    blinn_phong_program->SetUniform("u_directional_light.direction", directional_light.direction);
+    blinn_phong_program->SetUniform("u_directional_light.color", directional_light.color);
+    blinn_phong_program->SetUniform("u_directional_light.intensity", directional_light.intensity);
 
-    program->SetUniform("u_ambient_light", ambient_light);
+    blinn_phong_program->SetUniform("u_ambient_light", ambient_light);
 
-    program->SetUniform("u_camera_position", camera.position);
-
-    const f32 time{static_cast<f32>(SDL_GetTicks()) / SDL_MS_PER_SECOND};
+    blinn_phong_program->SetUniform("u_camera_position", camera.position);
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, {-1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
-      program->SetUniform("u_model", model);
-      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      model = glm::translate(model, {0.0F, -0.5F, 0.0F});
+      model = glm::scale(model, {8.0F, 1.0F, 8.0F});
+      blinn_phong_program->SetUniform("u_model", model);
+      blinn_phong_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
+    }
+
+    unlit_program->Use();
+
+    unlit_program->SetUniform("u_projection", projection);
+    unlit_program->SetUniform("u_view", view);
+
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, point_lights.at(0).position);
+      unlit_program->SetUniform("u_model", model);
+      unlit_program->SetUniform("u_color", point_lights.at(0).color);
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
     {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, {1.0F, 1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
-      program->SetUniform("u_model", model);
-      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
-    }
-
-    {
-      glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, {-1.0F, -1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
-      program->SetUniform("u_model", model);
-      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
-    }
-
-    {
-      glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, {1.0F, -1.0F, 0.0F});
-      model = glm::rotate(model, time * 1.0F, {1.0F, 1.0F, 1.0F});
-      program->SetUniform("u_model", model);
-      program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      model = glm::translate(model, point_lights.at(1).position);
+      unlit_program->SetUniform("u_model", model);
+      unlit_program->SetUniform("u_color", point_lights.at(1).color);
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
