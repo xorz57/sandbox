@@ -14,11 +14,7 @@
 
 namespace platform {
 
-Buffer::~Buffer() {
-  if (m_handle != 0) {
-    glDeleteBuffers(1, &m_handle);
-  }
-}
+Buffer::~Buffer() { Reset(); }
 
 Buffer::Buffer(Buffer &&other) noexcept
     : m_label{std::exchange(other.m_label, {})},
@@ -27,9 +23,7 @@ Buffer::Buffer(Buffer &&other) noexcept
 
 Buffer &Buffer::operator=(Buffer &&other) noexcept {
   if (this != &other) {
-    if (m_handle != 0) {
-      glDeleteBuffers(1, &m_handle);
-    }
+    Reset();
     m_label = std::exchange(other.m_label, {});
     m_size = std::exchange(other.m_size, 0);
     m_handle = std::exchange(other.m_handle, 0);
@@ -96,5 +90,13 @@ Buffer::Buffer(std::string_view label, usize size, u32 handle)
     : m_label{label},
       m_size{size},
       m_handle{handle} {}
+
+void Buffer::Reset() {
+  if (m_handle == 0) {
+    return;
+  }
+  glDeleteBuffers(1, &m_handle);
+  m_handle = 0;
+}
 
 } // namespace platform

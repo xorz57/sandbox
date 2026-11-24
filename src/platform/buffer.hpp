@@ -34,6 +34,8 @@ public:
 private:
   Buffer(std::string_view label, usize size, u32 handle);
 
+  void Reset();
+
   std::string m_label;
   usize m_size{};
   u32 m_handle{};
