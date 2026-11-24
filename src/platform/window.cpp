@@ -57,22 +57,30 @@ std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
 }
 
 void Window::Show() {
+  assert(m_window != nullptr);
   SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
   SDL_ShowWindow(m_window);
 }
 
 void Window::SetFullscreen(bool fullscreen) {
+  assert(m_window != nullptr);
   if (!SDL_SetWindowFullscreen(m_window, fullscreen)) {
     spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
   }
 }
 
 void Window::ToggleFullscreen() {
+  assert(m_window != nullptr);
   const bool is_fullscreen{static_cast<bool>(SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN)};
-  SetFullscreen(!is_fullscreen);
+  if (!SDL_SetWindowFullscreen(m_window, !is_fullscreen)) {
+    spdlog::error("SDL: failed to set fullscreen mode: {}.", SDL_GetError());
+  }
 }
 
-void Window::SwapBuffers() { SDL_GL_SwapWindow(m_window); }
+void Window::SwapBuffers() {
+  assert(m_window != nullptr);
+  SDL_GL_SwapWindow(m_window);
+}
 
 std::pair<i32, i32> Window::GetSize() const {
   i32 w{};
