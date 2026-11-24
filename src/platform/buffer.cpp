@@ -72,7 +72,7 @@ std::optional<Buffer> Buffer::Create(std::string_view label, std::span<const std
 }
 
 void Buffer::Update(std::span<const std::byte> data, usize offset) const {
-  if (offset + data.size() > m_size) {
+  if (data.size() > m_size || offset > m_size - data.size()) {
     spdlog::error("Buffer '{}': update out of bounds.", m_label);
     return;
   }
