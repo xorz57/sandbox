@@ -109,16 +109,16 @@ int main() {
                                              .color = {0.0F, 1.0F, 0.0F},
                                              .intensity = 1.0F,
                                              .kc = 1.0F,
-                                             .kl = 0.09F,
-                                             .kq = 0.032F,
+                                             .kl = 0.24F,
+                                             .kq = 0.07F,
                                          },
                                          PointLight{
                                              .position = {-2.0F, 1.0F, -2.0F},
                                              .color = {0.0F, 0.0F, 1.0F},
                                              .intensity = 1.0F,
                                              .kc = 1.0F,
-                                             .kl = 0.09F,
-                                             .kq = 0.032F,
+                                             .kl = 0.24F,
+                                             .kq = 0.07F,
                                          }};
 
   const DirectionalLight directional_light{
@@ -168,32 +168,25 @@ int main() {
     texture->Bind(0);
 
     blinn_phong_program->Use();
-
     blinn_phong_program->SetUniform("u_projection", projection);
     blinn_phong_program->SetUniform("u_view", view);
-
     blinn_phong_program->SetUniform("u_texture", 0);
-
     blinn_phong_program->SetUniform("u_point_lights[0].position", point_lights.at(0).position);
     blinn_phong_program->SetUniform("u_point_lights[0].color", point_lights.at(0).color);
     blinn_phong_program->SetUniform("u_point_lights[0].intensity", point_lights.at(0).intensity);
     blinn_phong_program->SetUniform("u_point_lights[0].kc", point_lights.at(0).kc);
     blinn_phong_program->SetUniform("u_point_lights[0].kl", point_lights.at(0).kl);
     blinn_phong_program->SetUniform("u_point_lights[0].kq", point_lights.at(0).kq);
-
     blinn_phong_program->SetUniform("u_point_lights[1].position", point_lights.at(1).position);
     blinn_phong_program->SetUniform("u_point_lights[1].color", point_lights.at(1).color);
     blinn_phong_program->SetUniform("u_point_lights[1].intensity", point_lights.at(1).intensity);
     blinn_phong_program->SetUniform("u_point_lights[1].kc", point_lights.at(1).kc);
     blinn_phong_program->SetUniform("u_point_lights[1].kl", point_lights.at(1).kl);
     blinn_phong_program->SetUniform("u_point_lights[1].kq", point_lights.at(1).kq);
-
     blinn_phong_program->SetUniform("u_directional_light.direction", directional_light.direction);
     blinn_phong_program->SetUniform("u_directional_light.color", directional_light.color);
     blinn_phong_program->SetUniform("u_directional_light.intensity", directional_light.intensity);
-
     blinn_phong_program->SetUniform("u_ambient_light", ambient_light);
-
     blinn_phong_program->SetUniform("u_camera_position", camera.position);
 
     {
@@ -206,23 +199,14 @@ int main() {
     }
 
     unlit_program->Use();
-
     unlit_program->SetUniform("u_projection", projection);
     unlit_program->SetUniform("u_view", view);
 
-    {
+    for (usize i{}; i < point_lights.size(); ++i) {
       glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, point_lights.at(0).position);
+      model = glm::translate(model, point_lights.at(i).position);
       unlit_program->SetUniform("u_model", model);
-      unlit_program->SetUniform("u_color", point_lights.at(0).color);
-      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
-    }
-
-    {
-      glm::mat4 model{glm::mat4{1.0F}};
-      model = glm::translate(model, point_lights.at(1).position);
-      unlit_program->SetUniform("u_model", model);
-      unlit_program->SetUniform("u_color", point_lights.at(1).color);
+      unlit_program->SetUniform("u_color", point_lights.at(i).color);
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
     }
 
