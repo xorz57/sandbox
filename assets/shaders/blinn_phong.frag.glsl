@@ -15,8 +15,10 @@ struct DirectionalLight {
   float intensity;
 };
 
+#define MAX_POINT_LIGHTS 2
+
 uniform sampler2D u_texture;
-uniform PointLight u_point_light;
+uniform PointLight u_point_lights[MAX_POINT_LIGHTS];
 uniform DirectionalLight u_directional_light;
 uniform vec3 u_ambient_light;
 uniform vec3 u_camera_position;
@@ -71,7 +73,9 @@ void main() {
   vec3 color = u_ambient_light * albedo;
 
   color += calculate_directional_light(u_directional_light, world_normal, view_direction, albedo);
-  color += calculate_point_light(u_point_light, world_normal, v_world_position, view_direction, albedo);
+  for(int i = 0; i < MAX_POINT_LIGHTS; i++) {
+    color += calculate_point_light(u_point_lights[i], world_normal, v_world_position, view_direction, albedo);
+  }
 
   f_color = vec4(color, 1.0F);
 }

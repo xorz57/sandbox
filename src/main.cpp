@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
+#include <array>
 #include <cstddef>
 #include <cstdlib>
 #include <span>
@@ -99,14 +100,22 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  const PointLight point_light{
-      .position = {0.0F, 0.0F, 8.0F},
-      .color = {1.0F, 1.0F, 1.0F},
-      .intensity = 1.0F,
-      .kc = 1.0F,
-      .kl = 0.09F,
-      .kq = 0.032F,
-  };
+  std::array<PointLight, 2> point_lights{PointLight{
+                                             .position = {8.0F, 0.0F, 8.0F},
+                                             .color = {0.0F, 1.0F, 0.0F},
+                                             .intensity = 1.0F,
+                                             .kc = 1.0F,
+                                             .kl = 0.09F,
+                                             .kq = 0.032F,
+                                         },
+                                         PointLight{
+                                             .position = {-8.0F, 0.0F, 8.0F},
+                                             .color = {0.0F, 0.0F, 1.0F},
+                                             .intensity = 1.0F,
+                                             .kc = 1.0F,
+                                             .kl = 0.09F,
+                                             .kq = 0.032F,
+                                         }};
 
   const DirectionalLight directional_light{
       .direction = {0.0F, -1.0F, 0.0F},
@@ -161,12 +170,19 @@ int main() {
 
     program->SetUniform("u_texture", 0);
 
-    program->SetUniform("u_point_light.position", point_light.position);
-    program->SetUniform("u_point_light.color", point_light.color);
-    program->SetUniform("u_point_light.intensity", point_light.intensity);
-    program->SetUniform("u_point_light.kc", point_light.kc);
-    program->SetUniform("u_point_light.kl", point_light.kl);
-    program->SetUniform("u_point_light.kq", point_light.kq);
+    program->SetUniform("u_point_lights[0].position", point_lights.at(0).position);
+    program->SetUniform("u_point_lights[0].color", point_lights.at(0).color);
+    program->SetUniform("u_point_lights[0].intensity", point_lights.at(0).intensity);
+    program->SetUniform("u_point_lights[0].kc", point_lights.at(0).kc);
+    program->SetUniform("u_point_lights[0].kl", point_lights.at(0).kl);
+    program->SetUniform("u_point_lights[0].kq", point_lights.at(0).kq);
+
+    program->SetUniform("u_point_lights[1].position", point_lights.at(1).position);
+    program->SetUniform("u_point_lights[1].color", point_lights.at(1).color);
+    program->SetUniform("u_point_lights[1].intensity", point_lights.at(1).intensity);
+    program->SetUniform("u_point_lights[1].kc", point_lights.at(1).kc);
+    program->SetUniform("u_point_lights[1].kl", point_lights.at(1).kl);
+    program->SetUniform("u_point_lights[1].kq", point_lights.at(1).kq);
 
     program->SetUniform("u_directional_light.direction", directional_light.direction);
     program->SetUniform("u_directional_light.color", directional_light.color);
