@@ -12,9 +12,6 @@ namespace platform {
 
 class Buffer final {
 public:
-  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, usize size);
-  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, std::span<const std::byte> data);
-
   ~Buffer();
 
   Buffer(const Buffer &) = delete;
@@ -22,6 +19,9 @@ public:
 
   Buffer &operator=(const Buffer &) = delete;
   Buffer &operator=(Buffer &&other) noexcept;
+
+  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, usize size);
+  [[nodiscard]] static std::optional<Buffer> Create(std::string_view label, std::span<const std::byte> data);
 
   void Update(std::span<const std::byte> data, usize offset) const;
 

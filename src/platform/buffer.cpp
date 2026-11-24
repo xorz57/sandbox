@@ -14,6 +14,29 @@
 
 namespace platform {
 
+Buffer::~Buffer() {
+  if (m_handle != 0) {
+    glDeleteBuffers(1, &m_handle);
+  }
+}
+
+Buffer::Buffer(Buffer &&other) noexcept
+    : m_label{std::exchange(other.m_label, {})},
+      m_size{std::exchange(other.m_size, 0)},
+      m_handle{std::exchange(other.m_handle, 0)} {}
+
+Buffer &Buffer::operator=(Buffer &&other) noexcept {
+  if (this != &other) {
+    if (m_handle != 0) {
+      glDeleteBuffers(1, &m_handle);
+    }
+    m_label = std::exchange(other.m_label, {});
+    m_size = std::exchange(other.m_size, 0);
+    m_handle = std::exchange(other.m_handle, 0);
+  }
+  return *this;
+}
+
 std::optional<Buffer> Buffer::Create(std::string_view label, usize size) {
   if (size == 0) {
     spdlog::error("Buffer '{}': cannot create buffer with size 0.", label);
@@ -54,34 +77,6 @@ std::optional<Buffer> Buffer::Create(std::string_view label, std::span<const std
   return Buffer{label, data.size(), handle};
 }
 
-Buffer::Buffer(std::string_view label, usize size, u32 handle)
-    : m_label{label},
-      m_size{size},
-      m_handle{handle} {}
-
-Buffer::~Buffer() {
-  if (m_handle != 0) {
-    glDeleteBuffers(1, &m_handle);
-  }
-}
-
-Buffer::Buffer(Buffer &&other) noexcept
-    : m_label{std::exchange(other.m_label, {})},
-      m_size{std::exchange(other.m_size, 0)},
-      m_handle{std::exchange(other.m_handle, 0)} {}
-
-Buffer &Buffer::operator=(Buffer &&other) noexcept {
-  if (this != &other) {
-    if (m_handle != 0) {
-      glDeleteBuffers(1, &m_handle);
-    }
-    m_label = std::exchange(other.m_label, {});
-    m_size = std::exchange(other.m_size, 0);
-    m_handle = std::exchange(other.m_handle, 0);
-  }
-  return *this;
-}
-
 void Buffer::Update(std::span<const std::byte> data, usize offset) const {
   if (offset + data.size() > m_size) {
     spdlog::error("Buffer '{}': update out of bounds.", m_label);
@@ -96,5 +91,10 @@ std::string_view Buffer::GetLabel() const { return m_label; }
 usize Buffer::GetSize() const { return m_size; }
 
 u32 Buffer::GetHandle() const { return m_handle; }
+
+Buffer::Buffer(std::string_view label, usize size, u32 handle)
+    : m_label{label},
+      m_size{size},
+      m_handle{handle} {}
 
 } // namespace platform
