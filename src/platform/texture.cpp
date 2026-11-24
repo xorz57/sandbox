@@ -49,6 +49,11 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
   PixelFormat pixel_format{};
 
   switch (n) {
+  case 1:
+    pixel_format.internal_format = GL_R8;
+    pixel_format.format = GL_RED;
+    pixel_format.type = GL_UNSIGNED_BYTE;
+    break;
   case 2:
     pixel_format.internal_format = GL_RG8;
     pixel_format.format = GL_RG;
