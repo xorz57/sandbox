@@ -14,20 +14,14 @@
 
 namespace platform {
 
-Texture::~Texture() {
-  if (m_handle != 0) {
-    glDeleteTextures(1, &m_handle);
-  }
-}
+Texture::~Texture() { Reset(); }
 
 Texture::Texture(Texture &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)} {}
 
 Texture &Texture::operator=(Texture &&other) noexcept {
   if (this != &other) {
-    if (m_handle != 0) {
-      glDeleteTextures(1, &m_handle);
-    }
+    Reset();
     m_handle = std::exchange(other.m_handle, 0);
   }
   return *this;
@@ -99,5 +93,13 @@ u32 Texture::GetHandle() const { return m_handle; }
 
 Texture::Texture(u32 handle)
     : m_handle{handle} {}
+
+void Texture::Reset() {
+  if (m_handle == 0) {
+    return;
+  }
+  glDeleteTextures(1, &m_handle);
+  m_handle = 0;
+}
 
 } // namespace platform

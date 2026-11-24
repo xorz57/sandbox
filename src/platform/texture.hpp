@@ -28,6 +28,8 @@ public:
 private:
   explicit Texture(u32 handle);
 
+  void Reset();
+
   u32 m_handle;
 };
 

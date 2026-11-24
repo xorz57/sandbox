@@ -36,6 +36,8 @@ public:
 private:
   explicit Window(SDL_Window *window);
 
+  void Reset();
+
   SDL_Window *m_window;
 };
 

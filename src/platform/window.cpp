@@ -13,23 +13,14 @@
 
 namespace platform {
 
-Window::Window(SDL_Window *window)
-    : m_window{window} {}
-
-Window::~Window() {
-  if (m_window != nullptr) {
-    SDL_DestroyWindow(m_window);
-  }
-}
+Window::~Window() { Reset(); }
 
 Window::Window(Window &&other) noexcept
     : m_window{std::exchange(other.m_window, nullptr)} {}
 
 Window &Window::operator=(Window &&other) noexcept {
   if (this != &other) {
-    if (m_window != nullptr) {
-      SDL_DestroyWindow(m_window);
-    }
+    Reset();
     m_window = std::exchange(other.m_window, nullptr);
   }
   return *this;
@@ -90,5 +81,16 @@ std::pair<i32, i32> Window::GetSize() const {
 }
 
 SDL_Window *Window::GetWindow() const { return m_window; }
+
+Window::Window(SDL_Window *window)
+    : m_window{window} {}
+
+void Window::Reset() {
+  if (m_window == nullptr) {
+    return;
+  }
+  SDL_DestroyWindow(m_window);
+  m_window = nullptr;
+}
 
 } // namespace platform
