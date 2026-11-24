@@ -13,6 +13,7 @@
 #include <span>
 
 #include "camera.hpp"
+#include "directional_light.hpp"
 #include "mesh_data.hpp"
 #include "platform/buffer.hpp"
 #include "platform/context.hpp"
@@ -99,7 +100,7 @@ int main() {
   }
 
   const PointLight point_light{
-      .position = {0.0F, 0.0F, 2.0F},
+      .position = {0.0F, 0.0F, 8.0F},
       .color = {1.0F, 1.0F, 1.0F},
       .intensity = 1.0F,
       .kc = 1.0F,
@@ -107,7 +108,15 @@ int main() {
       .kq = 0.032F,
   };
 
+  const DirectionalLight directional_light{
+      .direction = {0.0F, -1.0F, 0.0F},
+      .color = {1.0F, 0.0F, 0.0F},
+      .intensity = 1.0F,
+  };
+
   const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
+
+  Camera camera{.position = {0.0F, 0.0F, 4.0F}};
 
   bool running{true};
 
@@ -136,9 +145,7 @@ int main() {
     platform::Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
     platform::Renderer::Clear();
 
-    const f32 aspect_ratio{static_cast<f32>(w) / static_cast<f32>(h)};
-
-    const Camera camera{.position = {0.0F, 0.0F, 4.0F}, .aspect_ratio = aspect_ratio};
+    camera.aspect_ratio = static_cast<f32>(w) / static_cast<f32>(h);
 
     const glm::mat4 view{camera.ComputeViewMatrix()};
     const glm::mat4 projection{camera.ComputeProjectionMatrix()};
@@ -160,6 +167,10 @@ int main() {
     program->SetUniform("u_point_light.kc", point_light.kc);
     program->SetUniform("u_point_light.kl", point_light.kl);
     program->SetUniform("u_point_light.kq", point_light.kq);
+
+    program->SetUniform("u_directional_light.direction", directional_light.direction);
+    program->SetUniform("u_directional_light.color", directional_light.color);
+    program->SetUniform("u_directional_light.intensity", directional_light.intensity);
 
     program->SetUniform("u_ambient_light", ambient_light);
 
