@@ -23,6 +23,7 @@ Window &Window::operator=(Window &&other) noexcept {
     Reset();
     m_window = std::exchange(other.m_window, nullptr);
   }
+
   return *this;
 }
 
@@ -77,6 +78,7 @@ std::pair<i32, i32> Window::GetSize() const {
   i32 w{};
   i32 h{};
   SDL_GetWindowSizeInPixels(m_window, &w, &h);
+
   return std::pair<i32, i32>{w, h};
 }
 
@@ -89,6 +91,7 @@ void Window::Reset() {
   if (m_window == nullptr) {
     return;
   }
+
   SDL_DestroyWindow(m_window);
   m_window = nullptr;
 }

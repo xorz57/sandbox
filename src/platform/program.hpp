@@ -51,6 +51,8 @@ private:
 
   [[nodiscard]] i32 GetUniformLocation(const char *name) const;
 
+  void Reset();
+
   u32 m_handle;
   mutable std::unordered_map<std::string_view, i32> m_uniform_locations;
 };

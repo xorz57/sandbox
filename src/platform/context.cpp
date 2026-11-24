@@ -22,6 +22,7 @@ Context &Context::operator=(Context &&other) noexcept {
     Reset();
     m_context = std::exchange(other.m_context, nullptr);
   }
+
   return *this;
 }
 
@@ -71,6 +72,7 @@ void Context::Reset() {
   if (m_context == nullptr) {
     return;
   }
+
   SDL_GL_DestroyContext(m_context);
   m_context = nullptr;
 }

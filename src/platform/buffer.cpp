@@ -28,6 +28,7 @@ Buffer &Buffer::operator=(Buffer &&other) noexcept {
     m_size = std::exchange(other.m_size, 0);
     m_handle = std::exchange(other.m_handle, 0);
   }
+
   return *this;
 }
 
@@ -95,6 +96,7 @@ void Buffer::Reset() {
   if (m_handle == 0) {
     return;
   }
+
   glDeleteBuffers(1, &m_handle);
   m_handle = 0;
 }

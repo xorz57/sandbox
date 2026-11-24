@@ -24,14 +24,16 @@ Texture &Texture::operator=(Texture &&other) noexcept {
     Reset();
     m_handle = std::exchange(other.m_handle, 0);
   }
+
   return *this;
 }
 
 std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
+  stbi_set_flip_vertically_on_load(1);
+
   i32 w{};
   i32 h{};
   i32 n{};
-  stbi_set_flip_vertically_on_load(1);
   stbi_uc *pixels{stbi_load(path.string().c_str(), &w, &h, &n, 0)};
   if (pixels == nullptr) {
     spdlog::error("Texture: failed to load '{}': {}.", path.string(), stbi_failure_reason());
@@ -109,6 +111,7 @@ void Texture::Reset() {
   if (m_handle == 0) {
     return;
   }
+
   glDeleteTextures(1, &m_handle);
   m_handle = 0;
 }

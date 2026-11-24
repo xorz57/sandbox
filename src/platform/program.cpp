@@ -46,6 +46,7 @@ namespace {
   }
 
   shader_guard.Release();
+
   return std::optional<u32>{handle};
 }
 
@@ -80,6 +81,7 @@ namespace {
   }
 
   program_guard.Release();
+
   return std::optional<u32>{handle};
 }
 
@@ -100,11 +102,7 @@ namespace {
 
 namespace platform {
 
-Program::~Program() {
-  if (m_handle != 0) {
-    glDeleteProgram(m_handle);
-  }
-}
+Program::~Program() { Reset(); }
 
 Program::Program(Program &&other) noexcept
     : m_handle{std::exchange(other.m_handle, 0)},
@@ -112,12 +110,11 @@ Program::Program(Program &&other) noexcept
 
 Program &Program::operator=(Program &&other) noexcept {
   if (this != &other) {
-    if (m_handle != 0) {
-      glDeleteProgram(m_handle);
-    }
+    Reset();
     m_handle = std::exchange(other.m_handle, 0);
     m_uniform_locations = std::move(other.m_uniform_locations);
   }
+
   return *this;
 }
 
@@ -138,6 +135,7 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
   if (!handle.has_value()) {
     return std::nullopt;
   }
+
   return std::optional<Program>{Program{*handle}};
 }
 
@@ -259,8 +257,19 @@ i32 Program::GetUniformLocation(const char *name) const {
   if (location == -1) {
     spdlog::warn("Shader: uniform '{}' not found.", name);
   }
+
   m_uniform_locations.emplace(name, location);
+
   return location;
+}
+
+void Program::Reset() {
+  if (m_handle == 0) {
+    return;
+  }
+
+  glDeleteProgram(m_handle);
+  m_handle = 0;
 }
 
 } // namespace platform
