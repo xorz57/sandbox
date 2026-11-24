@@ -2,7 +2,9 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_keycode.h>
+#include <SDL3/SDL_timer.h>
 #include <glad/gl.h>
+#include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
@@ -134,6 +136,8 @@ int main() {
   bool running{true};
 
   while (running) {
+    const f32 time{static_cast<f32>(SDL_GetTicks()) / SDL_MS_PER_SECOND};
+
     SDL_Event event{};
 #pragma region ProcessEvents
     while (SDL_PollEvent(&event)) {
@@ -193,6 +197,16 @@ int main() {
       glm::mat4 model{glm::mat4{1.0F}};
       model = glm::translate(model, {0.0F, -0.5F, 0.0F});
       model = glm::scale(model, {8.0F, 1.0F, 8.0F});
+      blinn_phong_program->SetUniform("u_model", model);
+      blinn_phong_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
+      glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
+    }
+
+    {
+      glm::mat4 model{glm::mat4{1.0F}};
+      model = glm::translate(model, {0.0F, 2.0F, 0.0F});
+      model = glm::rotate(model, time, {1.0F, 1.0F, 1.0F});
+      model = glm::scale(model, {1.0F, 1.0F, 1.0F});
       blinn_phong_program->SetUniform("u_model", model);
       blinn_phong_program->SetUniform("u_normal_matrix", glm::transpose(glm::inverse(glm::mat3{model})));
       glDrawElements(GL_TRIANGLES, static_cast<i32>(mesh_data.elements.size()), GL_UNSIGNED_INT, nullptr);
