@@ -93,7 +93,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto program{platform::Program::Create("assets/shaders/lit")};
+  auto program{platform::Program::Create("assets/shaders/blinn_phong")};
   if (!program.has_value()) {
     return EXIT_FAILURE;
   }

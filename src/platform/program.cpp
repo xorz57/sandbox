@@ -12,7 +12,6 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <system_error>
 #include <utility>
 
 #include "scope_exit.hpp"
@@ -97,16 +96,6 @@ namespace {
   return std::optional<std::string>{buffer.str()};
 }
 
-[[nodiscard]] std::optional<std::filesystem::file_time_type> GetLastWriteTime(const std::filesystem::path &path) {
-  std::error_code error;
-  const std::filesystem::file_time_type last_write_time{std::filesystem::last_write_time(path, error)};
-  if (error) {
-    spdlog::error("Shader: failed to get last write time for '{}': {}.", path.string(), error.message());
-    return std::nullopt;
-  }
-  return std::optional<std::filesystem::file_time_type>{last_write_time};
-}
-
 } // namespace
 
 namespace platform {
@@ -153,16 +142,6 @@ std::optional<Program> Program::Create(const char *vs_source, const char *fs_sou
 }
 
 std::optional<Program> Program::Create(const std::filesystem::path &vs_path, const std::filesystem::path &fs_path) {
-  const auto vs_write_time{GetLastWriteTime(vs_path)};
-  if (!vs_write_time.has_value()) {
-    return std::nullopt;
-  }
-
-  const auto fs_write_time{GetLastWriteTime(fs_path)};
-  if (!fs_write_time.has_value()) {
-    return std::nullopt;
-  }
-
   const auto vs_source{ReadFile(vs_path)};
   if (!vs_source.has_value()) {
     return std::nullopt;
