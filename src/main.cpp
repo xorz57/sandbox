@@ -106,22 +106,24 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  std::array<PointLight, 2> point_lights{PointLight{
-                                             .position = {2.0F, 1.0F, 2.0F},
-                                             .color = {0.0F, 1.0F, 0.0F},
-                                             .intensity = 1.0F,
-                                             .kc = 1.0F,
-                                             .kl = 0.24F,
-                                             .kq = 0.07F,
-                                         },
-                                         PointLight{
-                                             .position = {-2.0F, 1.0F, -2.0F},
-                                             .color = {0.0F, 0.0F, 1.0F},
-                                             .intensity = 1.0F,
-                                             .kc = 1.0F,
-                                             .kl = 0.24F,
-                                             .kq = 0.07F,
-                                         }};
+  std::array<PointLight, 2> point_lights{
+      PointLight{
+          .position = {2.0F, 1.0F, 2.0F},
+          .color = {0.0F, 1.0F, 0.0F},
+          .intensity = 1.0F,
+          .kc = 1.0F,
+          .kl = 0.24F,
+          .kq = 0.07F,
+      },
+      PointLight{
+          .position = {-2.0F, 1.0F, -2.0F},
+          .color = {0.0F, 0.0F, 1.0F},
+          .intensity = 1.0F,
+          .kc = 1.0F,
+          .kl = 0.24F,
+          .kq = 0.07F,
+      },
+  };
 
   const DirectionalLight directional_light{
       .direction = {0.0F, 1.0F, 0.0F},

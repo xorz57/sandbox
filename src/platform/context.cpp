@@ -38,7 +38,7 @@ std::optional<Context> Context::Create(const std::optional<Window> &window) {
     spdlog::error("OpenGL: failed to create context: {}.", SDL_GetError());
     return std::nullopt;
   }
-  ScopeExit context_guard{[context]() { SDL_GL_DestroyContext(context); }};
+  ScopeExit context_guard{[context] { SDL_GL_DestroyContext(context); }};
 
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress)) == 0) {
