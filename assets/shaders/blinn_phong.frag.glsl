@@ -33,8 +33,8 @@ vec3 calculate_directional_light(DirectionalLight light, vec3 normal, vec3 view_
   const vec3 light_direction = normalize(-light.direction);
   const vec3 halfway_direction = normalize(light_direction + view_direction);
 
-  const float diffuse_factor = max(dot(normal, light_direction), 0.0F);
-  const float specular_factor = (diffuse_factor > 0.0F) ? pow(max(dot(normal, halfway_direction), 0.0F), 32.0F) : 0.0F;
+  const float diffuse_factor = max(dot(normal, light_direction), 0.0);
+  const float specular_factor = (diffuse_factor > 0.0) ? pow(max(dot(normal, halfway_direction), 0.0), 32.0) : 0.0;
 
   const vec3 radiance = light.color * light.intensity;
 
@@ -50,10 +50,10 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 world_position, v
 
   const float distance = length(light.position - world_position);
 
-  const float attenuation = 1.0F / (light.kc + light.kl * distance + light.kq * distance * distance);
+  const float attenuation = 1.0 / (light.kc + light.kl * distance + light.kq * distance * distance);
 
-  const float diffuse_factor = max(dot(normal, light_direction), 0.0F);
-  const float specular_factor = (diffuse_factor > 0.0F) ? pow(max(dot(normal, halfway_direction), 0.0F), 32.0F) : 0.0F;
+  const float diffuse_factor = max(dot(normal, light_direction), 0.0);
+  const float specular_factor = (diffuse_factor > 0.0) ? pow(max(dot(normal, halfway_direction), 0.0), 32.0) : 0.0;
 
   const vec3 radiance = light.color * light.intensity * attenuation;
 
@@ -77,5 +77,5 @@ void main() {
     color += calculate_point_light(u_point_lights[i], world_normal, v_world_position, view_direction, albedo);
   }
 
-  f_color = vec4(color, 1.0F);
+  f_color = vec4(color, 1.0);
 }

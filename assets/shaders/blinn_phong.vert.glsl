@@ -14,7 +14,7 @@ out vec3 v_world_normal;
 out vec2 v_uv;
 
 void main() {
-  const vec4 world_position = u_model * vec4(a_position, 1.0F);
+  const vec4 world_position = u_model * vec4(a_position, 1.0);
   v_world_position = world_position.xyz;
   v_world_normal = u_normal_matrix * a_normal;
   v_uv = a_uv;
