@@ -6,6 +6,6 @@
 
 struct DirectionalLight final {
   glm::vec3 direction{};
-  glm::vec3 color{};
-  f32 intensity{};
+  glm::vec3 color{1.0F, 1.0F, 1.0F};
+  f32 intensity{1.0F};
 };
