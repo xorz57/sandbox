@@ -4,9 +4,7 @@ struct PointLight {
   vec3 position;
   vec3 color;
   float intensity;
-  float kc;
-  float kl;
-  float kq;
+  float range;
 };
 
 struct DirectionalLight {
@@ -48,9 +46,13 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 world_position, v
   const vec3 light_direction = normalize(light.position - world_position);
   const vec3 halfway_direction = normalize(light_direction + view_direction);
 
-  const float distance = length(light.position - world_position);
+  const float d = distance(light.position, world_position);
+  const float d2 = d * d;
 
-  const float attenuation = 1.0 / (light.kc + light.kl * distance + light.kq * distance * distance);
+  const float r = clamp(d / light.range, 0.0, 1.0);
+  const float r4 = r * r * r * r;
+
+  const float attenuation = clamp(1.0 - r4, 0.0, 1.0) / d2;
 
   const float diffuse_factor = max(dot(normal, light_direction), 0.0);
   const float specular_factor = (diffuse_factor > 0.0) ? pow(max(dot(normal, halfway_direction), 0.0), 32.0) : 0.0;

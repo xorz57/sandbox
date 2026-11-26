@@ -111,17 +111,13 @@ int main() {
           .position = {2.0F, 1.0F, 2.0F},
           .color = {0.0F, 1.0F, 0.0F},
           .intensity = 1.0F,
-          .kc = 1.0F,
-          .kl = 0.24F,
-          .kq = 0.07F,
+          .range = 8.0F,
       },
       PointLight{
           .position = {-2.0F, 1.0F, -2.0F},
           .color = {0.0F, 0.0F, 1.0F},
           .intensity = 1.0F,
-          .kc = 1.0F,
-          .kl = 0.24F,
-          .kq = 0.07F,
+          .range = 8.0F,
       },
   };
 
@@ -180,15 +176,11 @@ int main() {
     blinn_phong_program->SetUniform("u_point_lights[0].position", point_lights.at(0).position);
     blinn_phong_program->SetUniform("u_point_lights[0].color", point_lights.at(0).color);
     blinn_phong_program->SetUniform("u_point_lights[0].intensity", point_lights.at(0).intensity);
-    blinn_phong_program->SetUniform("u_point_lights[0].kc", point_lights.at(0).kc);
-    blinn_phong_program->SetUniform("u_point_lights[0].kl", point_lights.at(0).kl);
-    blinn_phong_program->SetUniform("u_point_lights[0].kq", point_lights.at(0).kq);
+    blinn_phong_program->SetUniform("u_point_lights[0].range", point_lights.at(0).range);
     blinn_phong_program->SetUniform("u_point_lights[1].position", point_lights.at(1).position);
     blinn_phong_program->SetUniform("u_point_lights[1].color", point_lights.at(1).color);
     blinn_phong_program->SetUniform("u_point_lights[1].intensity", point_lights.at(1).intensity);
-    blinn_phong_program->SetUniform("u_point_lights[1].kc", point_lights.at(1).kc);
-    blinn_phong_program->SetUniform("u_point_lights[1].kl", point_lights.at(1).kl);
-    blinn_phong_program->SetUniform("u_point_lights[1].kq", point_lights.at(1).kq);
+    blinn_phong_program->SetUniform("u_point_lights[1].range", point_lights.at(1).range);
     blinn_phong_program->SetUniform("u_directional_light.direction", directional_light.direction);
     blinn_phong_program->SetUniform("u_directional_light.color", directional_light.color);
     blinn_phong_program->SetUniform("u_directional_light.intensity", directional_light.intensity);
