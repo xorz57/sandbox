@@ -49,10 +49,14 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 world_position, v
   const float d = distance(light.position, world_position);
   const float d2 = d * d;
 
-  const float r = clamp(d / light.range, 0.0, 1.0);
-  const float r4 = r * r * r * r;
+  float window = 1.0;
+  if (light.range > 0.0) {
+    const float r = clamp(d / light.range, 0.0, 1.0);
+    const float r4 = r * r * r * r;
+    window = clamp(1.0 - r4, 0.0, 1.0);
+  }
 
-  const float attenuation = clamp(1.0 - r4, 0.0, 1.0) / d2;
+  const float attenuation = window / max(d2, 0.01 * 0.01);
 
   const float diffuse_factor = max(dot(normal, light_direction), 0.0);
   const float specular_factor = (diffuse_factor > 0.0) ? pow(max(dot(normal, halfway_direction), 0.0), 32.0) : 0.0;
