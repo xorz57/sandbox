@@ -53,7 +53,8 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 world_position, v
   if (light.range > 0.0) {
     const float r = clamp(d / light.range, 0.0, 1.0);
     const float r4 = r * r * r * r;
-    window = clamp(1.0 - r4, 0.0, 1.0);
+    const float w = 1.0 - r4;
+    window = w * w;
   }
 
   const float attenuation = window / max(d2, 0.01 * 0.01);
