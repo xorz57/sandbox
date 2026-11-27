@@ -9,6 +9,11 @@ namespace platform {
 
 class Texture final {
 public:
+  enum class ColorSpace : u8 {
+    SRGB,
+    Linear,
+  };
+
   struct PixelFormat {
     u32 internal_format{};
     u32 format{};
@@ -23,7 +28,7 @@ public:
   Texture &operator=(const Texture &) = delete;
   Texture &operator=(Texture &&other) noexcept;
 
-  [[nodiscard]] static std::optional<Texture> Create(const std::filesystem::path &path);
+  [[nodiscard]] static std::optional<Texture> Create(const std::filesystem::path &path, ColorSpace color_space);
 
   void Bind(u32 unit) const;
 

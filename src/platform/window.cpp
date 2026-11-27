@@ -28,7 +28,7 @@ Window &Window::operator=(Window &&other) noexcept {
 }
 
 std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
-  constexpr std::array<std::pair<SDL_GLAttr, i32>, 8> attributes{
+  constexpr std::array<std::pair<SDL_GLAttr, i32>, 9> attributes{
       {
           {SDL_GL_CONTEXT_MAJOR_VERSION, 4},
           {SDL_GL_CONTEXT_MINOR_VERSION, 6},
@@ -38,6 +38,7 @@ std::optional<Window> Window::Create(const char *title, i32 w, i32 h) {
           {SDL_GL_STENCIL_SIZE, 8},
           {SDL_GL_MULTISAMPLEBUFFERS, 1},
           {SDL_GL_MULTISAMPLESAMPLES, 4},
+          {SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1},
       },
   };
 

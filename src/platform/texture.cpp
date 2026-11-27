@@ -28,7 +28,7 @@ Texture &Texture::operator=(Texture &&other) noexcept {
   return *this;
 }
 
-std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
+std::optional<Texture> Texture::Create(const std::filesystem::path &path, ColorSpace color_space) {
   stbi_set_flip_vertically_on_load(1);
 
   i32 w{};
@@ -50,6 +50,8 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
 
   PixelFormat pixel_format{};
 
+  const bool srgb{color_space == ColorSpace::SRGB};
+
   switch (n) {
   case 1:
     pixel_format.internal_format = GL_R8;
@@ -62,12 +64,12 @@ std::optional<Texture> Texture::Create(const std::filesystem::path &path) {
     pixel_format.type = GL_UNSIGNED_BYTE;
     break;
   case 3:
-    pixel_format.internal_format = GL_RGB8;
+    pixel_format.internal_format = srgb ? GL_SRGB8 : GL_RGB8;
     pixel_format.format = GL_RGB;
     pixel_format.type = GL_UNSIGNED_BYTE;
     break;
   case 4:
-    pixel_format.internal_format = GL_RGBA8;
+    pixel_format.internal_format = srgb ? GL_SRGB8_ALPHA8 : GL_RGBA8;
     pixel_format.format = GL_RGBA;
     pixel_format.type = GL_UNSIGNED_BYTE;
     break;

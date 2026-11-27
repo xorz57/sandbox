@@ -12,6 +12,14 @@ public:
 
   static void SetClearColor(const glm::vec4 &color);
 
+  static void SetMultisampling(bool enabled);
+
+  static void SetFaceCulling(bool enabled);
+
+  static void SetDepthTesting(bool enabled);
+
+  static void SetFramebufferSRGB(bool enabled);
+
   static void Clear();
 };
 

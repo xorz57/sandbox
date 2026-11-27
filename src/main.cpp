@@ -51,9 +51,7 @@ int main() {
 
   window->Show();
 
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_MULTISAMPLE);
+  platform::Renderer::SetMultisampling(true);
 
   const MeshData mesh_data{primitives::MakeCube()};
 
@@ -91,7 +89,7 @@ int main() {
   glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, static_cast<u32>(offsetof(Vertex, uv)));
   glVertexArrayAttribBinding(vao, 2, 0);
 
-  auto texture{platform::Texture::Create("assets/textures/checkerboard.png")};
+  auto texture{platform::Texture::Create("assets/textures/checkerboard.png", platform::Texture::ColorSpace::SRGB)};
   if (!texture.has_value()) {
     return EXIT_FAILURE;
   }
@@ -127,7 +125,7 @@ int main() {
       .intensity = 1.0F,
   };
 
-  const glm::vec3 ambient_light{0.1F, 0.1F, 0.1F};
+  const glm::vec3 ambient_light{0.02F, 0.02F, 0.02F};
 
   Camera camera{.position = {0.0F, 2.0F, 8.0F}};
 
@@ -155,6 +153,10 @@ int main() {
 #pragma endregion ProcessEvents
 
     const auto [w, h]{window->GetSize()};
+
+    platform::Renderer::SetFaceCulling(true);
+    platform::Renderer::SetDepthTesting(true);
+    platform::Renderer::SetFramebufferSRGB(true);
 
     platform::Renderer::SetViewport(0, 0, w, h);
     platform::Renderer::SetClearColor({0.0F, 0.0F, 0.0F, 1.0F});
